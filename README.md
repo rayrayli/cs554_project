@@ -1,6 +1,11 @@
 # cs554_project
 
-group member:
+Group member:
+
 Christian Montero
+
 Caroline V Palicz
+
 Kah S Yap
+
+Rui Li
