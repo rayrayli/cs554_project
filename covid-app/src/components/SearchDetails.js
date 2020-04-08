@@ -7,8 +7,6 @@ import MapSearch from './MapSearch'
 const SearchDetails = () => {
     return (
         <Container className = 'main'>
-            <br />
-            <br />
             <Row>
                 <Col lg = {6} md = {12} sm = {12} id = 'left-comp'> 
                     <Row> <h1> DENSITY MAP HERE </h1> </Row>
