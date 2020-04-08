@@ -16,7 +16,7 @@
 }
 
 .App-header {
-  background-color: #282c34;
+  /* background-color: #282c34; */
   min-height: 50px;
   display: flex;
   flex-direction: column;
@@ -43,15 +43,21 @@
   align-content: center;
   padding: 20px;
 }
+#map-hold {
+  justify-content: center;
+  align-content: center;
+}
 #gMap {
   /* height: 600px;
   width: 90%; */
-  background-color: purple;
   /* justify-content: center;
   align-content: center; */
+  width: 950px;
+  height: 100%;
+
 }
 .rect {
-  width: 90%;
+  max-width: 75% ;
 }
 #left-comp, #right-comp, #map-comp {
   justify-content: center;
@@ -61,38 +67,40 @@
 .legend {
   text-align: left;
   font-size: 11pt;
+  height: fit-content;
 }
+
 #leg-item {
   padding-right: 2px;
   padding-left: 2px;
 }
 #zero{
   height: 12px;
-  width: 135px;
+  width: 115px;
   background-color: #02e66c;
   margin: 0px;
 }
 #one{
   height: 12px;
-  width: 135px;
+  width: 115px;
   background-color: #06c961;
   margin: 0px;
 }
 #two{
   height: 12px;
-  width: 135px;
+  width: 115px;
   background-color: #02a34d;
   margin: 0px;
 }
 #three{
   height: 12px;
-  width: 135px;
+  width: 115px;
   background-color: #246b3b;
   margin: 0px;
 }
 #four{
   height: 12px;
-  width: 135px;
+  width: 115px;
   background-color: #174726;
   margin: 0px;
 }
@@ -113,19 +121,13 @@
   justify-content: center;
 }
 #landingform {
-  width: 85%;
+  width: 55%;
   align-content: center;
   justify-content: center;
 }
 .landing-form {
   align-content: center;
   justify-content: center;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #search  {
-    transition: none;
-  }
 }
 
 .stat-header{
