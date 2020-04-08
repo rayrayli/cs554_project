@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Figure } from 'react-bootstrap';
+import { Container, Row, Col, Figure, Form, InputGroup, FormControl } from 'react-bootstrap';
 import { Chart } from "react-google-charts";
 import axios from 'axios';
 
@@ -71,7 +71,6 @@ const Landing = () => {
         "WI": "Wisconsin",
         "WY": "Wyoming"
     };
-    
 
     useEffect(
         () => {
@@ -153,7 +152,14 @@ const Landing = () => {
 
     return (
         <Container className='main'>
-            <br />
+            <Row className = 'landing-form'>
+                <Form className = 'landing-form' method = 'POST' name = 'formSearchLocal'>
+                    <InputGroup>
+                        <FormControl id = "search" />
+                    </InputGroup>
+                </Form>
+            </Row>
+            
             <br />
             <Row id = 'gMap' sm = {12} md = {6} lg = {6}>
                 {/* <div id = 'gMap' /> */}
@@ -197,8 +203,8 @@ const Landing = () => {
 
             </Row>        
         </Container>
-    )
-}
+    );
+};
 
 
 
