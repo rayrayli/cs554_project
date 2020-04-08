@@ -9,7 +9,7 @@ import './App.css';
 function App() {
   return (
     <Router> 
-       <Container className="App">
+       <Container className="App" fluid>
        <header className = 'App-header'>
           <a href = '/'>
             <h1> COVID SITE </h1>

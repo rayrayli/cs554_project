@@ -152,9 +152,14 @@ const Landing = () => {
         chart.draw(data, options);
     };
 
+    // https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     if (statesCurrVals && nationCurrVals) {
         return (
-            <Container className='main'>
+            <Container className='main' fluid = "lg">
                 <Row className = 'landing-form'>
                     <Form id = 'landingform' method = 'POST' name = 'formSearchLocal'>
                         <InputGroup>
@@ -167,19 +172,19 @@ const Landing = () => {
                     US STATS
                 </Row>
                 <br />
-                <Row>
+                <Row id = 'legend'>
                     <Col>
                         <Row className = 'stat-header'>
                             Positive Cases
                         </Row>
                         <Row className = 'stat-cont'>
-                            {nationCurrVals.positive}
+                            {numberWithCommas(nationCurrVals.positive)}
                         </Row>
                         <Row className = 'stat-header'>
                             Tests Administered
                         </Row>
                         <Row className = 'stat-cont'>
-                            {nationCurrVals.totalTestResults}
+                            {numberWithCommas(nationCurrVals.totalTestResults)}
                         </Row>
                     </Col>
                         
@@ -188,13 +193,13 @@ const Landing = () => {
                             Currently Hospitalized
                         </Row>
                         <Row className = 'stat-cont'>
-                            {nationCurrVals.hospitalizedCurrently}
+                            {numberWithCommas(nationCurrVals.hospitalizedCurrently)}
                         </Row>
                         <Row className = 'stat-header'>
                             Currently in ICU
                         </Row>
                         <Row className = 'stat-cont'>
-                            {nationCurrVals.inIcuCurrently}
+                            {numberWithCommas(nationCurrVals.inIcuCurrently)}
                         </Row>
                     </Col>
 
@@ -203,58 +208,60 @@ const Landing = () => {
                             Recovered Patients
                         </Row>
                         <Row className = 'stat-cont'>
-                            {nationCurrVals.recovered}
+                            {numberWithCommas(nationCurrVals.recovered)}
                         </Row>
                         <Row className = 'stat-header'>
                             Currently on Ventilator
                         </Row>
                         <Row className = 'stat-cont'>
-                            {nationCurrVals.onVentilatorCurrently}
+                            {numberWithCommas(nationCurrVals.onVentilatorCurrently)}
                         </Row>
                     </Col>
                 </Row>
 
-                <Row id = 'gMap' sm = {12} md = {6} lg = {6}>
-                    {/* <div id = 'gMap' /> */}
+                <Row id = 'map-hold'>
+                    <Row id = 'gMap' sm = {12} md = {12} lg = {12} xl = {12}/>
+                    
+                    <Row className = 'legend' sm = {12} md = {12} lg = {12} xl = {12}>
+                        <Figure id = 'leg-item'>
+                            <Figure.Image id = 'zero' alt = ''/>
+                            <Figure.Caption>
+                                1 - 500
+                            </Figure.Caption>
+                        </Figure>
+                    
+                        <Figure id = 'leg-item'>
+                            <Figure.Image id = 'one' alt = ''/>
+                            <Figure.Caption>
+                                501 - 5,000
+                            </Figure.Caption>
+                        </Figure>
+                    
+        
+                        <Figure id = 'leg-item'>
+                            <Figure.Image id = 'two' alt = ''/>
+                            <Figure.Caption>
+                                5,001 - 9,999
+                            </Figure.Caption>
+                        </Figure>
+        
+                        <Figure id = 'leg-item'>
+                            <Figure.Image id = 'three' alt = ''/>
+                            <Figure.Caption>
+                                10,000 - 15,000
+                            </Figure.Caption>
+                        </Figure>
+        
+                        <Figure id = 'leg-item'>
+                            <Figure.Image id = 'four' alt = ''/>
+                            <Figure.Caption>
+                                15,000 +
+                            </Figure.Caption>
+                        </Figure>
+    
+                    </Row> 
                 </Row>
-                <Row className = 'legend' sm = {12} md = {12} lg = {12}>
-                    <Figure id = 'leg-item'>
-                        <Figure.Image id = 'zero' />
-                        <Figure.Caption>
-                            1 - 500
-                        </Figure.Caption>
-                    </Figure>
-                
-                    <Figure id = 'leg-item'>
-                        <Figure.Image id = 'one' />
-                        <Figure.Caption>
-                            501 - 5,000
-                        </Figure.Caption>
-                    </Figure>
-                
-    
-                    <Figure id = 'leg-item'>
-                        <Figure.Image id = 'two' />
-                        <Figure.Caption>
-                            5,001 - 9,999
-                        </Figure.Caption>
-                    </Figure>
-    
-                    <Figure id = 'leg-item'>
-                        <Figure.Image id = 'three' />
-                        <Figure.Caption>
-                            10,000 - 15,000
-                        </Figure.Caption>
-                    </Figure>
-    
-                    <Figure id = 'leg-item'>
-                        <Figure.Image id = 'four' />
-                        <Figure.Caption>
-                            15,000 +
-                        </Figure.Caption>
-                    </Figure>
-    
-                </Row>        
+                       
             </Container>
         );
     } else {
@@ -268,115 +275,5 @@ const Landing = () => {
 
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const Landing = () => {
-//     const [ statesCurrVals, setStatesCurrVals ] = useState(undefined);
-//     const [ nationCurrVals, setNationCurrVals ] = useState(undefined);
-
-
-
-//     let stateData = undefined
-
-//     useEffect( 
-//         () => {
-//             async function fetchData() {
-//                 try {
-//                     await axios.get('https://covidtracking.com/api/v1/states/current.json').then( async (stateData) => {
-//                         let states = stateData.data
-//                         return await axios.get('https://covidtracking.com/api/v1/us/current.json').then( async (nationData) => {
-//                             let nation = await nationData.data
-//                             console.log(states)
-//                             setStatesCurrVals(states);
-//                             setNationCurrVals(nation)
-//                         });
-//                     });
-
-//                 } catch (err) {
-//                     console.log(err)
-//                 };
-//             }
-//             fetchData();
-
-//         }, []
-//     )
-
-//     if (statesCurrVals) {
-        // stateData = (statesCurrVals && statesCurrVals.map( (stateStat) => {
-        //     return [
-        //         abrev[stateStat.state],
-        //         stateStat.positive,
-        //         stateStat.death,
-        //     ]
-        //     // return {
-        //     //     state: stateStat.state,
-        //     //     positive: stateStat.positive,
-        //     //     hospitalized: stateStat.hospitalized,
-        //     //     Deaths: stateStat.lastUpdateEt,
-        //     // }
-        // }))
-//         let head = ['State', 'positive', 'deaths']
-
-//         stateData = [head].concat(stateData)
-
-//         console.log('####',stateData)
-
-//     }
-
-//     if (statesCurrVals && nationCurrVals) {
-//         return (
-//             <Container className = 'main'>
-//                 <br />
-//                 <br />
-//                 <Row>
-//                     <Chart
-//                         widataTableh = {'100%'}
-//                         height = {'auto'}
-//                         chartType = "GeoChart"
-//                         data = { stateData }
-//                         // Note: you will need to get a mapsApiKey for your project.
-//                         // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
-//                         mapsApiKey = 'AIzaSyAzvmldZdw7JDk_x7g-fvOLzs_Egd5Ha6o'
-//                         // options = {{
-//                         //     region: 'US',
-//                         //     displayMode: 'markers'
-//                         // }}
-//                         options={{
-//                             region: 'US',
-//                             displayMode: 'regions',
-//                             resolution: 'provinces',
-//                             colorAxis: { colors: ['#02a34d', '2a6336', '#0e2b17'] },
-//                             datalessRegionColor: '#d2d4d3',
-//                             defaultColor: '#d2d4d3'
-//                           }}
-//                     />
-//                 </Row>
-
-//             </Container>
-//         )
-//     } else {return (
-//         <Container className = 'main'>
-//             <br />
-//             <br />
-//             <Row>
-//                 LOADING
-//             </Row>
-
-//         </Container>
-//     )};
-// };
 
 export default Landing;
