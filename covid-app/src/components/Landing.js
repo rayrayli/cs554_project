@@ -76,11 +76,13 @@ const Landing = () => {
         () => {
             async function fetchData() {
                 try {
+                    console.log('!!!!!!!!!!!~!')
                     await axios.get('https://covidtracking.com/api/v1/states/current.json').then(async (stateData) => {
                         let states = stateData.data
                         console.log(states)
                         return await axios.get('https://covidtracking.com/api/v1/us/current.json').then(async (nationData) => {
                             let nation = nationData.data
+                            console.log(nation)
                             return await axios.get('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest').then( (popData) => {
                                 let pop = popData.data.data
                                 let statePop = {};
@@ -89,7 +91,7 @@ const Landing = () => {
                                 });
 
                                 setStatesCurrVals([states, statePop]);
-                                setNationCurrVals(nation);
+                                setNationCurrVals(nation[0]);
                             });
                         });
                     });
@@ -150,60 +152,121 @@ const Landing = () => {
         chart.draw(data, options);
     };
 
-    return (
-        <Container className='main'>
-            <Row className = 'landing-form'>
-                <Form className = 'landing-form' method = 'POST' name = 'formSearchLocal'>
-                    <InputGroup>
-                        <FormControl id = "search" />
-                    </InputGroup>
-                </Form>
-            </Row>
-            
-            <br />
-            <Row id = 'gMap' sm = {12} md = {6} lg = {6}>
-                {/* <div id = 'gMap' /> */}
-            </Row>
-            <Row className = 'legend' sm = {12} md = {12} lg = {12}>
-                <Figure id = 'leg-item'>
-                    <Figure.Image id = 'zero' />
-                    <Figure.Caption>
-                        1 - 500
-                    </Figure.Caption>
-                </Figure>
-            
-                <Figure id = 'leg-item'>
-                    <Figure.Image id = 'one' />
-                    <Figure.Caption>
-                        501 - 5,000
-                    </Figure.Caption>
-                </Figure>
-            
+    if (statesCurrVals && nationCurrVals) {
+        return (
+            <Container className='main'>
+                <Row className = 'landing-form'>
+                    <Form id = 'landingform' method = 'POST' name = 'formSearchLocal'>
+                        <InputGroup>
+                            <FormControl id = "search" placeholder = 'Search Your Locality'/>
+                        </InputGroup>
+                    </Form>
+                </Row>
+                <br />
+                <Row className = 'stat-header'>
+                    US STATS
+                </Row>
+                <br />
+                <Row>
+                    <Col>
+                        <Row className = 'stat-header'>
+                            Positive Cases
+                        </Row>
+                        <Row className = 'stat-cont'>
+                            {nationCurrVals.positive}
+                        </Row>
+                        <Row className = 'stat-header'>
+                            Tests Administered
+                        </Row>
+                        <Row className = 'stat-cont'>
+                            {nationCurrVals.totalTestResults}
+                        </Row>
+                    </Col>
+                        
+                    <Col>
+                        <Row className = 'stat-header'>
+                            Currently Hospitalized
+                        </Row>
+                        <Row className = 'stat-cont'>
+                            {nationCurrVals.hospitalizedCurrently}
+                        </Row>
+                        <Row className = 'stat-header'>
+                            Currently in ICU
+                        </Row>
+                        <Row className = 'stat-cont'>
+                            {nationCurrVals.inIcuCurrently}
+                        </Row>
+                    </Col>
 
-                <Figure id = 'leg-item'>
-                    <Figure.Image id = 'two' />
-                    <Figure.Caption>
-                        5,001 - 9,999
-                    </Figure.Caption>
-                </Figure>
+                    <Col>
+                        <Row className = 'stat-header'>
+                            Recovered Patients
+                        </Row>
+                        <Row className = 'stat-cont'>
+                            {nationCurrVals.recovered}
+                        </Row>
+                        <Row className = 'stat-header'>
+                            Currently on Ventilator
+                        </Row>
+                        <Row className = 'stat-cont'>
+                            {nationCurrVals.onVentilatorCurrently}
+                        </Row>
+                    </Col>
+                </Row>
 
-                <Figure id = 'leg-item'>
-                    <Figure.Image id = 'three' />
-                    <Figure.Caption>
-                        10,000 - 15,000
-                    </Figure.Caption>
-                </Figure>
+                <Row id = 'gMap' sm = {12} md = {6} lg = {6}>
+                    {/* <div id = 'gMap' /> */}
+                </Row>
+                <Row className = 'legend' sm = {12} md = {12} lg = {12}>
+                    <Figure id = 'leg-item'>
+                        <Figure.Image id = 'zero' />
+                        <Figure.Caption>
+                            1 - 500
+                        </Figure.Caption>
+                    </Figure>
+                
+                    <Figure id = 'leg-item'>
+                        <Figure.Image id = 'one' />
+                        <Figure.Caption>
+                            501 - 5,000
+                        </Figure.Caption>
+                    </Figure>
+                
+    
+                    <Figure id = 'leg-item'>
+                        <Figure.Image id = 'two' />
+                        <Figure.Caption>
+                            5,001 - 9,999
+                        </Figure.Caption>
+                    </Figure>
+    
+                    <Figure id = 'leg-item'>
+                        <Figure.Image id = 'three' />
+                        <Figure.Caption>
+                            10,000 - 15,000
+                        </Figure.Caption>
+                    </Figure>
+    
+                    <Figure id = 'leg-item'>
+                        <Figure.Image id = 'four' />
+                        <Figure.Caption>
+                            15,000 +
+                        </Figure.Caption>
+                    </Figure>
+    
+                </Row>        
+            </Container>
+        );
+    } else {
+        return (
+            <Container className='main'>
+                <Row className = 'landing-form'>
+                    LOADING>>>>
+                </Row>        
+            </Container>
+        );
 
-                <Figure id = 'leg-item'>
-                    <Figure.Image id = 'four' />
-                    <Figure.Caption>
-                        15,000 +
-                    </Figure.Caption>
-                </Figure>
-
-            </Row>        
-        </Container>
-    );
+    }
 };
 
 
