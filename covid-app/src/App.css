@@ -50,6 +50,9 @@
   /* justify-content: center;
   align-content: center; */
 }
+.rect {
+  width: 90%;
+}
 #left-comp, #right-comp, #map-comp {
   justify-content: center;
   align-content: center;
@@ -103,15 +106,37 @@
   border-radius: 0px;
   border-color: black;
   text-align: center;
+  align-content: center;
 }
-.landing-form {
+#form {
+  align-content: center;
+  justify-content: center;
+}
+#landingform {
   width: 85%;
   align-content: center;
+  justify-content: center;
+}
+.landing-form {
+  align-content: center;
+  justify-content: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
   #search  {
     transition: none;
   }
+}
+
+.stat-header{
+  align-content: center;
+  justify-content: center;
+  /* font-style: italic; */
+  font-weight: bold;
+
+}
+.stat-cont {
+  align-content: center;
+  justify-content: center;
 }
 
