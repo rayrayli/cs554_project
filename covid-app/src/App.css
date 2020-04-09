@@ -38,12 +38,28 @@
     transform: rotate(360deg);
   }
 }
+
 .main {
   justify-content: space-evenly;
   align-content: center;
-  padding: 20px;
-  margin-top: 4rem;
+  padding: 2rem;
+  margin-top: 3rem;
 }
+
+.landing-form, #landingform {
+  align-content: center;
+  justify-content: center;
+}
+#landingform {
+  width: 35%;
+}
+
+
+
+
+
+
+
 #map-hold {
   justify-content: center;
   align-content: center;
@@ -54,11 +70,11 @@
   /* justify-content: center;
   align-content: center; */
   width: 100%;
-  min-height: 500px;
+  height: 500px;
 
 }
 .rect {
-  max-width: 75% ;
+  max-width: 95% ;
 }
 #left-comp, #right-comp, #map-comp {
   justify-content: center;
@@ -71,37 +87,40 @@
   height: fit-content;
 }
 
-#leg-item {
-  padding-right: 2px;
-  padding-left: 2px;
+.leg-item {
+  padding-right: 1px;
+  padding-left: 1px;
+  width: 7.5rem;
 }
 #zero{
-  height: 12px;
-  width: 115px;
+  height: .75rem;
+  width: 7rem;
   background-color: #02e66c;
   margin: 0px;
 }
 #one{
-  height: 12px;
-  width: 115px;
+  height: .75rem;
+  width: 7rem;
+  min-width: 50px;
+  max-width: 115px;
   background-color: #06c961;
   margin: 0px;
 }
 #two{
-  height: 12px;
-  width: 115px;
+  height: .75rem;
+  width: 7rem;
   background-color: #02a34d;
   margin: 0px;
 }
 #three{
-  height: 12px;
-  width: 115px;
+  height: .75rem;
+  width: 7rem;
   background-color: #246b3b;
   margin: 0px;
 }
 #four{
-  height: 12px;
-  width: 115px;
+  height: .75rem;
+  width: 7rem;
   background-color: #174726;
   margin: 0px;
 }
@@ -121,15 +140,8 @@
   align-content: center;
   justify-content: center;
 }
-#landingform {
-  width: 55%;
-  align-content: center;
-  justify-content: center;
-}
-.landing-form {
-  align-content: center;
-  justify-content: center;
-}
+
+
 
 .stat-header{
   align-content: center;
@@ -148,10 +160,9 @@
   height: auto;
 }
 #land-right{
-  padding: 20px;
+  padding: 2rem;
 }
 #land-left{
-  padding: 20px;
-  padding-top: 50px;
+  padding: 2rem;
 }
 
