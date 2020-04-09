@@ -4,7 +4,7 @@ const settings = {
     mongoConfig: {
         serverUrl: "mongodb://localhost:27017",
         database: "CS554-Final-Project-CovidApp"
-    };
+    }
 };
 
 const mongoConfig = settings.mongoConfig;
