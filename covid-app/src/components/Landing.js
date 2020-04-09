@@ -9,6 +9,7 @@ const Landing = () => {
     const [statesCurrVals, setStatesCurrVals] = useState(undefined);
     const [nationCurrVals, setNationCurrVals] = useState(undefined);
 
+
     let stateData = undefined
     const abrev = {
         "AL": "Alabama",
@@ -76,7 +77,6 @@ const Landing = () => {
         () => {
             async function fetchData() {
                 try {
-                    console.log('!!!!!!!!!!!~!')
                     await axios.get('https://covidtracking.com/api/v1/states/current.json').then(async (stateData) => {
                         let states = stateData.data
                         console.log(states)
@@ -102,7 +102,7 @@ const Landing = () => {
             };
 
             fetchData();
-        }, []
+        }, [ ]
     );
 
     if (statesCurrVals && nationCurrVals) {
@@ -115,20 +115,23 @@ const Landing = () => {
     }
 
     function drawGeoChart() {
-        stateData = (statesCurrVals && statesCurrVals[0].map((stateStat) => {
-            let name = abrev[stateStat.state]
-            return [
-                name,
-                stateStat.positive,
-                stateStat.death
-            ]
-            // return {
-            //     state: stateStat.state,
-            //     positive: stateStat.positive,
-            //     hospitalized: stateStat.hospitalized,
-            //     Deaths: stateStat.lastUpdateEt,
-            // }
-        }))
+        if (statesCurrVals){
+            console.log("$$",statesCurrVals)
+            stateData = (statesCurrVals && statesCurrVals[0].map((stateStat) => {
+                let name = abrev[stateStat.state]
+                return [
+                    name,
+                    stateStat.positive,
+                    stateStat.death
+                ]
+                // return {
+                //     state: stateStat.state,
+                //     positive: stateStat.positive,
+                //     hospitalized: stateStat.hospitalized,
+                //     Deaths: stateStat.lastUpdateEt,
+                // }
+            }))
+        }
 
         let head = ['State', 'Positive Cases', 'Total Deaths',]
         stateData = [head].concat(stateData)
@@ -153,18 +156,19 @@ const Landing = () => {
         
     };
 
-    // https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+
+    // https://stackoverflow.com
     function numberWithCommas(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     if (statesCurrVals && nationCurrVals) {
         return (
-            <Container className='main' fluid >
-                <Row className='landing-form'>
-                    <Form id='landingform' method='POST' name='formSearchLocal'>
+            <Container className = 'main' fluid >
+                <Row className = 'landing-form'>
+                    <Form id = 'landingform' method = 'POST' name = 'formSearchLocal'>
                         <InputGroup>
-                            <FormControl id="search" placeholder='Search Your Locality' />
+                            <FormControl id = "search" placeholder = 'Search Your Locality' />
                         </InputGroup>
                     </Form>
                 </Row>
@@ -172,50 +176,50 @@ const Landing = () => {
                 <br />
 
                 <Row>
-                    <Col id='land-left' lg={6} md={12} sm={12}>
-                        <Row className='stat-header'>
+                    <Col id = 'land-left' lg={6} md={12} sm={12}>
+                        <Row className = 'stat-header'>
                             US STATS
-                    </Row>
+                        </Row>
                         <br />
-                        <Row id='legend'>
+                        <Row id = 'stats'>
                             <Col>
-                                <Row className='stat-header'>
+                                <Row className = 'stat-header'>
                                     Positive Cases
                             </Row>
-                                <Row className='stat-cont'>
+                                <Row className = 'stat-cont'>
                                     {numberWithCommas(nationCurrVals.positive)}
                                 </Row>
-                                <Row className='stat-header'>
+                                <Row className = 'stat-header'>
                                     Tests Administered
                             </Row>
-                                <Row className='stat-cont'>
+                                <Row className = 'stat-cont'>
                                     {numberWithCommas(nationCurrVals.totalTestResults)}
                                 </Row>
                             </Col>
 
                             <Col>
-                                <Row className='stat-header'>
+                                <Row className = 'stat-header'>
                                     Currently Hospitalized
                             </Row>
-                                <Row className='stat-cont'>
+                                <Row className = 'stat-cont'>
                                     {numberWithCommas(nationCurrVals.hospitalizedCurrently)}
                                 </Row>
-                                <Row className='stat-header'>
+                                <Row className = 'stat-header'>
                                     Currently in ICU
                             </Row>
-                                <Row className='stat-cont'>
+                                <Row className = 'stat-cont'>
                                     {numberWithCommas(nationCurrVals.inIcuCurrently)}
                                 </Row>
                             </Col>
 
                             <Col>
-                                <Row className='stat-header'>
+                                <Row className = 'stat-header'>
                                     Recovered Patients
                             </Row>
-                                <Row className='stat-cont'>
+                                <Row className = 'stat-cont'>
                                     {numberWithCommas(nationCurrVals.recovered)}
                                 </Row>
-                                <Row className='stat-header'>
+                                <Row className = 'stat-header'>
                                     Currently on Ventilator
                             </Row>
                                 <Row className='stat-cont'>
@@ -226,48 +230,47 @@ const Landing = () => {
 
                         <Row id='map-hold'>
                             <br />
-                            !! Need FUNC to Redraw Map When Window Size Changes !!
+                            !! Need FUNC to Redraw Map When Window Size Changes !! Make As Own Component?
                             <Row id = 'gMap' />
-
-                            <Row className='legend' >
-                                <Figure id='leg-item'>
-                                    <Figure.Image id='zero' alt='' />
+                        </Row>
+                        <Row className = 'legend' >
+                                <Figure className = 'leg-item'>
+                                    <Row id='zero' />
                                     <Figure.Caption>
                                         1 - 500
                                 </Figure.Caption>
                                 </Figure>
 
-                                <Figure id='leg-item'>
-                                    <Figure.Image id='one' alt='' />
+                                <Figure className = 'leg-item'>
+                                    <Row id='one' />
                                     <Figure.Caption>
                                         501 - 5,000
                                 </Figure.Caption>
                                 </Figure>
 
 
-                                <Figure id='leg-item'>
-                                    <Figure.Image id='two' alt='' />
+                                <Figure className = 'leg-item'>
+                                    <Row id='two' />
                                     <Figure.Caption>
                                         5,001 - 9,999
                                 </Figure.Caption>
                                 </Figure>
 
-                                <Figure id='leg-item'>
-                                    <Figure.Image id='three' alt='' />
+                                <Figure className = 'leg-item'>
+                                    <Row id='three' />
                                     <Figure.Caption>
                                         10,000 - 15,000
                                 </Figure.Caption>
                                 </Figure>
 
-                                <Figure id='leg-item'>
-                                    <Figure.Image id='four' alt='' />
+                                <Figure className = 'leg-item'>
+                                    <Row id='four' />
                                     <Figure.Caption>
                                         15,000 +
                                 </Figure.Caption>
                                 </Figure>
 
                             </Row>
-                        </Row>
                     </Col>
                     <Col id='land-right' lg={6} md={12} sm={12}>
                         <Row>
