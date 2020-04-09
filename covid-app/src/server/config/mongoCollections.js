@@ -14,8 +14,7 @@ const getCollectionFn = collection => {
 };
 
 module.exports = {
-    geoMap: getCollectionFn('geoMapData'), // Used for nation/state-level covid stats
-    googMap: getCollectionFn('googleMapData'), // Used for county-level covid stats
+    covidStats: getCollectionFn('covidStats'), // Used for nation/state-level covid stats
     users: getCollectionFn('users'), // Used to store all user data ... User Types: Patient, FacilityUser, Admin)
     facilities: getCollectionFn('facilities'), // Used to store all testing facilities and respective info (hours, appoinment data, patient data, employees, etc)
 };
