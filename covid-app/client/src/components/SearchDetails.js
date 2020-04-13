@@ -5,7 +5,7 @@ import Col from 'react-bootstrap/Col';
 import MapSearch from './MapSearch'
 
 const SearchDetails = (props) => {
-    const 
+    // const 
     return (
         <Container className = 'main'>
             <Row>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import GoogleMapReact from 'google-map-react'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
@@ -30,11 +29,7 @@ const MapSearch = () =>{
     if (locData) {
         return (
             <Row id  = 'map'>
-                <GoogleMapReact
-                    bootstrapURLKeys = {locData.urlKeys}
-                    center = {locData.center}
-                    zoom = {locData.zoom} >
-                </GoogleMapReact> 
+              
             </Row>
         );
     } else {
