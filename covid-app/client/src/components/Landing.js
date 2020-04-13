@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Figure, Form, InputGroup, FormControl, Nav } from 'react-bootstrap';
-import axios from 'axios';
-
+import { Container, Row, Col, Figure, Form, InputGroup, FormControl } from 'react-bootstrap';
 
 const Landing = () => {
     const [statesCurrVals, setStatesCurrVals] = useState(undefined);
@@ -12,13 +10,12 @@ const Landing = () => {
     useEffect(
         () => {
             async function fetchData() {
-                
-                try {
-                    // Query MongoDB 
-
-                } catch (err) {
-                    console.log(err);
-                }
+                fetch('/data/nation_state')
+                .then( (res1) => res1.json())
+                .then( (data) => {
+                    setStatesCurrVals(data.state)
+                    setNationCurrVals(data.nation)
+                })
             };
 
             fetchData();
@@ -36,8 +33,7 @@ const Landing = () => {
 
     function drawGeoChart() {
         if (statesCurrVals){
-            console.log("$$",statesCurrVals)
-            stateData = (statesCurrVals && statesCurrVals[0].map((stateStat) => {
+            stateData = (statesCurrVals && statesCurrVals.map((stateStat) => {
                 return [
                     stateStat.state,
                     stateStat.positive,

@@ -74,9 +74,49 @@ const abrev = {
 // getCountyLevel()
 
 let exportedMethods = {
-    async getData(url, mongoCol) {
+    async getStateNationData() {
+        const stateCollection = await state();
+        const nationCollection = await nation();
+
+        let stateData = await stateCollection.find( {} ).toArray();
+        let nationData = await nationCollection.find( {} ).toArray();
+
+        return {state: stateData, nation: nationData[0]};
+    },
+
+    async getCountyData() {
+        const countyCollection = await county();
+
+        let countyData = await countyCollection.find( {} ).toArray();
+
+        return countyData;
+    },
+
+    async getPopData() {
+        const popCollection = await population();
+
+        let popData = await popCollection.find( {} ).toArray();
+
+        return popData;
+    },
+    
+
+    async fetchData(url, level) {
         try {
-            const collection = await mongoCol;
+            let collection;
+            
+            if (level === 'state') {
+                collection = await state();
+            } else if (level == 'nation') {
+                collection = await nation();
+            } else if (level === ' county') {
+                collection = await county();
+            } else if (level === 'pop') {
+                collection = await population()
+            } else {
+                throw 'invalid level'
+            };
+
             let conf = collection.deleteMany( {} );
             console.log(`Getting data from ${url} to ${collection}`)
     
@@ -114,7 +154,7 @@ let exportedMethods = {
         };
     },
     
-    async getCountyLevel() {
+    async fetchCountyLevel() {
         try {
             const countyCollection = await county();
             let conf = countyCollection.deleteMany( {} );
