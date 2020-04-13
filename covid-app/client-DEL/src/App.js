@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Container, Row, Navbar, Nav } from 'react-bootstrap';
 import Landing from './components/Landing';
 import SearchDetails from './components/SearchDetails'
+import person from './img/person.png'
 import './App.css';
 
 
