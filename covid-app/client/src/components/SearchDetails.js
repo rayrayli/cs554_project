@@ -4,6 +4,7 @@ import Container from 'react-bootstrap/Container';
 import { Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import SearchBar from './SearchBar';
+const key = process.env.REACT_APP_GOOGLE_API_KEY 
 
 async function loadScript(src) {
     let script = document.createElement('script');
@@ -19,11 +20,13 @@ const SearchDetails = (props) => {
     const [searchResult, setSearchResult] = useState(undefined);
     const [countyData, setCountyData] = useState({});
 
-    const key = process.env.GOOGLE_API_KEY
+    
+    console.log('%%%',key)
     const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
 
     useEffect(
         () => {
+            console.log('%%%',key)
             async function getLocation(searchInput) {
                 await loadScript(script)
 
@@ -32,6 +35,7 @@ const SearchDetails = (props) => {
                 let data = coor.data.results[0]
                 let county;
                 let state;
+                console.log(data);
 
                 if (data.address_components[1].long_name.includes('County')) {
                     county = data.address_components[1].long_name;
