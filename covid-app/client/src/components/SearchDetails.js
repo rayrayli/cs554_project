@@ -1,55 +1,184 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import MapSearch from './MapSearch'
+import { Row, Col } from 'react-bootstrap';
+import axios from 'axios';
+import SearchBar from './SearchBar';
+
+async function loadScript(src) {
+    let script = document.createElement('script');
+    script.src = src;
+    script.addEventListener('load', () => console.log('loaded'), {passive: false} );
+    script.addEventListener('error', (err) => console.log(err), {passive: false} );
+    document.body.appendChild(script);
+}
 
 const SearchDetails = (props) => {
-    // const 
+    const [userData, setUserdata] = useState(undefined);
+    const [facilityData, setFacilityData] = useState(undefined);
+    const [searchResult, setSearchResult] = useState(undefined);
+    const [countyData, setCountyData] = useState({});
+
+    const key = process.env.GOOGLE_API_KEY
+    const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
+
+    useEffect(
+        () => {
+            async function getLocation(searchInput) {
+                await loadScript(script)
+
+                const coor = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${searchInput}&key=${key}`)
+
+                let data = coor.data.results[0]
+                let county;
+                let state;
+
+                if (data.address_components[1].long_name.includes('County')) {
+                    county = data.address_components[1].long_name;
+                    state = data.address_components[2].long_name
+
+                    setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
+
+                } else if (data.address_components[2].long_name.includes('County')) {
+                    county = data.address_components[2].long_name
+                    state = data.address_components[3].long_name
+
+                    setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
+                };
+
+                fetch(`/data/county/${county.substring(0, county.indexOf('County'))}`)
+                    .then((res1) => res1.json())
+                    .then((data) => {
+                        data.forEach((doc) => {
+                            if (doc.Province_State === state) {
+                                console.log(doc);
+                                setCountyData(doc);
+                            };
+
+                        });
+                    });
+            };
+            getLocation(props.location.state.result)
+            window.initMap = initMap();
+
+        }, []
+    );
+
+    if (searchResult) {
+        initMap()
+    }
+
+    function initMap() {
+        if (searchResult) {
+            var usBounds = {
+                north: 49.34,
+                south: 24.74,
+                west: -124.78,
+                east: -66.95,
+            };
+
+            let lat = searchResult.lat;
+            let lng = searchResult.lng;
+
+            const map = new window.google.maps.Map(document.getElementById('map'), {
+                center: { lat, lng },
+                restriction: {
+                    latLngBounds: usBounds,
+                    strictBounds: false,
+                },
+                disableDefaultUI: true,
+                zoom: 12,
+                styles: [
+                    { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
+                    { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
+                    { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] },
+                    {
+                        featureType: 'administrative.locality',
+                        elementType: 'labels.text.fill',
+                        stylers: [{ color: '#d59563' }]
+                    },
+                    {
+                        featureType: 'road',
+                        elementType: 'geometry',
+                        stylers: [{ color: '#38414e' }]
+                    },
+                    {
+                        featureType: 'road',
+                        elementType: 'geometry.stroke',
+                        stylers: [{ color: '#212a37' }]
+                    },
+                    {
+                        featureType: 'road',
+                        elementType: 'labels.text.fill',
+                        stylers: [{ color: '#9ca5b3' }]
+                    },
+
+                    {
+                        featureType: 'water',
+                        elementType: 'geometry',
+                        stylers: [{ color: '#17263c' }]
+                    },
+                    {
+                        featureType: 'water',
+                        elementType: 'labels.text.fill',
+                        stylers: [{ color: '#515c6d' }]
+                    },
+                    {
+                        featureType: 'water',
+                        elementType: 'labels.text.stroke',
+                        stylers: [{ color: '#17263c' }]
+                    }
+                ]
+            });
+        };
+    };
+
     return (
-        <Container className = 'main'>
+        <Container className='main' fluid >
             <Row>
-                <Col lg = {6} md = {12} sm = {12} id = 'left-comp'> 
+                <Link to='/'>Go Back</Link>
+            </Row>
+            <Row>
+                <Col lg={6} md={12} sm={12} id='left-comp'>
                     <Row> <h1> DENSITY MAP HERE </h1> </Row>
-                    <Row> SEARCH BAR </Row>
-                    <Row> <MapSearch/> </Row>
+                    <div id='map' />
                 </Col>
 
-                <Col lg = {6} md = {12} sm = {12} id = 'right-comp'>  
-                    <Row className = 'land-row'>
-                        <Row> <h1> COVID FACTS HERE </h1></Row>
-                        <Row> 
-                            Did you know that the world is inhabited by creatures known as Pokémon? Pokémon
-                            can be found in all corners of the world: some run across sprawling plains, others
-                            fly through the open skies, some in the high mountains, or in dense forests, or 
-                            various coasts and bodies of water! Scientists such as Professor Samual Oak (who's 
-                            laboratory is located right here in Pallete Town!) have dedicated their lives to 
-                            studying the characteristics and behavior patterns of Pokémon in their natural 
-                            envionment. All the information learned through research is sompiled into the Pokédex, 
-                            a device that acts as a digital encylocpedia created by Professor Oaks to find and 
-                            record data on each Pokémon.
-                        </Row>
-                    </Row>
-                    
-                    <Row className = 'testing-info'>
+                <Col lg={6} md={12} sm={12} id='right-comp'>
+                    {/* <Row className='land-row'> */}
+                        <h1> COVID FACTS HERE </h1>
+
+                        <p>County: {countyData.Admin2}</p>
+                        <p> State: {countyData.Province_State}</p>
+                        <p> Confirmed Cases: {countyData.Confirmed}</p>
+                        <p>Deaths: {countyData.Deaths}</p>
+                        <p>Recovered Patiends: {countyData.Recovered}</p>
+
+                    {/* </Row> */}
+
+
+                    {/* <Row className='testing-info'>
                         <Row> <h1> TESTING CENTER INFO HERE </h1></Row>
-                        <Row> 
-                            Did you know that the world is inhabited by creatures known as Pokémon? Pokémon
-                            can be found in all corners of the world: some run across sprawling plains, others
-                            fly through the open skies, some in the high mountains, or in dense forests, or 
-                            various coasts and bodies of water! Scientists such as Professor Samual Oak (who's 
-                            laboratory is located right here in Pallete Town!) have dedicated their lives to 
-                            studying the characteristics and behavior patterns of Pokémon in their natural 
-                            envionment. All the information learned through research is sompiled into the Pokédex, 
-                            a device that acts as a digital encylocpedia created by Professor Oaks to find and 
-                            record data on each Pokémon.
+                        <Row>
+                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                            info info info info info
+                            info info info info infoinfo info info info infoinfo info info info info
+                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                            info info info info info
+                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                            info info info info info
                         </Row>
-                    </Row>
+                    </Row> */}
 
                 </Col>
             </Row>
-
         </Container>
+
     )
 }
 

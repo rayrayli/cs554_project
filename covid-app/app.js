@@ -13,7 +13,7 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded( {extended: true} ));
 
-// Get National Data Router 
+// Get National/State Level Data Router 
 app.get("/data/nation_state", async (req, res) => {
     try {
         const state_nationLevel = await getData.getStateNationData();
@@ -22,6 +22,22 @@ app.get("/data/nation_state", async (req, res) => {
     } catch (err) {
         res.status(400).json( {"error": err.message} );
     };
+});
+
+// Get County Level Data Router 
+app.get("/data/county/:name", async (req, res) => {
+    try {
+        const countyLevel = await getData.getCountyData(req.params.name);
+        res.status(200).json(countyLevel);
+
+    } catch (err) {
+        res.status(400).json( {"error": err.message} );
+    };
+});
+
+app.post("/map", async (req, res) => {
+    console.log(req.params.location)
+    res.json(req.params.location)
 });
 
 
