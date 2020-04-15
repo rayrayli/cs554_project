@@ -84,10 +84,12 @@ let exportedMethods = {
         return {state: stateData, nation: nationData[0]};
     },
 
-    async getCountyData() {
+    async getCountyData(name) {
         const countyCollection = await county();
+        name = name.charAt(0).toUpperCase() + name.slice(1)
 
-        let countyData = await countyCollection.find( {} ).toArray();
+        let countyData = await countyCollection.find( {Admin2: name} ).toArray();
+        console.log(countyData)
 
         return countyData;
     },

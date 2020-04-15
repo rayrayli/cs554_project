@@ -76,10 +76,10 @@
 .rect {
   max-width: 95% ;
 }
-#left-comp, #right-comp, #map-comp {
+/* #left-comp, #right-comp, #map-comp {
   justify-content: center;
   align-content: center;
-}
+} */
 
 .legend {
   text-align: left;
@@ -164,5 +164,10 @@
 }
 #land-left{
   padding: 2rem;
+}
+
+#map{
+  height:600px;
+  width: 600px;
 }
 
