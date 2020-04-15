@@ -28,7 +28,7 @@ const Landing = () => {
     if (statesCurrVals && nationCurrVals) {
         // Load the Visualization API and the piechart package.
         window.google.charts.load('current', {
-            'packages': ['geochart'], 'mapsApiKey': process.env.GOOGLE_API_KEY
+            'packages': ['geochart'], 'mapsApiKey': process.env.REACT_APP_GOOGLE_API_KEY 
         });
         // Set a callback to run when the Google Visualization API is loaded.
         window.google.charts.setOnLoadCallback(drawGeoChart);
