@@ -12,9 +12,8 @@ const Register = () => {
         'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
     ];
 
-    option = states.map( (state) => {
-        console.log(state)
-        return <option> {state} </option>
+    option = states.map((state) => {
+        return <option key={state}> {state} </option>
     });
 
     return (
@@ -25,7 +24,7 @@ const Register = () => {
                     <p> You're one step closer to knowing your COVID-19 status! </p>
                     <br />
                     <p> Already have an account? </p>
-                    <Button> Login </Button><br />
+                    <Button> Login Here </Button><br />
                 </Col>
 
                 <Col className='register-right' md={9} lg={9}>
@@ -41,118 +40,76 @@ const Register = () => {
                             </Nav>
                         </Row>
                         <Row>
-                            <Tab.Content>
+                            <Tab.Content id='patient-register'>
                                 <Tab.Pane eventKey="patient">
-                                    <h2> Personal Information </h2>
                                     <Form>
-                                        <Form.Row>
-                                            <Form.Group as={Col} controlId="formGridFName">
-                                                <Form.Label>First Name</Form.Label>
-                                                <Form.Control type="text" placeholder="First Name" />
-                                            </Form.Group>
-
-                                            <Form.Group as={Col} controlId="formGridLName">
-                                                <Form.Label>Last Name</Form.Label>
-                                                <Form.Control type="text" placeholder="LastName" />
-                                            </Form.Group>
-                                        </Form.Row>
-
-                                        <Form.Row>
-                                            <Form.Group controlId="formGridAddress1">
-                                                <Form.Label>Date of Birth</Form.Label>
-                                                <Form.Control type='text' placeholder="MM/DD/YYYY" />
-                                            </Form.Group>
-                                            <Form.Group as={Col} controlId="formGridState">
-                                                <Form.Label>Gender</Form.Label>
-                                                <Form.Control as="select" value="Choose..." custom>
-                                                    <option>Choose...</option>
-                                                    <option>Male</option>
-                                                    <option>Female</option>
-                                                </Form.Control>
-                                            </Form.Group>
-
-                                            <Form.Group controlId="formGridAddress1">
-                                                <Form.Label>SSN</Form.Label>
-                                                <Form.Control type='text' placeholder="111222333" />
-                                            </Form.Group>
-                                        </Form.Row>
-
-                                        <Form.Row>
-                                            <Form.Group as={Col} controlId="formGridEmail">
-                                                <Form.Label>Email</Form.Label>
-                                                <Form.Control type="email" placeholder="Enter email" />
-                                            </Form.Group>
-
-                                            <Form.Group as={Col} controlId="formGridPassword">
-                                                <Form.Label>Password</Form.Label>
-                                                <Form.Control type="password" placeholder="Password" />
-                                            </Form.Group>
-                                        </Form.Row>
-
-                                        <Form.Group controlId="formGridAddress1">
-                                            <Form.Label>Address</Form.Label>
-                                            <Form.Control placeholder="1234 Main St" />
-                                        </Form.Group>
-
-                                        <Form.Group controlId="formGridAddress2">
-                                            <Form.Label>Address 2</Form.Label>
-                                            <Form.Control placeholder="Apartment, studio, or floor" />
-                                        </Form.Group>
-
-                                        <Form.Row>
-                                            <Form.Group as={Col} controlId="formGridCity">
-                                                <Form.Label>City</Form.Label>
-                                                <Form.Control />
-                                            </Form.Group>
-
-                                            <Form.Group as={Col} controlId="formGridState">
-                                                <Form.Label>State</Form.Label>
-                                                <Form.Control as="select" value="Choose...">
-                                                    <option>Choose...</option>
-                                                    {option}
-                                                </Form.Control>
-                                            </Form.Group>
-
-                                            <Form.Group as={Col} controlId="formGridZip">
-                                                <Form.Label>Zip</Form.Label>
-                                                <Form.Control />
-                                            </Form.Group>
-                                        </Form.Row>
-
-                                        <h2> Health Information </h2>
-
-                                        <Form.Row>
-                                            <Col>
-                                                <Form.Group controlId="exampleForm.ControlSelect2">
-                                                    <Form.Label>Select Any Pre-Existing Conditions</Form.Label>
-                                                    <Form.Control as="select" multiple>
-                                                        <option>High Blood Pressure</option>
-                                                        <option>Asthma</option>
-                                                        <option>3</option>
-                                                        <option>4</option>
-                                                        <option>5</option>
-                                                    </Form.Control>
-                                                </Form.Group>
-                                            </Col>
-
-                                            <Col md={6}>
-                                                <Form.Group controlId="formGridAddress1">
-                                                    <Form.Label>Insurance Provider</Form.Label>
-                                                    <Form.Control type='text' placeholder="Aetna Health HMO" />
+                                        <Col lg={12} md={12}>
+                                            <Form.Row>
+                                                <Form.Group as={Col} controlId="formFirstName">
+                                                    <Form.Label>First Name</Form.Label>
+                                                    <Form.Control
+                                                        className='register-form'
+                                                        name='first_name'
+                                                        type='text'
+                                                        placeholder='First Name'
+                                                        required
+                                                    />
                                                 </Form.Group>
 
-
-                                                <Form.Group controlId="formGridAddress1">
-                                                    <Form.Label>Insurance Member ID</Form.Label>
-                                                    <Form.Control type='text' placeholder="R11122233" />
+                                                <Form.Group as={Col} controlId="formLastName">
+                                                    <Form.Label>Last Name</Form.Label>
+                                                    <Form.Control
+                                                        className='register-form'
+                                                        name='last_name'
+                                                        type='text'
+                                                        placeholder='LastName'
+                                                        required
+                                                    />
                                                 </Form.Group>
+                                            </Form.Row>
 
-                                            </Col>
-                                        </Form.Row>
+                                            <Form.Row>
+                                                <Form.Group as={Col} controlId="formEmail">
+                                                    <Form.Label>Email</Form.Label>
+                                                    <Form.Control
+                                                        className='register-form'
+                                                        name='email'
+                                                        type="email"
+                                                        placeholder="Enter email"
+                                                        required
+                                                    />
+                                                </Form.Group>
+                                            </Form.Row>
+                                            <Form.Row>
+                                                <Form.Group as={Col} controlId="formPassword">
+                                                    <Form.Label>Password</Form.Label>
+                                                    <Form.Control
+                                                        className='register-form'
+                                                        name='password'
+                                                        type="password"
+                                                        placeholder="Password"
+                                                        required
+                                                    />
+                                                </Form.Group>
+                                            </Form.Row>
 
-                                        <Button variant="primary" type="submit">
-                                            Submit
-                                        </Button>
+                                            <Form.Row>
+                                                <Form.Group as={Col} controlId="formPasswordConf">
+                                                    <Form.Label>Password</Form.Label>
+                                                    <Form.Control
+                                                        className='register-form'
+                                                        name='passwordConf'
+                                                        type="password"
+                                                        placeholder="Confirm Password"
+                                                        required
+                                                    />
+                                                </Form.Group>
+                                            </Form.Row>
+
+                                            <Button variant="primary" type="submit">
+                                                Submit
+                                            </Button>
+                                        </Col>
                                     </Form>
                                 </Tab.Pane>
                                 <Tab.Pane eventKey="facility">
@@ -161,14 +118,148 @@ const Register = () => {
                             </Tab.Content>
                         </Row>
                     </Tab.Container>
-
                 </Col>
-
             </Row>
-
         </Container>
     )
-
 };
 
 export default Register;
+
+{/* 
+    <h2> Personal Information </h2>
+    <Form.Row>
+<Form.Group controlId="formDOB">
+<Form.Label>Date of Birth</Form.Label>
+<Form.Control
+className='register-form'
+name='dob'
+type='date'
+placeholder="MM/DD/YYYY"
+required
+/>
+</Form.Group>
+<Form.Group as={Col} controlId="formGender">
+    <Form.Label>Gender</Form.Label>
+    <Form.Control as="select" name='gender' custom required>
+        <option>Choose...</option>
+        <option value='male'>Male</option>
+        <option value='female'>Female</option>
+    </Form.Control>
+</Form.Group>
+
+<Form.Group controlId="formSSN">
+    <Form.Label>SSN</Form.Label>
+    <Form.Control
+        className='register-form'
+        name='ssn'
+        type='password'
+        placeholder="111222333"
+        data-toggle="password"
+        required
+    />
+</Form.Group>
+</Form.Row> 
+
+<Form.Group controlId="formAddress">
+            <Form.Label>Address</Form.Label>
+            <Form.Control
+                className='register-form'
+                name='email'
+                type='text'
+                placeholder="1234 Main St"
+                required
+            />
+        </Form.Group>
+
+        <Form.Group controlId="formAddress2">
+            <Form.Label>Address 2</Form.Label>
+            <Form.Control
+                className='register-form'
+                name='address2'
+                type='text'
+                placeholder="Apartment, studio, or floor"
+                required
+            />
+        </Form.Group>
+
+        <Form.Row>
+            <Form.Group as={Col} controlId="formCity">
+                <Form.Label>City</Form.Label>
+                <Form.Control
+                    className='register-form'
+                    name='city'
+                    type='text'
+                    placeholder='New York'
+                    required
+                />
+            </Form.Group>
+
+            <Form.Group as={Col} controlId="formState">
+                <Form.Label>State</Form.Label>
+                <Form.Control as="select" value="Choose..." name='state' required>
+                    <option>Choose...</option>
+                    {option}
+                </Form.Control>
+            </Form.Group>
+
+            <Form.Group as={Col} controlId="formZip">
+                <Form.Label>Zip</Form.Label>
+                <Form.Control
+                    className='register-form'
+                    name='city'
+                    type='text'
+                    placeholder='10001'
+                    required
+                />
+            </Form.Group>
+        </Form.Row>
+    </Col>
+
+    <Col lg={12} md={12}>
+        <h2> Health Information </h2>
+        <Form.Row>
+            <Col>
+                <Form.Group controlId="formPE">
+                    <Form.Label>Select Any Pre-Existing Conditions</Form.Label>
+                    <Form.Control as="select" name='pe' multiple required>
+                        <option value='cancer'>Cancer (currently receiving treatment)</option>
+                        <option value='liver'>Liver Disease</option>
+                        <option value='transplant'>Recent Bone Marrow/Organ Transplantation</option>
+                        <option value='kidney'>Chronic Kidney Disease (currently undergoing dialysis)</option>
+                        <option value='diabetes'>Diabetes (Type I and II)</option>
+                        <option value='asthma'>Asthma or other Chronic Lung Disease</option>
+                        <option value='heart'>High Blood Pressure or other Serious Heart Condition</option>
+                        <option value='hiv'>HIV/AIDS (poorly controlled)</option>
+                        <option value='obese'>Obesity (BMI 40+)</option>
+                    </Form.Control>
+                </Form.Group>
+            </Col>
+
+            <Col md={6}>
+                <Form.Group controlId="formInsurProv">
+                    <Form.Label>Insurance Provider</Form.Label>
+                    <Form.Control
+                        className='register-form'
+                        name='insurProv'
+                        type='text'
+                        placeholder="Aetna Health HMO"
+                        required
+                    />
+                </Form.Group>
+
+
+                <Form.Group controlId="formInsurId">
+                    <Form.Label>Insurance Member ID</Form.Label>
+                    <Form.Control
+                        className='register-form'
+                        name='insurId'
+                        type='text'
+                        placeholder="R11122233"
+                        required />
+                </Form.Group>
+
+            </Col>
+        </Form.Row>
+    </Col>
+*/}
