@@ -7,6 +7,7 @@ const app = express();                  // Generate Express Application
 const bodyParser = require("body-parser"); // JSON Parsing
 const data = require('./data')
 const getData = data.statData;
+const users = data.users;
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
@@ -35,11 +36,33 @@ app.get("/data/county/:name", async (req, res) => {
     };
 });
 
-app.post("/map", async (req, res) => {
-    console.log(req.params.location)
-    res.json(req.params.location)
+// Add New User
+app.post("/users/", async (req, res) => {
+    try {
+        const newUser = await users.addNewUser(req.body)
+        res.status(201).send({'_id': newUser})
+
+    } catch (err) {
+        res.status(400).json( {"error": err.message} );
+    };
 });
 
+// Get User By ID
+app.get("/users/:uid", async (req, res) => {
+    try {
+        const userFound = await users.getUserById(req.params.uid);
+        res.status(200).send(userFound);
+
+    } catch (err) {
+        res.status(400).json( {"error": err.message} );
+    };
+});
+
+// Update User W/ ID
+app.post("/users/:id", async (req, res) => {
+    const update = await users.updateUser(req.params.id, req.body);
+    res.status(200).json(update);
+})
 
 
 // RUN SERVER

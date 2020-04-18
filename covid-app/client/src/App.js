@@ -1,47 +1,48 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { Container, Row, Navbar, Nav } from 'react-bootstrap';
+import { Container, Row } from 'react-bootstrap';
 import Landing from './components/Landing';
 import Account from './components/Account';
 import Login from './components/Login';
-import Logout from './components/Logout';
 import Register from './components/Register';
 import SearchDetails from './components/SearchDetails';
 import PrivateRoute from './components/PrivateRoute';
+import Navigation from './components/Navigation'
 import './App.css';
 import { AuthProvider } from './firebase/Auth';
 
-
 function App() {
   return (
+
     <AuthProvider>
       <Router>
+
         <Container className="App" fluid>
 
           <Row>
-            <Navbar className='App-nav' fixed='top'>
-              <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>
-              <Navbar.Collapse className="justify-content-end">
-                <Nav.Link href='/account'> Account </Nav.Link>
-                <Nav.Link href='/account/messages'> Messages </Nav.Link>
-                <Nav.Link href='/logout'> Logout </Nav.Link>
-              </Navbar.Collapse>
-            </Navbar>
+            <Navigation />
           </Row>
 
           <Row>
             <Switch>
+              {/* ROUTES FOR ALL USERS */}
+              <Route path='/login' component={Login} />
+              <Route path='/register' component={Register} />
               <Route exact path='/' component={Landing} />
               <Route path='/searchDetails' component={SearchDetails} />
+              {/* ROUTES FOR PATIENT USERS */}
+              {/* ROUTES FOR FACILITY USERS */}
+              {/* ROUTES FOR ADMIN USERS */}
               <PrivateRoute path='/account' component={Account} />
-              <Route path='/login' component={Login} />
-              <Route path='/logout' component={Logout} />
-              <Route path='/register' component={Register} />
+              <PrivateRoute path='/messages' component={Account} />
+
             </Switch>
           </Row>
         </Container>
+
       </Router>
     </AuthProvider>
+
   );
 }
 

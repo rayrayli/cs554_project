@@ -1,9 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Container, Row, Col, ListGroup, Form, Button, FormControl, Nav, Tab } from 'react-bootstrap';
+import { Container, Row, Col, ListGroup, Form, Button, FormControl, Nav, Tab, NavLink, Alert } from 'react-bootstrap';
+import { doCreateUserWithEmailAndPassword } from '../firebase/FirebaseFunctions';
+import { AuthContext } from '../firebase/Auth';
+import '../App.css'
 
 const Register = () => {
-    let option;
+    const { currentUser } = useContext(AuthContext);
+    const [passwordMatch, setPasswordMatch] = useState(undefined);
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password1: '',
+        password2: ''
+    })
+
+
     const states = [
         'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
         'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
@@ -11,10 +24,78 @@ const Register = () => {
         'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
         'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
     ];
-
-    option = states.map((state) => {
+    let option = states.map((state) => {
         return <option key={state}> {state} </option>
     });
+
+    const handleChange = (e) => {
+        e.preventDefault();
+        let form = formData
+        form[e.target.name] = e.target.value
+        setFormData(form)
+
+        if (formData) {
+            setPasswordMatch(formData.password1 !== formData.password2 || formData.password1 === '' || formData.email === '')
+        }
+    }
+
+    const handlePatientRegister = async (e) => {
+        e.preventDefault();
+        const { firstName, lastName, email, password1, password2 } = e.target.elements;
+
+        if (password1.value !== password2.value) {
+            setPasswordMatch("Passwords do not match")
+            return false
+        }
+
+        try {
+            let displayName = firstName.value + lastName.value
+
+            await fetch('/users/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    role: 'patient',
+                    uid: null,
+                    firstName: firstName.value,
+                    lastName: lastName.value,
+                    email: email.value,
+                    gender: null,
+                    dob: null,
+                    ssn: null,
+                    address: null,
+                    phone: null,
+                    conditions: [null],
+                    insurance: {
+                        id: null,
+                        provider: null,
+                    },
+                    appointments: [null],
+                    messages: [null]
+                })
+
+            }).then(async (res) => {
+                console.log("USER ADDED TO FIREBASE")
+                let {_id} = await res.json()
+                console.log(_id)
+                await doCreateUserWithEmailAndPassword(email.value, password1.value, displayName, _id)
+            })
+
+            console.log("USER ADDED TO FIREBASE AND DB")
+
+        } catch (err) {
+            alert(err);
+        }
+    }
+
+    const handleFacilityRegister = async (e) => {
+    }
+
+    if (currentUser) {
+        return (<Redirect to='/account' />)
+    }
 
     return (
         <Container className='main' fluid>
@@ -24,7 +105,9 @@ const Register = () => {
                     <p> You're one step closer to knowing your COVID-19 status! </p>
                     <br />
                     <p> Already have an account? </p>
-                    <Button> Login Here </Button><br />
+                    <NavLink href='/login'>
+                        Login Here
+                    </NavLink><br />
                 </Col>
 
                 <Col className='register-right' md={9} lg={9}>
@@ -40,71 +123,151 @@ const Register = () => {
                             </Nav>
                         </Row>
                         <Row>
-                            <Tab.Content id='patient-register'>
-                                <Tab.Pane eventKey="patient">
-                                    <Form>
+                            <Tab.Content id='register'>
+                                <Tab.Pane eventKey="patient" title='patient'>
+                                    <Form onSubmit={handlePatientRegister} >
                                         <Col lg={12} md={12}>
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="formFirstName">
+                                                <Form.Group as={Col} controlId="firstName">
                                                     <Form.Label>First Name</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='first_name'
+                                                        name='firstName'
                                                         type='text'
                                                         placeholder='First Name'
+                                                        onChange={handleChange}
                                                         required
                                                     />
                                                 </Form.Group>
 
-                                                <Form.Group as={Col} controlId="formLastName">
+                                                <Form.Group as={Col} controlId="lastName">
                                                     <Form.Label>Last Name</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='last_name'
+                                                        name='lastName'
                                                         type='text'
                                                         placeholder='LastName'
+                                                        onChange={handleChange}
                                                         required
                                                     />
                                                 </Form.Group>
                                             </Form.Row>
 
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="formEmail">
+                                                <Form.Group as={Col} controlId="email">
                                                     <Form.Label>Email</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
                                                         name='email'
                                                         type="email"
-                                                        placeholder="Enter email"
+                                                        placeholder="Enter Email"
+                                                        autoComplete="username"
+                                                        onChange={handleChange}
                                                         required
                                                     />
                                                 </Form.Group>
                                             </Form.Row>
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="formPassword">
+                                                <Form.Group as={Col} controlId="password1">
                                                     <Form.Label>Password</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='password'
+                                                        name='password1'
                                                         type="password"
                                                         placeholder="Password"
+                                                        autoComplete="new-password"
+                                                        onChange={handleChange}
                                                         required
                                                     />
                                                 </Form.Group>
                                             </Form.Row>
 
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="formPasswordConf">
+                                                <Form.Group as={Col} controlId="password2">
                                                     <Form.Label>Password</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='passwordConf'
+                                                        name='password2'
                                                         type="password"
                                                         placeholder="Confirm Password"
+                                                        autoComplete="new-password"
+                                                        onChange={handleChange}
                                                         required
                                                     />
                                                 </Form.Group>
                                             </Form.Row>
+                                            {passwordMatch && <h4 className='error'> {passwordMatch} </h4>}
+
+                                            <Button disabled={passwordMatch} variant="primary" type="submit">
+                                                Submit
+                                            </Button>
+                                        </Col>
+                                    </Form>
+                                </Tab.Pane>
+
+
+
+
+
+
+
+
+                                <Tab.Pane eventKey="facility">
+                                    <Form onSubmit={handleFacilityRegister} >
+                                        <Col lg={12} md={12}>
+                                            <Form.Row>
+                                                <Form.Group as={Col} controlId="facilityName">
+                                                    <Form.Label>Facility Name</Form.Label>
+                                                    <Form.Control
+                                                        className='register-form'
+                                                        name='facilityName'
+                                                        type='text'
+                                                        placeholder='Facility Name'
+                                                        required
+                                                    />
+                                                </Form.Group>
+
+                                                <Form.Group as={Col} controlId="femail">
+                                                    <Form.Label>Email</Form.Label>
+                                                    <Form.Control
+                                                        className='register-form'
+                                                        name='email'
+                                                        type="email"
+                                                        placeholder="Enter Admin Email"
+                                                        autoComplete="username"
+                                                        required
+                                                    />
+                                                </Form.Group>
+                                            </Form.Row>
+
+                                            <Form.Row>
+                                                <Form.Group as={Col} controlId="fpassword1">
+                                                    <Form.Label>Password</Form.Label>
+                                                    <Form.Control
+                                                        className='register-form'
+                                                        name='password1'
+                                                        type="password"
+                                                        placeholder="Password"
+                                                        autoComplete="new-password"
+                                                        required
+                                                    />
+                                                </Form.Group>
+                                            </Form.Row>
+
+                                            <Form.Row>
+                                                <Form.Group as={Col} controlId="fpassword2">
+                                                    <Form.Label>Password</Form.Label>
+                                                    <Form.Control
+                                                        className='register-form'
+                                                        name='password2'
+                                                        type="password"
+                                                        placeholder="Confirm Password"
+                                                        autoComplete="new-password"
+                                                        required
+                                                    />
+                                                </Form.Group>
+                                            </Form.Row>
+                                            {passwordMatch && <h4 className='error'> {passwordMatch} </h4>}
 
                                             <Button variant="primary" type="submit">
                                                 Submit
@@ -112,15 +275,14 @@ const Register = () => {
                                         </Col>
                                     </Form>
                                 </Tab.Pane>
-                                <Tab.Pane eventKey="facility">
-                                    <h1> FACILITY</h1>
-                                </Tab.Pane>
                             </Tab.Content>
+
                         </Row>
+
                     </Tab.Container>
                 </Col>
             </Row>
-        </Container>
+        </Container >
     )
 };
 
