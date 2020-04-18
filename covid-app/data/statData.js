@@ -87,9 +87,13 @@ let exportedMethods = {
     async getCountyData(name) {
         const countyCollection = await county();
         name = name.charAt(0).toUpperCase() + name.slice(1)
+        console.log(name)
+        if (name === 'New York' || name === 'Kings' || name === 'Queens' || name === 'Richmond' || name === 'Bronx') {
+            name = 'New York City'
+        }
 
         let countyData = await countyCollection.find( {Admin2: name} ).toArray();
-        console.log(countyData)
+        console.log('!!!!', countyData)
 
         return countyData;
     },

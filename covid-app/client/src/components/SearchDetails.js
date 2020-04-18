@@ -4,13 +4,13 @@ import Container from 'react-bootstrap/Container';
 import { Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import SearchBar from './SearchBar';
-const key = process.env.REACT_APP_GOOGLE_API_KEY 
+const key = process.env.REACT_APP_GOOGLE_API_KEY
 
 async function loadScript(src) {
     let script = document.createElement('script');
     script.src = src;
-    script.addEventListener('load', () => console.log('loaded'), {passive: false} );
-    script.addEventListener('error', (err) => console.log(err), {passive: false} );
+    script.addEventListener('load', () => console.log('loaded'), { passive: false });
+    script.addEventListener('error', (err) => console.log(err), { passive: false });
     document.body.appendChild(script);
 }
 
@@ -18,15 +18,12 @@ const SearchDetails = (props) => {
     const [userData, setUserdata] = useState(undefined);
     const [facilityData, setFacilityData] = useState(undefined);
     const [searchResult, setSearchResult] = useState(undefined);
-    const [countyData, setCountyData] = useState({});
+    const [countyData, setCountyData] = useState(undefined);
 
-    
-    console.log('%%%',key)
     const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
 
     useEffect(
         () => {
-            console.log('%%%',key)
             async function getLocation(searchInput) {
                 await loadScript(script)
 
@@ -37,18 +34,27 @@ const SearchDetails = (props) => {
                 let state;
                 console.log(data);
 
-                if (data.address_components[1].long_name.includes('County')) {
+                if ((data.address_components.length >= 2) && (data.address_components[1].long_name.includes('County'))) {
                     county = data.address_components[1].long_name;
+                    console.log(county)
                     state = data.address_components[2].long_name
 
-                    setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
-
-                } else if (data.address_components[2].long_name.includes('County')) {
+                } else if ((data.address_components.length >= 3) && (data.address_components[2].long_name.includes('County'))) {
                     county = data.address_components[2].long_name
+                    console.log(county)
                     state = data.address_components[3].long_name
 
-                    setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
+                } else if ((data.address_components.length >= 4) && (data.address_components[3].long_name.includes('County'))) {
+                    county = data.address_components[3].long_name
+                    console.log(county)
+                    state = data.address_components[4].long_name
+
+                } else {
+                    setSearchResult({lat: data.geometry.location.lat, lng: data.geometry.location.lng });
+                    return
                 };
+
+                setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
 
                 fetch(`/data/county/${county.substring(0, county.indexOf('County'))}`)
                     .then((res1) => res1.json())
@@ -137,53 +143,81 @@ const SearchDetails = (props) => {
         };
     };
 
-    return (
-        <Container className='main' fluid >
-            <Row>
-                <Link to='/'>Go Back</Link>
-            </Row>
-            <Row>
-                <Col lg={6} md={12} sm={12} id='left-comp'>
-                    <Row> <h1> DENSITY MAP HERE </h1> </Row>
-                    <div id='map' />
-                </Col>
+    if (searchResult && countyData) {
+        
+        return (
+            <Container className='main' fluid >
+                <Row>
+                    <Link to='/'>Go Back</Link>
+                </Row>
+                <Row>
+                    <Col lg={6} md={12} sm={12} id='left-comp'>
+                        <Row> <h1> DENSITY MAP HERE </h1> </Row>
+                        <div id='map' />
+                    </Col>
 
-                <Col lg={6} md={12} sm={12} id='right-comp'>
-                    {/* <Row className='land-row'> */}
+                    <Col lg={6} md={12} sm={12} id='right-comp'>
+                        {/* <Row className='land-row'> */}
                         <h1> COVID FACTS HERE </h1>
 
                         <p>County: {countyData.Admin2}</p>
-                        <p> State: {countyData.Province_State}</p>
-                        <p> Confirmed Cases: {countyData.Confirmed}</p>
+                        <p>State: {countyData.Province_State}</p>
+                        <p>Confirmed Cases: {countyData.Confirmed}</p>
                         <p>Deaths: {countyData.Deaths}</p>
                         <p>Recovered Patiends: {countyData.Recovered}</p>
 
-                    {/* </Row> */}
+                        {/* </Row> */}
 
 
-                    {/* <Row className='testing-info'>
-                        <Row> <h1> TESTING CENTER INFO HERE </h1></Row>
-                        <Row>
-                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                            info info info info info
-                            info info info info infoinfo info info info infoinfo info info info info
-                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                            info info info info info
-                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                            info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                            info info info info info
-                        </Row>
-                    </Row> */}
+                        {/* <Row className='testing-info'>
+                            <Row> <h1> TESTING CENTER INFO HERE </h1></Row>
+                            <Row>
+                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                                info info info info info
+                                info info info info infoinfo info info info infoinfo info info info info
+                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                                info info info info info
+                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
+                                info info info info info
+                            </Row>
+                        </Row> */}
 
-                </Col>
-            </Row>
-        </Container>
+                    </Col>
+                </Row>
+            </Container>
+        )
 
-    )
+    } else {
+        return (
+            <Container className='main' fluid>
+                <Row>
+                    <Link to='/'>Go Back</Link>
+                </Row>
+                <Row>
+                    <Col lg={6} md={12} sm={12} id='left-comp'>
+                        <Row> <h1> DENSITY MAP HERE </h1> </Row>
+                        <div id='map' />
+                    </Col>
+
+                    <Col lg={6} md={12} sm={12} id='right-comp'>
+                        <h1> COVID FACTS HERE </h1>
+
+                        <p>County: Data Unavailable</p>
+                        <p> State: Data Unavailable</p>
+                        <p> Confirmed Cases: Data Unavailable</p>
+                        <p>Deaths: Data Unavailable</p>
+                        <p>Recovered Patiends: Data Unavailable</p>
+
+                    </Col>
+                </Row>
+            </Container>
+        )
+    }
 }
 
 export default SearchDetails;
