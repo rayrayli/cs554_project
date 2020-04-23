@@ -7,7 +7,9 @@ import Login from './components/Login';
 import Register from './components/Register';
 import SearchDetails from './components/SearchDetails';
 import PrivateRoute from './components/PrivateRoute';
-import Navigation from './components/Navigation'
+import HealthInfo from './components/HealthInfo';
+import FacilityInfo from './components/FacilityInfo';
+import Navigation from './components/Navigation';
 import './App.css';
 import { AuthProvider } from './firebase/Auth';
 
@@ -24,16 +26,18 @@ function App() {
           </Row>
 
           <Row>
+            {/* ROUTES FOR ALL USERS */}
+            <Route path='/login' component={Login} />
+            <Route exact path='/register' component={Register} />
+            <Route exact path='/' component={Landing} />
+            <Route path='/searchDetails' component={SearchDetails} />
             <Switch>
-              {/* ROUTES FOR ALL USERS */}
-              <Route path='/login' component={Login} />
-              <Route path='/register' component={Register} />
-              <Route exact path='/' component={Landing} />
-              <Route path='/searchDetails' component={SearchDetails} />
               {/* ROUTES FOR PATIENT USERS */}
               {/* ROUTES FOR FACILITY USERS */}
               {/* ROUTES FOR ADMIN USERS */}
               <PrivateRoute path='/account' component={Account} />
+              <PrivateRoute path='/register/health-details' component={HealthInfo} />
+              <PrivateRoute path='/register/facility-details' component={FacilityInfo} />
               <PrivateRoute path='/messages' component={Account} />
 
             </Switch>

@@ -1,18 +1,19 @@
+import firebaseApp from './Firebase';
 import firebase from 'firebase/app';
 
 async function doCreateUserWithEmailAndPassword(email, password, displayName, _id) {
     await firebase.auth().createUserWithEmailAndPassword(email, password)
-        .then( async (res) => {
-        await fetch(`/users/${_id}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            },
-            body: JSON.stringify({
-                uid: firebase.auth().currentUser.uid,
-            })
+        .then(async (res) => {
+            await fetch(`/users/${_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    uid: firebase.auth().currentUser.uid,
+                })
+            });
         });
-    });
 
     firebase.auth().currentUser.updateProfile({ displayName: displayName });
     return firebase.auth().currentUser.uid
@@ -46,19 +47,21 @@ async function doSignOut() {
 };
 
 async function onAuthUserListen(next, redirect) {
-    await firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-            setTimeout(5000);
-            console.log('GETTING DBUSER TO MERGE WITH AUTH')
 
-            await fetch(`/users/${user.uid}`)
-                .then( (res1) => res1.json())
-                .then( (data) => {
-                    console.log('ACQUIRED DBUSER', data)
+    firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+            setTimeout(200);
+            console.log('GETTING DBUSER TO MERGE WITH AUTH USER...:')
+
+            try {
+                await fetch(`/users/${user.uid}`)
+                .then((res1) => res1.json())
+                .then((data) => {
+                    console.log('ACQUIRED DBUSER:')
                     if (data) {
                         const currentUser = {
                             user: user,
-                            role: data.role,
+                            dbUser: data,
                         }
 
                         console.log('DBUSER MERGED WITH AUTH')
@@ -66,10 +69,14 @@ async function onAuthUserListen(next, redirect) {
                     }
 
                 });
+            } catch (err) {
+                return err
+            }
         } else {
             redirect();
         }
     })
+
 }
 
 export {

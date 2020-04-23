@@ -18,31 +18,31 @@ const SearchBar = (props) => {
             setSearchLocality(searchLocality.replace(',', '').replace(' ', '+'))
             setRedirect(true)
         } else {
-            setSearchLocality('new+york+new+york')
-            setRedirect(true)
+            setSearchLocality('new+york+new+york');
+            setRedirect(true);
         }
     }
 
-    if (searchLocality != undefined && redirect) {
+    if (searchLocality !== undefined && redirect) {
         return(
             <Redirect to={{
                 pathname: `/searchDetails`,
                 state: {result: searchLocality}
             }}/>
-        )
+        );
 
     } else {
         return (
             <Row className='landing-form'>
                 <Form id='landingform' method='POST' name='formSearchLocal' onSubmit={handleSubmit} >
                     <InputGroup>
-                        <FormControl type='text' id="search" placeholder='Search Your Locality' onChange={handleChange} />
+                        <FormControl type='text' id="search" placeholder='Search Testing Facilities in Your Area' onChange={handleChange} />
                         {/* <button> SEARCH </button> */}
                     </InputGroup>
                 </Form>
             </Row>
         );
-    }
-}
+    };
+};
 
 export default SearchBar;

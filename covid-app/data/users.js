@@ -2,29 +2,83 @@ const mongoCollections = require('../config/mongoCollections');
 const users = mongoCollections.users;
 const { ObjectId } = require('mongodb');
 
-
 let exportedMethods = {
     async addNewUser(userInfo) {
-        const userCollection = await users();
-        let newUser = await userCollection.insertOne(userInfo)
-        return newUser.insertedId;
+        try {
+            const userCollection = await users();
+            let newUser = await userCollection.insertOne(userInfo)
+            return newUser.insertedId;
+        } catch (err) {
+            return err
+        }
     },
 
     async getUserById(uid) {
-        const userCollection = await users();
-        let userFound = await userCollection.find({ uid: uid }).toArray();
-        return userFound[0]
+        try {
+            const userCollection = await users();
+            let userFound = await userCollection.find({ uid: uid }).toArray();
+            return userFound[0]
+        } catch (err) {
+            return err;
+        }
 
     },
 
-    async updateUser(_id, updateInfo) {
-        const userCollection = await users();
-        let doc = await userCollection.find({ _id: ObjectId(_id) }).toArray();
-        doc = doc[0]
-        doc['uid'] = updateInfo.uid
+    async updateUser(_id, updateInfo, type = null) {
+        try {
+            console.log(updateInfo)
+            const userCollection = await users();
+            let doc = await userCollection.find({ _id: ObjectId(_id) }).toArray();
+            doc = doc[0]
+            if (doc.uid) {
+                type = doc.role
+            }
 
-        let updated = await userCollection.replaceOne({ _id: ObjectId(_id) }, doc);
-        return updated
+            if (type === null) {
+                doc['uid'] = updateInfo.uid
+
+            } else if (type === 'facilityUser') {
+                return
+            } else {
+                doc.address = {
+                    'street': updateInfo.address1.trim(),
+                    'unit': updateInfo.address2 ? updateInfo.address2.trim() : null,
+                    'city': updateInfo.city.trim(),
+                    'state': updateInfo.state.trim(),
+                    'zip': updateInfo.zip.trim()
+                }
+
+                if (type === 'patient') {
+                    doc.dob = updateInfo.dob;
+                    doc.gender = updateInfo.gender;
+                    doc.ssn = updateInfo.ssn;
+                    doc.conditions = updateInfo.conditions;
+                    doc.insurance = {
+                        'id': updateInfo.insuranceID.trim(),
+                        'provider': updateInfo.insuranceProvider.trim()
+                    };
+                }
+
+                if (type === 'admin') {
+                    doc.phone = updateInfo.phone.trim();
+                    doc.url = updateInfo.website.trim();
+                    doc.hours = {
+                        'Monday': updateInfo.Monday,
+                        'Tuesday': updateInfo.Tuesday,
+                        'Wednesday': updateInfo.Wednesday,
+                        'Thursday': updateInfo.Thursday,
+                        'Friday': updateInfo.Friday,
+                        'Saturday': updateInfo.Saturday,
+                        'Sunday': updateInfo.Sunday
+                    }
+                }
+            }
+
+            let updated = await userCollection.replaceOne({ _id: ObjectId(_id) }, doc);
+            return updated
+        } catch (err) {
+            return err;
+        }
     }
 
 };

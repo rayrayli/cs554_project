@@ -1,10 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Container, Row, Col, Figure, Form, InputGroup, FormControl } from 'react-bootstrap';
+import { AuthContext } from '../firebase/Auth';
 import SearchDetails from './SearchDetails'
 import SearchBar from './SearchBar'
 
 const Landing = () => {
+    const { currentUser } = useContext(AuthContext);
+    console.log('#####', currentUser)
+
+    return <Container className='main' fluid>
+        {(!currentUser || currentUser.dbUser.role === 'patient') ? <PatientLanding /> : <FacilityLanding />}
+    </Container>
+
+};
+
+const FacilityLanding = () => {
+    return (
+        <div>
+            <h1> ADMIN LANDING </h1>
+        </div>
+    )
+}
+
+const PatientLanding = () => {
     const [statesCurrVals, setStatesCurrVals] = useState(undefined);
     const [nationCurrVals, setNationCurrVals] = useState(undefined);
 
@@ -28,7 +47,7 @@ const Landing = () => {
     if (statesCurrVals && nationCurrVals) {
         // Load the Visualization API and the piechart package.
         window.google.charts.load('current', {
-            'packages': ['geochart'], 'mapsApiKey': process.env.REACT_APP_GOOGLE_API_KEY 
+            'packages': ['geochart'], 'mapsApiKey': process.env.REACT_APP_GOOGLE_API_KEY
         });
         // Set a callback to run when the Google Visualization API is loaded.
         window.google.charts.setOnLoadCallback(drawGeoChart);
@@ -72,16 +91,11 @@ const Landing = () => {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
 
-
-
     if (statesCurrVals && nationCurrVals) {
         return (
-            <Container className='main' fluid >
-
+            <div>
                 <SearchBar />
-
                 <br />
-
                 <Row>
                     <Col id='land-left' lg={6} md={12} sm={12}>
                         <Row className='stat-header'>
@@ -203,9 +217,8 @@ const Landing = () => {
 
                     </Col>
                 </Row>
-
-            </Container>
-        );
+            </div>
+        )
     } else {
         return (
             <Container className='main'>
@@ -215,6 +228,6 @@ const Landing = () => {
             </Container>
         );
     };
-};
+}
 
 export default Landing;
