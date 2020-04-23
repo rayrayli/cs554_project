@@ -1,32 +1,31 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../firebase/Auth';
-
-// if USER.role === Admin
-
-// if USER.role === FacilityUser
-
-// if USER.roole === Patient
-
+import { Container, Row, Col, Figure, Form, InputGroup, FormControl } from 'react-bootstrap';
 
 const Account = (props) => {
-    const {currentUser} = useContext(AuthContext);
-    console.log('#####',currentUser)
+    const { currentUser } = useContext(AuthContext);
+    console.log('#####', currentUser)
 
-    if (currentUser.role === 'patient') {
-        return (
-            <div>
-                <h1> PATIENT ACCOUNT PAGE</h1>
-            </div>
-        )
-    } else {
-        return (
-            <div>
-                <h1> ACCOUNT PAGE</h1>
-            </div>
-        )
-    }
+    return <Container className='main' fluid>
+        {(currentUser.dbUser.role === 'admin' || currentUser.dbUser.role === 'facilityUser') ? <AccountFacility /> : <AccountPatient />}
+    </Container>
+}
 
-    
+const AccountFacility = () => {
+
+    return (
+        <div>
+            <h1> ADMIN ACCOUNT PAGE</h1>
+        </div>
+    )
+}
+
+const AccountPatient = () => {
+    return (
+        <div>
+            <h1> PATIENT ACCOUNT PAGE</h1>
+        </div>
+    )
 }
 
 const UpdatePassword = () => {

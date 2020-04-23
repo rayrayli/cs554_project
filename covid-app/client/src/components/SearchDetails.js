@@ -68,10 +68,11 @@ const SearchDetails = (props) => {
                         });
                     });
             };
+
             getLocation(props.location.state.result)
             window.initMap = initMap();
 
-        }, []
+        }, [ initMap() ]
     );
 
     if (searchResult) {
@@ -90,7 +91,7 @@ const SearchDetails = (props) => {
             let lat = searchResult.lat;
             let lng = searchResult.lng;
 
-            const map = new window.google.maps.Map(document.getElementById('map'), {
+            new window.google.maps.Map(document.getElementById('map'), {
                 center: { lat, lng },
                 restriction: {
                     latLngBounds: usBounds,
