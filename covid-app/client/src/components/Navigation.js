@@ -1,25 +1,26 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../firebase/Auth';
-import { Navbar, Nav, Row } from 'react-bootstrap';
+import { Navbar, Nav, Row, NavLink } from 'react-bootstrap';
 import { doSignOut } from '../firebase/FirebaseFunctions';
 import '../App.css'
+import { Redirect } from 'react-router-dom';
 
 const Navigation = () => {
     const { currentUser } = useContext(AuthContext);
     const role = currentUser && currentUser.dbUser.role
-    
+
     if (role === 'admin') {
         return <Row> {<NavigationAdmin />} </Row>
     } else if (role === 'patient' || role === 'facilityUser') {
         return <Row> {<NavigationAuth />} </Row>
     } else {
-        return  <Row> <NavigationNoAuth /> </Row>
+        return <Row> <NavigationNoAuth /> </Row>
     }
 };
 
 const NavigationAdmin = () => {
     const { currentUser } = useContext(AuthContext);
-    let displayName 
+    let displayName
     if (currentUser.dbUser.firstName) {
         displayName = `${currentUser.dbUser.firstName}  ${currentUser.dbUser.lastName}`
     } else {
@@ -33,20 +34,20 @@ const NavigationAdmin = () => {
                 <Navbar.Text>
                     <a href="#login"> {displayName} | </a>
                 </Navbar.Text>
-                <Nav.Link href='/account'> Account </Nav.Link> 
-                <Nav.Link onClick={doSignOut}> Logout </Nav.Link>
+                <Nav.Link href='/account'> Account </Nav.Link>
+                <Nav.Link to='/' onClick={doSignOut}> Logout </Nav.Link>
             </Navbar.Collapse>
         </Navbar>
     );
 }
 const NavigationAuth = () => {
     const { currentUser } = useContext(AuthContext);
-    let displayName 
+    let displayName
     if (currentUser.dbUser.firstName) {
         displayName = currentUser.dbUser.firstName + currentUser.dbUser.lastName
     } else {
         displayName = currentUser.dbUser.facilityName
-    }    
+    }
 
     return (
         <Navbar className='App-nav' fixed='top'>
@@ -55,7 +56,7 @@ const NavigationAuth = () => {
                 <Navbar.Text>
                     <a href="#login"> {displayName} | </a>
                 </Navbar.Text>
-                <Nav.Link href='/account'> Account </Nav.Link> 
+                <Nav.Link href='/account'> Account </Nav.Link>
                 <Nav.Link href='/messages'> Messages </Nav.Link>
                 <Nav.Link onClick={doSignOut}> Logout </Nav.Link>
             </Navbar.Collapse>
