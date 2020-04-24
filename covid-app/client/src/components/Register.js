@@ -28,6 +28,7 @@ const Register = () => {
         if (formData) {
             setPasswordMatch(formData.password1 !== formData.password2 || formData.password1 === '' || formData.email === '')
         }
+        console.log(passwordMatch)
     }
 
     const handlePatientRegister = async (e) => {
@@ -135,7 +136,7 @@ const Register = () => {
 
     if (currentUser && currentUser.dbUser.role === 'patient') {
         return (<Redirect to='/register/health-details' />)
-    } else if(currentUser && currentUser.dbUser.role === 'admin') {
+    } else if (currentUser && currentUser.dbUser.role === 'admin') {
         return (<Redirect to='/register/facility-details' />)
     }
 
@@ -168,6 +169,9 @@ const Register = () => {
                         <Row>
                             <Tab.Content id='register'>
                                 <Tab.Pane eventKey="patient" title='patient'>
+                                    <div id='form-error'>>
+                                        {passwordMatch && <h4 className='error'> {passwordMatch} </h4>}
+                                    </div>
                                     <Form onSubmit={handlePatientRegister} >
                                         <Col lg={12} md={12}>
                                             <Form.Row>
@@ -239,7 +243,6 @@ const Register = () => {
                                                     />
                                                 </Form.Group>
                                             </Form.Row>
-                                            {passwordMatch && <h4 className='error'> {passwordMatch} </h4>}
 
                                             <Button disabled={passwordMatch} variant="primary" type="submit">
                                                 Submit

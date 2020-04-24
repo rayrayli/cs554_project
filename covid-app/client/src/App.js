@@ -19,7 +19,7 @@ function App() {
     <AuthProvider>
       <Router>
 
-        <Container className="App" fluid>
+        <Container className="App">
 
           <Row>
             <Navigation />
