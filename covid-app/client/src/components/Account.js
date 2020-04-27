@@ -103,14 +103,14 @@ const AccountPatient = () => {
                                                     className='register-form'
                                                     name='dob'
                                                     type='date'
-                                                    defaultValue={currentUser.dbUser.dob}
+                                                    defaultValue={currentUser.dbUser.dob || "MM/DD/YYYY"}
                                                     placeholder="MM/DD/YYYY"
                                                     required
                                                 />
                                             </Form.Group>
                                             <Form.Group as={Col} controlId="gender">
                                                 <Form.Label>Gender</Form.Label>
-                                                <Form.Control as="select" name='gender' defaultValue={currentUser.dbUser.gender} custom required>
+                                                <Form.Control as="select" name='gender' defaultValue={currentUser.dbUser.gender || 'Choose...'} custom required>
                                                     <option>Choose...</option>
                                                     <option value='male'>Male</option>
                                                     <option value='female'>Female</option>
@@ -125,7 +125,7 @@ const AccountPatient = () => {
                                                 className='register-form'
                                                 name='address1'
                                                 type='text'
-                                                placeholder={currentUser.dbUser.address.street}
+                                                placeholder={currentUser.dbUser.address && currentUser.dbUser.address.street || 'Address'}
                                                 required
                                             />
                                         </Form.Group>
@@ -136,7 +136,7 @@ const AccountPatient = () => {
                                                 className='register-form'
                                                 name='address2'
                                                 type='text'
-                                                defaultValue={currentUser.dbUser.address.unit}
+                                                defaultValue={currentUser.dbUser.address && currentUser.dbUser.address.unit || 'Unit'}
                                                 placeholder="Apartment, studio, or floor"
                                             />
                                         </Form.Group>
@@ -148,14 +148,14 @@ const AccountPatient = () => {
                                                     className='register-form'
                                                     name='city'
                                                     type='text'
-                                                    placeholder={currentUser.dbUser.address.city}
+                                                    placeholder={currentUser.dbUser.address && currentUser.dbUser.address.city || 'City'}
                                                     required
                                                 />
                                             </Form.Group>
 
                                             <Form.Group as={Col} controlId="state">
                                                 <Form.Label>State</Form.Label>
-                                                <Form.Control as="select" name='state' defaultValue={currentUser.dbUser.address.state} custom required >
+                                                <Form.Control as="select" name='state' defaultValue={currentUser.dbUser.address && currentUser.dbUser.address.state || "Choose..."} custom required >
                                                     <option>Choose...</option>
                                                     {states && states.map((state) => {
                                                         return <option key={state} value={state}> {state} </option>
@@ -169,7 +169,7 @@ const AccountPatient = () => {
                                                     className='register-form'
                                                     name='zip'
                                                     type='text'
-                                                    placeholder={currentUser.dbUser.address.zip}
+                                                    placeholder={currentUser.dbUser.address && currentUser.dbUser.address.zip || 'Zip'}
                                                     required
                                                 />
                                             </Form.Group>
