@@ -50,7 +50,7 @@ async function onAuthUserListen(next, redirect) {
 
     firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
-            setTimeout(200);
+            // setTimeout(200);
             console.log('GETTING DBUSER TO MERGE WITH AUTH USER...:')
 
             console.log(user)
