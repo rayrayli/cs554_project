@@ -67,7 +67,6 @@ async function onAuthUserListen(next, redirect) {
                         console.log('DBUSER MERGED WITH AUTH')
                         next(currentUser);
                     }
-
                 });
             } catch (err) {
                 return err

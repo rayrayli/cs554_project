@@ -193,6 +193,50 @@ const AccountPatient = () => {
                             </Tab.Pane>
                             <Tab.Pane eventKey="HealthDetails">
                                 HEALTH DETAILS
+
+                                <Form>
+                                    <Form.Row>
+                                        <Form.Group as={Col} controlId="insuranceProvider">
+                                            <Form.Label>Insurance Provider</Form.Label>
+                                            <Form.Control
+                                                className='register-form'
+                                                name='insuranceProvider'
+                                                type='text'
+                                                placeholder="Aetna Health HMO"
+                                                defaultValue={currentUser.dbUser.insurance.provider}
+                                                required
+                                            />
+                                        </Form.Group>
+
+                                        <Form.Group as={Col} controlId="insuranceID">
+                                            <Form.Label>Insurance Member ID</Form.Label>
+                                            <Form.Control
+                                                className='register-form'
+                                                name='insuranceID'
+                                                type='text'
+                                                placeholder="R11122233"
+                                                defaultValue={currentUser.dbUser.insurance.id}
+                                                required />
+                                        </Form.Group>
+                                    </Form.Row>
+                                    <Form.Row>
+                                        <Form.Group as={Col} controlId="conditions">
+                                            <Form.Label> Pre-Existing Conditions</Form.Label>
+                                            <Form.Control as="select" name='conditions' multiple>
+                                                <option value='cancer'>Cancer (currently receiving treatment)</option>
+                                                <option value='liver'>Liver Disease</option>
+                                                <option value='transplant'>Recent Bone Marrow/Organ Transplantation</option>
+                                                <option value='kidney'>Chronic Kidney Disease (currently undergoing dialysis)</option>
+                                                <option value='diabetes'>Diabetes (Type I and II)</option>
+                                                <option value='asthma'>Asthma or other Chronic Lung Disease</option>
+                                                <option value='heart'>High Blood Pressure or other Serious Heart Condition</option>
+                                                <option value='hiv'>HIV/AIDS (poorly controlled)</option>
+                                                <option value='obese'>Obesity (BMI 40+)</option>
+                                            </Form.Control>
+                                        </Form.Group>
+                                    </Form.Row>
+
+                                </Form>
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>
@@ -218,7 +262,7 @@ const ChangePassword = () => {
         form[e.target.name] = e.target.value
         setFormData(form)
 
-        if (formData && (formData.newPassword1 !== formData.newPassword2 && formData.newPassword2) ) {
+        if (formData && (formData.newPassword1 !== formData.newPassword2 && formData.newPassword2)) {
             setPasswordMatch('Passwords Do Not Match')
         }
     };

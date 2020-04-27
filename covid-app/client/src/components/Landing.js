@@ -17,9 +17,40 @@ const Landing = () => {
 };
 
 const FacilityLanding = () => {
+    const { currentUser } = useContext(AuthContext);
+    const [employees, setEmployees] = useState([])
+
+    useEffect(
+        () => {
+
+        }, []
+    )
+    const li = null
+
     return (
         <div>
             <h1> ADMIN LANDING </h1>
+            <Row>
+                <Col>
+                    <Row>
+                        <h3> Facility Employees</h3>
+                        <Button href='/admin/createUser'> Add Employee </Button>
+                    </Row>
+                    <Row>
+                        <div>
+                            <h6> Currently No Employee Accounts Created. To Create An Employee, Click 'Add Employee' Button Above </h6>
+                        </div>
+                    </Row>
+                </Col>
+
+
+                <Col>
+                    <div>
+                        <h3> Facility Appointment Manager </h3>
+
+                    </div>
+                </Col>
+            </Row>
         </div>
     )
 }
@@ -49,7 +80,7 @@ const PatientLanding = () => {
                         console.log("!!!!!", siteList.data)
                         if (currentUser && currentUser.dbUser && currentUser.dbUser.address) {
                             let currState = currentUser.dbUser.address.state
-                            siteList.data.forEach( (stateObj) => {
+                            siteList.data.forEach((stateObj) => {
                                 if (stateObj.state === currState) {
                                     setStateSite(stateObj.covid19Site)
                                 };
@@ -315,12 +346,12 @@ const PatientLanding = () => {
                                     </Button>
                                 </Col>
 
-                                {currentUser && stateSite && 
-                                <Col>
-                                    <Button href={stateSite}>
-                                        <span> {stateSite && currentUser && currentUser.dbUser && currentUser.dbUser.address.state.toLowerCase()}.gov</span>
-                                    </Button>
-                                </Col>
+                                {currentUser && stateSite &&
+                                    <Col>
+                                        <Button href={stateSite}>
+                                            <span> {stateSite && currentUser && currentUser.dbUser && currentUser.dbUser.address.state.toLowerCase()}.gov</span>
+                                        </Button>
+                                    </Col>
                                 }
                             </Row>
                         </div>

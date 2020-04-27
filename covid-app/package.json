@@ -4,6 +4,7 @@
   "description": "CS554 Final Project",
   "main": "app.js",
   "scripts": {
+    "seed": "node ./task/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
   },
@@ -12,6 +13,7 @@
   "dependencies": {
     "axios": "^0.19.2",
     "express": "^4.17.1",
+    "firebase-admin": "^8.11.0",
     "mongodb": "^3.5.5"
   }
 }
