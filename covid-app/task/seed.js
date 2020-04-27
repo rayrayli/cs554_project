@@ -63,8 +63,8 @@ const abrev = {
     "WY": "Wyoming"
 };
 
-
 async function main() {
+
     const db = await dbConnection();
     await db.dropDatabase();
 
@@ -120,8 +120,7 @@ async function main() {
 
             if (justAdded.insertedCount === 0) throw new Error("Unable to add county data set");
             const newDataAdded = await justAdded.insertedId;
-            console.log(justAdded.insertedCount);
-            return true;
+            return `Aquired ${level} Data`;
 
         } catch (err) {
             console.log(err);
@@ -167,7 +166,6 @@ async function main() {
                     if (justAdded.insertedCount === 0) throw new Error("Unable to add county data set");
 
                     const newDataAdded = await justAdded.insertedId;
-                    return
                 });
 
         } catch (err) {
@@ -175,10 +173,17 @@ async function main() {
         };
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////\
-    fetchData('https://covidtracking.com/api/v1/states/current.json', 'state');
-    fetchData('https://covidtracking.com/api/v1/us/current.json', 'nation');
-    fetchData('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest', 'population');
-    fetchCountyLevel()
+    await fetchData('https://covidtracking.com/api/v1/states/current.json', 'state');
+    await fetchData('https://covidtracking.com/api/v1/us/current.json', 'nation');
+    await fetchData('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest', 'pop');
+    await fetchCountyLevel()
+
+    return true
 }
 
-main();
+const run = async () => {
+    await main()
+    process.exit()
+}
+
+run();
