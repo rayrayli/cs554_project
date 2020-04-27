@@ -53,6 +53,7 @@ async function onAuthUserListen(next, redirect) {
             setTimeout(200);
             console.log('GETTING DBUSER TO MERGE WITH AUTH USER...:')
 
+            console.log(user)
             try {
                 await fetch(`/users/${user.uid}`)
                 .then((res1) => res1.json())
