@@ -66,7 +66,7 @@ const abrev = {
 async function main() {
 
     const db = await dbConnection();
-    await db.dropDatabase();
+   
 
     const state = mongoCollections.covidStStats;
     const nation = mongoCollections.covidNaStats;
@@ -92,6 +92,7 @@ async function main() {
                 throw 'invalid level'
             };
 
+            let conf = collection.deleteMany({});
             console.log(`Getting data from ${url} to ${collection}`)
 
             const data = await axios.get(url)
