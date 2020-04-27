@@ -1,5 +1,5 @@
 // RUN BACKEND SERVER ON PORT 3001
-
+const admin = require('firebase-admin')
 // CREATE SERVER
 const express = require("express");     // Utilize Express Module
 const path = require('path');
@@ -8,6 +8,7 @@ const bodyParser = require("body-parser"); // JSON Parsing
 const data = require('./data')
 const getData = data.statData;
 const users = data.users;
+
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
@@ -63,7 +64,6 @@ app.post("/users/:id", async (req, res) => {
     const update = await users.updateUser(req.params.id, req.body);
     res.status(200).json(update);
 })
-
 
 // RUN SERVER
 app.listen(3001, () => {        // Listen For Requests on Port 3001

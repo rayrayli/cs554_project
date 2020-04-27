@@ -40,6 +40,7 @@ const NavigationAdmin = () => {
         </Navbar>
     );
 }
+
 const NavigationAuth = () => {
     const { currentUser } = useContext(AuthContext);
     let displayName

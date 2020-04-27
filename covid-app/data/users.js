@@ -21,7 +21,6 @@ let exportedMethods = {
         } catch (err) {
             return err;
         }
-
     },
 
     async updateUser(_id, updateInfo, type = null) {
