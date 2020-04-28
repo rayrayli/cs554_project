@@ -77,7 +77,6 @@ const PatientLanding = () => {
             async function fetchSites() {
                 await axios.get('https://covidtracking.com/api/states/info')
                     .then((siteList) => {
-                        console.log("!!!!!", siteList.data)
                         if (currentUser && currentUser.dbUser && currentUser.dbUser.address) {
                             let currState = currentUser.dbUser.address.state
                             siteList.data.forEach((stateObj) => {

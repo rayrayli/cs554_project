@@ -1,7 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { Redirect } from 'react-router-dom';
-import { AuthContext } from '../firebase/Auth';
-import { Container, Row, Col, Modal, Form, Button, FormControl, Nav, Tab, NavLink, Alert } from 'react-bootstrap';
+import React from 'react';
+import { Modal, Button } from 'react-bootstrap';
 
 const AddressModal = (props) => {
     return (

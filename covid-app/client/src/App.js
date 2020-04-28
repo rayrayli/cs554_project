@@ -20,7 +20,6 @@ function App() {
       <Router>
 
         <Container className="App">
-
           <Row>
             <Navigation />
           </Row>

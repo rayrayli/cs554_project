@@ -1,0 +1,36 @@
+version: "3"
+services:
+    client:
+        build:
+          context: ./client
+          dockerfile: Dockerfile
+        restart: always
+        ports:
+            - "3000:3000"
+        volumes:
+            - /client/node_modules
+            - ./client:/client
+        links:
+            - server
+        depends_on:
+            - mongo
+        stdin_open: true
+    server:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        restart: always
+        ports:
+            - "3001:3001"
+        volumes:
+            - /server/node_modules
+            - ./server:/server
+        links:
+            - mongo
+        depends_on:
+            - mongo
+    mongo:
+        image: mongo
+        ports:
+            - "27017:27017"
+    
