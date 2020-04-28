@@ -66,12 +66,6 @@ const abrev = {
     "WY": "Wyoming"
 };
 // RUN METHODS EVRYDAY AT MIDNIGHT (DATA RELEASED EVERY 24HRS)
-//
-// USE
-// getData('https://covidtracking.com/api/v1/states/current.json', state());
-// getData('https://covidtracking.com/api/v1/us/current.json', nation());
-// getData('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest', population()) 
-// getCountyLevel()
 
 let exportedMethods = {
     async getStateNationData() {
@@ -106,7 +100,6 @@ let exportedMethods = {
         return popData;
     },
     
-
     async fetchData(url, level) {
         try {
             let collection;

@@ -84,9 +84,9 @@ const Register = () => {
 
     const handleFacilityRegister = async (e) => {
         e.preventDefault();
-        const { facilityName, email, password1, password2 } = e.target.elements;
+        const { facilityName, admin_email, admin_password1, admin_password2 } = e.target.elements;
 
-        if (password1.value !== password2.value) {
+        if (admin_password1.value !== admin_password2.value) {
             setPasswordMatch("Passwords do not match");
             return false;
         } else {
@@ -102,7 +102,7 @@ const Register = () => {
                 role: 'admin',
                 uid: null,
                 facilityName: facilityName.value,
-                email: email.value,
+                email: admin_email.value,
                 address: {},
                 phone: null,
                 url: null,
@@ -128,7 +128,7 @@ const Register = () => {
             })
         }).then(async (res) => {
             let { _id } = await res.json();
-            await doCreateUserWithEmailAndPassword(email.value, password1.value, facilityName.value, _id);
+            await doCreateUserWithEmailAndPassword(admin_email.value, admin_password1.value, facilityName.value, _id);
         });
 
         console.log("ADMIN USER ADDED TO FIREBASE AND DB");
@@ -266,11 +266,11 @@ const Register = () => {
                                                     />
                                                 </Form.Group>
 
-                                                <Form.Group as={Col} controlId="email">
+                                                <Form.Group as={Col} controlId="admin-email">
                                                     <Form.Label>Email</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='email'
+                                                        name='admin-email'
                                                         type="email"
                                                         placeholder="Enter Admin Email"
                                                         autoComplete="username"
@@ -280,11 +280,11 @@ const Register = () => {
                                             </Form.Row>
 
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="password1">
+                                                <Form.Group as={Col} controlId="admin-password1">
                                                     <Form.Label>Password</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='password1'
+                                                        name='admin-password1'
                                                         type="password"
                                                         placeholder="Password"
                                                         autoComplete="new-password"
@@ -294,11 +294,11 @@ const Register = () => {
                                             </Form.Row>
 
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="password2">
+                                                <Form.Group as={Col} controlId="admin-password2">
                                                     <Form.Label>Password</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='password2'
+                                                        name='admin-password2'
                                                         type="password"
                                                         placeholder="Confirm Password"
                                                         autoComplete="new-password"
