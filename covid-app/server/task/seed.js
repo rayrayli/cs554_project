@@ -71,9 +71,14 @@ async function main() {
     const state = mongoCollections.covidStStats;
     const nation = mongoCollections.covidNaStats;
     const population = mongoCollections.covidPopStats;
-    const county = mongoCollections.covidCoStats
+    const county = mongoCollections.covidCoStats;
+    const users = mongoCollections.users;
   
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    async function clearUsers() {
+        collection = await users();
+        let conf = collection.deleteMany({});
+    }
 
     async function fetchData(url, level) {
         try {
@@ -178,12 +183,14 @@ async function main() {
     await fetchData('https://covidtracking.com/api/v1/us/current.json', 'nation');
     await fetchData('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest', 'pop');
     await fetchCountyLevel()
+    // await clearUsers()
 
     return true
 }
 
 const run = async () => {
     await main()
+    console.log("MONGODB SEEDED")
     process.exit()
 }
 
