@@ -50,7 +50,7 @@ const SearchDetails = (props) => {
                     state = data.address_components[4].long_name
 
                 } else {
-                    setSearchResult({lat: data.geometry.location.lat, lng: data.geometry.location.lng });
+                    setSearchResult({ lat: data.geometry.location.lat, lng: data.geometry.location.lng });
                     return
                 };
 
@@ -67,15 +67,25 @@ const SearchDetails = (props) => {
 
                         });
                     });
+
+                fetch('/users/admin/')
+                    .then((res1) => res1.json())
+                    .then((data) => {
+                        setFacilityData(data)
+                    })
             };
 
             getLocation(props.location.state.result)
             window.initMap = initMap();
 
-        }, [ initMap() ]
+        }, [initMap()]
     );
 
-    if (searchResult) {
+    if (facilityData) {
+        console.log(facilityData)
+    }
+
+    if (searchResult && facilityData) {
         initMap()
     }
 
@@ -91,7 +101,7 @@ const SearchDetails = (props) => {
             let lat = searchResult.lat;
             let lng = searchResult.lng;
 
-            new window.google.maps.Map(document.getElementById('map'), {
+            let map = new window.google.maps.Map(document.getElementById('map'), {
                 center: { lat, lng },
                 restriction: {
                     latLngBounds: usBounds,
@@ -141,11 +151,18 @@ const SearchDetails = (props) => {
                     }
                 ]
             });
+
+            facilityData && facilityData.forEach((facility) => {
+                let marker = new window.google.maps.Marker({
+                    position: new window.google.maps.LatLng(facility.geoJSON.geometry.coordinates[0], facility.geoJSON.geometry.coordinates[1]),
+                    map: map
+                });
+            })
         };
     };
 
     if (searchResult && countyData) {
-        
+
         return (
             <Container className='main' fluid >
                 <Row>

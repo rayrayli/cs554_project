@@ -85,6 +85,8 @@ const Register = () => {
     const handleFacilityRegister = async (e) => {
         e.preventDefault();
         const { facilityName, admin_email, admin_password1, admin_password2 } = e.target.elements;
+        console.log(admin_password1)
+        console.log(admin_password2)
 
         if (admin_password1.value !== admin_password2.value) {
             setPasswordMatch("Passwords do not match");
@@ -124,7 +126,8 @@ const Register = () => {
                     Saturday: [null],
                     Sunday: [null]
                 },
-                employees: [null]
+                employees: [null],
+                geoJSON: null
             })
         }).then(async (res) => {
             let { _id } = await res.json();
@@ -266,11 +269,11 @@ const Register = () => {
                                                     />
                                                 </Form.Group>
 
-                                                <Form.Group as={Col} controlId="admin-email">
+                                                <Form.Group as={Col} controlId="admin_email">
                                                     <Form.Label>Email</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='admin-email'
+                                                        name='admin_email'
                                                         type="email"
                                                         placeholder="Enter Admin Email"
                                                         autoComplete="username"
@@ -280,11 +283,11 @@ const Register = () => {
                                             </Form.Row>
 
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="admin-password1">
+                                                <Form.Group as={Col} controlId="admin_password1">
                                                     <Form.Label>Password</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='admin-password1'
+                                                        name='admin_password1'
                                                         type="password"
                                                         placeholder="Password"
                                                         autoComplete="new-password"
@@ -294,11 +297,11 @@ const Register = () => {
                                             </Form.Row>
 
                                             <Form.Row>
-                                                <Form.Group as={Col} controlId="admin-password2">
+                                                <Form.Group as={Col} controlId="admin_password2">
                                                     <Form.Label>Password</Form.Label>
                                                     <Form.Control
                                                         className='register-form'
-                                                        name='admin-password2'
+                                                        name='admin_password2'
                                                         type="password"
                                                         placeholder="Confirm Password"
                                                         autoComplete="new-password"

@@ -17,7 +17,7 @@ const cors = require('cors');
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded( {extended: true} ));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Get National/State Level Data Router 
 app.get("/data/nation_state", async (req, res) => {
@@ -27,7 +27,7 @@ app.get("/data/nation_state", async (req, res) => {
 
     } catch (err) {
         console.log(err)
-        res.status(400).json( {"error": err.message} );
+        res.status(400).json({ "error": err.message });
     };
 });
 
@@ -38,7 +38,7 @@ app.get("/data/county/:name", async (req, res) => {
         res.status(200).json(countyLevel);
 
     } catch (err) {
-        res.status(400).json( {"error": err.message} );
+        res.status(400).json({ "error": err.message });
     };
 });
 
@@ -46,12 +46,31 @@ app.get("/data/county/:name", async (req, res) => {
 app.post("/users/", async (req, res) => {
     try {
         const newUser = await users.addNewUser(req.body)
-        res.status(201).send({'_id': newUser})
+        res.status(201).send({ '_id': newUser })
 
     } catch (err) {
-        res.status(400).json( {"error": err.message} );
+        res.status(400).json({ "error": err.message });
     };
 });
+
+// Get All Users
+app.get("/users/", async (req, res) => {
+    try {
+        const usersFound = await users.getAllUsers();
+        res.status(200).send(usersFound)
+    } catch (err) {
+        res.status(400).json({ 'error': err.message })
+    }
+})
+
+app.get("/users/admin/", async (req, res) => {
+    try {
+        const adminsFound = await users.getAdmins();
+        res.status(200).send(adminsFound)
+    } catch (err) {
+        res.status(400).json({ 'error': err.message })
+    }
+})
 
 // Get User By ID
 app.get("/users/:uid", async (req, res) => {
@@ -60,14 +79,19 @@ app.get("/users/:uid", async (req, res) => {
         res.status(200).send(userFound);
 
     } catch (err) {
-        res.status(400).json( {"error": err.message} );
+        res.status(400).json({ "error": err.message });
     };
 });
 
 // Update User W/ ID
 app.post("/users/:id", async (req, res) => {
-    const update = await users.updateUser(req.params.id, req.body);
-    res.status(200).json(update);
+    try {
+        const update = await users.updateUser(req.params.id, req.body);
+        res.status(200).json(update);
+
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
 })
 
 // RUN SERVER

@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 3001
 
 # Run the app when the container launches
-CMD npm run seed && npm start
+CMD npm run seed && npm run dev

@@ -45,7 +45,18 @@ const FacilityInfo = (props) => {
     // Query User Input Address to Google GeoCode API
     const validateAddress = async (address) => {
         const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
-        return find.data.results[0].formatted_address
+        console.log(find.data)
+        let geoJson = {
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: [
+                    find.data.results[0].geometry.location.lat,
+                    find.data.results[0].geometry.location.lng
+                ]
+            }
+        }
+        return [find.data.results[0].formatted_address, geoJson]
     };
 
     // Update User Input Address
@@ -60,7 +71,7 @@ const FacilityInfo = (props) => {
         updateDbUser(info)
     }
 
-    const updateDbUser = async () => {
+    const updateDbUser = async (inf) => {
         let info = userInfo
         try {
             await fetch(`/users/${currentUser.dbUser._id}`, {
@@ -85,7 +96,7 @@ const FacilityInfo = (props) => {
         let elem = [...e.target.elements]
         console.log(elem)
         let info = {}
-        
+
         elem.forEach((element) => {
             if (element.id.includes('Start') || element.id.includes('End') || element.id.includes('Closed')) {
                 if (info[element.id.substring(0, element.id.indexOf('y') + 1)]) {
@@ -110,8 +121,11 @@ const FacilityInfo = (props) => {
 
         // Check Address Validity using google Geocoding API
         let entered = `${info.address1}, ${info.city}, ${info.state} ${info.zip}, USA`
-        let corrected = await validateAddress(entered)
+        let [corrected, geoJSON] = await validateAddress(entered)
+        info.geoJSON = geoJSON
         setCorrectedAddress(corrected)
+
+        console.log('*******',info)
 
         if (corrected !== entered) {
             setHideModal(false);

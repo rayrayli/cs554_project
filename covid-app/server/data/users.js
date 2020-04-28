@@ -13,6 +13,21 @@ let exportedMethods = {
         }
     },
 
+    async getAllUsers() {
+        const userCollection = await users();
+        let userFound = await userCollection.find({}).toArray();
+        return userFound
+    },
+
+    async getAdmins() {
+        console.log("OKKKK")
+        const userCollection = await users();
+        let adminsFound = await userCollection.find({ role: 'admin' }).toArray();
+        console.log(adminsFound)
+        return adminsFound
+
+    },
+
     async getUserById(uid) {
         try {
             const userCollection = await users();
@@ -25,10 +40,10 @@ let exportedMethods = {
 
     async updateUser(_id, updateInfo, type = null) {
         try {
-            console.log(updateInfo)
             const userCollection = await users();
             let doc = await userCollection.find({ _id: ObjectId(_id) }).toArray();
             doc = doc[0]
+
             if (doc.uid) {
                 type = doc.role
             }
@@ -69,7 +84,8 @@ let exportedMethods = {
                         'Friday': updateInfo.Friday,
                         'Saturday': updateInfo.Saturday,
                         'Sunday': updateInfo.Sunday
-                    }
+                    },
+                        doc.geoJSON = updateInfo.geoJSON
                 }
             }
 
