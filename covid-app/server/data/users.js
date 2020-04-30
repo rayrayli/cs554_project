@@ -22,7 +22,6 @@ let exportedMethods = {
         } catch (err) {
             return err;
         }
-
     },
 
     async getAllUsers() {
@@ -32,12 +31,17 @@ let exportedMethods = {
     },
 
     async getAdmins() {
-        console.log("OKKKK")
         const userCollection = await users();
         let adminsFound = await userCollection.find({ role: 'admin' }).toArray();
         console.log(adminsFound)
         return adminsFound
+    },
 
+    async getEmployees(facilityName) {
+        const userCollection = await users();
+        let adminsFound = await userCollection.find({ role: 'employee' }, {facility: facilityName}).toArray();
+        console.log(adminsFound)
+        return adminsFound
     },
 
     async getUserById(uid) {

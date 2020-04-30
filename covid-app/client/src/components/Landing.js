@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Row, Col, Figure, Tab, Tabs, Button } from 'react-bootstrap';
+import { Container, Row, Col, Figure, Tab, Tabs, Button, Modal, Form } from 'react-bootstrap';
+import { doCreateUserWithEmailAndPassword, doPasswordReset, deleteAccount } from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
 import SearchBar from './SearchBar';
 import axios from 'axios';
@@ -9,21 +10,72 @@ const Landing = () => {
     console.log('#####', currentUser)
 
     return <Container className='main' fluid>
-        {(!currentUser || currentUser.dbUser.role === 'patient') ? <PatientLanding /> : <FacilityLanding />}
+        {(!currentUser || currentUser.dbUser.role === 'patient' || currentUser.dbUser.role === 'employee') ? <PatientLanding /> : <FacilityLanding />}
     </Container>
 
 };
 
 const FacilityLanding = () => {
-    // const { currentUser } = useContext(AuthContext);
-    // const [employees, setEmployees] = useState([])
+    const { currentUser } = useContext(AuthContext);
+    const [ hideModal, setHideModal ] = useState(true)
+    const [ employees, setEmployees ] = useState([])
+
+    let li = null
 
     useEffect(
         () => {
+            async function fetchEmployees() {
+                fetch(`/users/${currentUser.dbUser.facilityName}/employee`)
+                    .then((res1) => res1.json())
+                    .then((data) => {
+                        console.log(data)
+                        setEmployees(data)
+                    })
+            };
 
-        }, []
+            fetchEmployees();
+        }, [ hideModal ]
     )
-    // const li = null
+
+    const adminAddUser = () => {
+        if (currentUser && currentUser.dbUser.role === 'admin') {
+            setHideModal(false)
+        }
+    }
+
+    const adminDeleteUser = async (uid) => {
+        try {
+            // Remove User From Firbease via Admin SDK
+            await fetch('/admin/deleteEmployee', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    uid: uid
+                })
+            }).then( (res) => {
+                window.location.reload()
+            })
+            
+
+        } catch (err) {
+            alert(err);
+        }
+    }
+
+    if (employees) {
+        li = employees && employees.map((employee) => {
+            return (
+                <li key={employee.uid}>
+                    <div>
+                        <p> {employee.firstName} {employee.lastName} ({employee.email}) </p>
+                        <Button onClick={() => adminDeleteUser(employee.uid)}> Delete </Button>
+                    </div>
+                </li>
+            )
+        })
+    }
 
     return (
         <div>
@@ -32,11 +84,18 @@ const FacilityLanding = () => {
                 <Col>
                     <Row>
                         <h3> Facility Employees</h3>
-                        <Button href='/admin/createUser'> Add Employee </Button>
+                        <Button onClick={adminAddUser}> Add Employee </Button>
                     </Row>
                     <Row>
                         <div>
-                            <h6> Currently No Employee Accounts Created. To Create An Employee, Click 'Add Employee' Button Above </h6>
+                            {
+                                employees ?
+                                    <ul>
+                                        {li}
+                                    </ul>
+                                    :
+                                    <h6> Currently No Employee Accounts Created. To Create An Employee, Click 'Add Employee' Button Above </h6>
+                            }
                         </div>
                     </Row>
                 </Col>
@@ -49,15 +108,20 @@ const FacilityLanding = () => {
                     </div>
                 </Col>
             </Row>
+
+            <AdminNewUserModal
+                show={!hideModal}
+                onHide={() => setHideModal(true)}
+            />
         </div>
     )
 }
 
 const PatientLanding = () => {
     const { currentUser } = useContext(AuthContext);
-    const [ statesCurrVals, setStatesCurrVals ] = useState(undefined);
-    const [ nationCurrVals, setNationCurrVals ] = useState(undefined);
-    const [ stateSite, setStateSite] = useState(undefined)
+    const [statesCurrVals, setStatesCurrVals] = useState(undefined);
+    const [nationCurrVals, setNationCurrVals] = useState(undefined);
+    const [stateSite, setStateSite] = useState(undefined)
 
     let stateData = undefined
 
@@ -88,7 +152,7 @@ const PatientLanding = () => {
 
             fetchData();
             fetchSites();
-        }, [ currentUser ]
+        }, [currentUser]
     );
 
 
@@ -365,6 +429,107 @@ const PatientLanding = () => {
             </Container>
         );
     };
+}
+
+const AdminNewUserModal = (props) => {
+    const { currentUser } = useContext(AuthContext);
+
+    const handleNewUser = async (e) => {
+        e.preventDefault();
+        const { firstName, lastName, email } = e.target.elements;
+
+        try {
+            let tempPassword = Math.random().toString(36).substr(2, 8)
+            console.log(tempPassword)
+
+            // Add User to Firbease via Admin SDK
+            await fetch('/admin/newEmployee', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    firstName: firstName.value,
+                    lastName: lastName.value,
+                    email: email.value,
+                    password: tempPassword,
+                    facility: currentUser.dbUser.facilityName
+                })
+            })
+                .then((res) => {
+                    doPasswordReset(email.value)
+                    alert('Employee Created and Password Reset Sent')
+                })
+
+
+            console.log("EMPLOYEE USER ADDED TO FIREBASE AND DB")
+            props.onHide()
+
+        } catch (err) {
+            alert(err);
+        }
+    }
+
+    return (
+        <Modal
+            {...props}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+        >
+            <Modal.Header>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    Add New Employee
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form onSubmit={handleNewUser} >
+                    <Col lg={12} md={12}>
+                        <Form.Row>
+                            <Form.Group as={Col} controlId="firstName">
+                                <Form.Label>First Name</Form.Label>
+                                <Form.Control
+                                    className='register-form'
+                                    name='firstName'
+                                    type='text'
+                                    placeholder='First Name'
+                                    required
+                                />
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="lastName">
+                                <Form.Label>Last Name</Form.Label>
+                                <Form.Control
+                                    className='register-form'
+                                    name='lastName'
+                                    type='text'
+                                    placeholder='LastName'
+                                    required
+                                />
+                            </Form.Group>
+                        </Form.Row>
+
+                        <Form.Row>
+                            <Form.Group as={Col} controlId="email">
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control
+                                    className='register-form'
+                                    name='email'
+                                    type="email"
+                                    placeholder="Enter Email"
+                                    autoComplete="username"
+                                    required
+                                />
+                            </Form.Group>
+                        </Form.Row>
+                        <Button onClick={props.onHide}>Cancel</Button>
+                        <Button variant="primary" type="submit" >Submit</Button>
+                    </Col>
+                </Form>
+
+            </Modal.Body>
+        </Modal>
+    );
 }
 
 export default Landing;

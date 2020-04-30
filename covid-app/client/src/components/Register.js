@@ -17,9 +17,9 @@ const Register = () => {
         password2: ''
     });
 
-    useEffect( 
+    useEffect(
         () => {
-        }, [ currentUser ]
+        }, [currentUser]
     )
 
     const handleChange = (e) => {
@@ -76,9 +76,10 @@ const Register = () => {
                 let { _id } = await res.json();
                 console.log(_id);
                 await doCreateUserWithEmailAndPassword(email.value, password1.value, displayName, _id);
-            })
-
-            console.log("PATIENT USER ADDED TO FIREBASE AND DB")
+            }).then((res2) => {
+                console.log("PATIENT USER ADDED TO FIREBASE AND DB")
+                
+            });
 
         } catch (err) {
             alert(err);
@@ -135,17 +136,18 @@ const Register = () => {
         }).then(async (res) => {
             let { _id } = await res.json();
             await doCreateUserWithEmailAndPassword(admin_email.value, admin_password1.value, facilityName.value, _id);
-        });
+        }).then((res2) => {
+            console.log("ADMIN USER ADDED TO FIREBASE AND DB");
 
-        console.log("ADMIN USER ADDED TO FIREBASE AND DB");
+        })
     };
 
-    if (currentUser && currentUser.dbUser.role === 'patient') {
-        return (<Redirect to='/register/health-details' />)
-    }
-    
-    if (currentUser && currentUser.dbUser.role === 'admin') {
-        return (<Redirect to='/register/facility-details' />)
+    if (currentUser && currentUser.dbUser) {
+        if (currentUser.dbUser.role === 'patient') {
+            return (<Redirect to='/register/health-details' />)
+        } else if (currentUser.dbUser.role === 'admin') {
+            return (<Redirect to='/register/facility-details' />)
+        }
     }
 
     return (
