@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Container, Row } from 'react-bootstrap';
+import { AuthProvider } from './firebase/Auth';
+
 import Landing from './components/Landing';
 import Account from './components/Account';
 import Login from './components/Login';
@@ -10,8 +12,10 @@ import PrivateRoute from './components/PrivateRoute';
 import HealthInfo from './components/HealthInfo';
 import FacilityInfo from './components/FacilityInfo';
 import Navigation from './components/Navigation';
+
+
+
 import './App.css';
-import { AuthProvider } from './firebase/Auth';
 
 function App() {
   return (
@@ -38,7 +42,6 @@ function App() {
               <PrivateRoute path='/register/health-details' component={HealthInfo} />
               <PrivateRoute path='/register/facility-details' component={FacilityInfo} />
               <PrivateRoute path='/messages' component={Account} />
-
             </Switch>
           </Row>
         </Container>

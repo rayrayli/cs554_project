@@ -1,11 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Container, Row, Col, ListGroup, Form, Button, FormControl, Nav, Tab, NavLink, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Nav, Tab, NavLink } from 'react-bootstrap';
 import { doCreateUserWithEmailAndPassword } from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
 import '../App.css'
-
-const key = process.env.REACT_APP_GOOGLE_API_KEY
 
 const Register = () => {
     const { currentUser } = useContext(AuthContext);
@@ -18,6 +16,11 @@ const Register = () => {
         password1: '',
         password2: ''
     });
+
+    useEffect( 
+        () => {
+        }, [ currentUser ]
+    )
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -139,7 +142,9 @@ const Register = () => {
 
     if (currentUser && currentUser.dbUser.role === 'patient') {
         return (<Redirect to='/register/health-details' />)
-    } else if (currentUser && currentUser.dbUser.role === 'admin') {
+    }
+    
+    if (currentUser && currentUser.dbUser.role === 'admin') {
         return (<Redirect to='/register/facility-details' />)
     }
 

@@ -43,11 +43,25 @@ async function doPasswordReset(email) {
 };
 
 async function doSignOut() {
-    await firebase.auth().signOut();
+    await firebase.auth().signOut()
 };
 
-async function onAuthUserListen(next, redirect) {
+async function deleteAccount() {
+    let uid = firebase.auth().currentUser.uid
+    await firebase.auth().currentUser.delete()
+        .then(async (res) => {
+            await fetch(`/users/${uid}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                }
+            }).then( (conf) => {
+                console.log('User Deleted')
+            })
+        });
+}
 
+async function onAuthUserListen(next, redirect) {
     firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
             // setTimeout(200);
@@ -56,19 +70,19 @@ async function onAuthUserListen(next, redirect) {
             console.log(user)
             try {
                 await fetch(`/users/${user.uid}`)
-                .then((res1) => res1.json())
-                .then((data) => {
-                    console.log('ACQUIRED DBUSER:')
-                    if (data) {
-                        const currentUser = {
-                            user: user,
-                            dbUser: data,
-                        }
+                    .then((res1) => res1.json())
+                    .then((data) => {
+                        console.log('ACQUIRED DBUSER:')
+                        if (data) {
+                            const currentUser = {
+                                user: user,
+                                dbUser: data,
+                            }
 
-                        console.log('DBUSER MERGED WITH AUTH')
-                        next(currentUser);
-                    }
-                });
+                            console.log('DBUSER MERGED WITH AUTH')
+                            next(currentUser);
+                        }
+                    });
             } catch (err) {
                 return err
             }
@@ -86,5 +100,6 @@ export {
     doPasswordReset,
     doSignOut,
     doChangePassword,
+    deleteAccount,
     onAuthUserListen
 };

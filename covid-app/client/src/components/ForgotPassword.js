@@ -1,7 +1,6 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
 import { doPasswordReset } from '../firebase/FirebaseFunctions';
-import { Modal, Col, Image, Form, Button, FormControl, Nav, NavLink, FormGroup } from 'react-bootstrap';
+import { Modal, Col, Form, Button } from 'react-bootstrap';
 
 
 const ForgotPassword = (props) => {
@@ -9,7 +8,10 @@ const ForgotPassword = (props) => {
     const handleReset = async (e) => {
         let email = document.getElementById('email-reset').value;
         if (email) {
-            doPasswordReset(email);
+            doPasswordReset(email)
+            .then( (res) => {
+                alert('Password Reset Email Sent')
+            });
         } else {
             alert("Enter Email");
         }

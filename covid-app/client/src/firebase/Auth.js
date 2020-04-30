@@ -11,11 +11,12 @@ export const AuthProvider = ({ children }) => {
         () => {
             async function listener() {
                 await onAuthUserListen((user) => {
-                    console.log("OK HERE NOW", user)
+                    console.log("USER FOUND: ", user)
                     setCurrentUser({ 'user': user.user, 'dbUser': user.dbUser })
                     setLoadingUser(false)
 
                 }, () => {
+                    console.log(("NO USER FOUND"))
                     setCurrentUser(null);
                     setLoadingUser(false);
 
@@ -27,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     );
 
     if (loadingUser) {
-        return <div>Loading....</div>;
+        return <div>Loading User....</div>;
     }
 
     return <AuthContext.Provider value={{ currentUser }}> {children} </AuthContext.Provider>

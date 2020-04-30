@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Container, Row, Col, Figure, Form, InputGroup, FormControl } from 'react-bootstrap';
-import SearchDetails from './SearchDetails'
+import { Row, Form, InputGroup, FormControl } from 'react-bootstrap';
 
 const SearchBar = (props) => {
     const [searchLocality, setSearchLocality] = useState(undefined);

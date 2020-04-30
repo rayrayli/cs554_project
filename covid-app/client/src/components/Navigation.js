@@ -1,9 +1,8 @@
 import React, { useContext } from 'react';
 import { AuthContext } from '../firebase/Auth';
-import { Navbar, Nav, Row, NavLink } from 'react-bootstrap';
+import { Navbar, Nav, Row } from 'react-bootstrap';
 import { doSignOut } from '../firebase/FirebaseFunctions';
 import '../App.css'
-import { Redirect } from 'react-router-dom';
 
 const Navigation = () => {
     const { currentUser } = useContext(AuthContext);
@@ -18,6 +17,7 @@ const Navigation = () => {
     }
 };
 
+// RENDERED FOR USERS WITH ADMIN ACCOUNT TYPE
 const NavigationAdmin = () => {
     const { currentUser } = useContext(AuthContext);
     let displayName
@@ -29,7 +29,7 @@ const NavigationAdmin = () => {
 
     return (
         <Navbar className='App-nav' fixed='top'>
-            <Navbar.Brand href='/' > COVID-19 Admin Hub </Navbar.Brand>
+            <Navbar.Brand href='/' > COVID-19 Admin Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
                     <a href="#login"> {displayName} | </a>
@@ -41,6 +41,7 @@ const NavigationAdmin = () => {
     );
 }
 
+// RENDERED FOR USERS WITH PATIENT AND FACILITYUSER ACCOUNT TYPES
 const NavigationAuth = () => {
     const { currentUser } = useContext(AuthContext);
     let displayName
@@ -65,6 +66,7 @@ const NavigationAuth = () => {
     );
 };
 
+// RENDERED FOR USERS WHO ARE NOT LOGGED INTO AN ACCOUNT
 const NavigationNoAuth = () => {
     return (
         <Navbar className='App-nav' fixed='top'>

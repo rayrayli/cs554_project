@@ -1,11 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { AuthContext } from '../firebase/Auth';
 
 const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
     // Check If User Logged In
     const { currentUser } = useContext(AuthContext);
-    const [userRole, setUserRole] = useState(undefined);
 
     useEffect(
         () => {
@@ -17,9 +16,8 @@ const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
                     })
             }
 
-        }, []
+        }, [ currentUser ]
     )
-
 
     return (
         <Route
