@@ -1,6 +1,17 @@
 // RUN BACKEND SERVER ON PORT 3001
 const PORT = 3001;
+
+// SET UP FIREBASE ADMIN SDK
 const admin = require('firebase-admin')
+const dotenv = require('dotenv');
+dotenv.config();
+const serviceAccount = process.env.FIREBASE_CONFIG
+console.log(JSON.parse(serviceAccount))
+admin.initializeApp({
+    credential: admin.credential.cert(JSON.parse(serviceAccount)),
+    databaseURL: "https://cs554final-covidapp.firebaseio.com"
+});
+
 // CREATE SERVER
 const express = require("express");     // Utilize Express Module
 const path = require('path');
@@ -17,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Get National/State Level Data Router 
+// Get National/State Level Data  
 app.get("/data/nation_state", async (req, res) => {
     try {
         const state_nationLevel = await getData.getStateNationData();
@@ -29,7 +40,7 @@ app.get("/data/nation_state", async (req, res) => {
     };
 });
 
-// Get County Level Data Router 
+// Get County Level Data  
 app.get("/data/county/:name", async (req, res) => {
     try {
         const countyLevel = await getData.getCountyData(req.params.name);
@@ -51,6 +62,43 @@ app.post("/users/", async (req, res) => {
     };
 });
 
+// Admin Create New Employee
+app.post("/admin/newEmployee", (req, res) => {
+    try {
+        let employeeInfo = req.body
+
+        admin.auth().createUser({
+            email: employeeInfo.email,
+            emailVerified: false,
+            password: employeeInfo.password,
+            displayName: employeeInfo.firstName + ' ' + employeeInfo.lastName
+        })
+            .then(async (userRecord) => {
+                console.log('Successfully created new firebase user:', userRecord.uid);
+                await users.addNewUser({
+                    role: "employee",
+                    uid: userRecord.uid,
+                    firstName: employeeInfo.firstName,
+                    lastName: employeeInfo.lastName,
+                    email: employeeInfo.email,
+                    phone: null,
+                    facility: employeeInfo.facility,
+                    appointments: [
+                        null
+                    ],
+                    messages: [
+                        null
+                    ]
+                })
+                
+                res.status(200).send(userRecord.uid)
+            })
+
+    } catch (err) {
+        res.status(400).json({ 'error': err })
+    }
+})
+
 // Get All Users
 app.get("/users/", async (req, res) => {
     try {
@@ -61,6 +109,7 @@ app.get("/users/", async (req, res) => {
     }
 })
 
+// Get All Admin Users
 app.get("/users/admin/", async (req, res) => {
     try {
         const adminsFound = await users.getAdmins();
@@ -70,7 +119,18 @@ app.get("/users/admin/", async (req, res) => {
     }
 })
 
-// Get User By ID
+// Get All Employee Users From Facility
+app.get("/users/:facility/employee", async (req, res) => {
+    try {
+        const employeesFound = await users.getEmployees(req.params.facility);
+        res.status(200).send(employeesFound);
+
+    } catch (err) {
+        res.status(400).json({ 'error': err.message })
+    }
+})
+
+// Get User By UID
 app.get("/users/:uid", async (req, res) => {
     try {
         const userFound = await users.getUserById(req.params.uid);
@@ -81,6 +141,7 @@ app.get("/users/:uid", async (req, res) => {
     };
 });
 
+// Delete User With UID
 app.delete("/users/:uid", async (req, res) => {
     try {
         const deleted = await users.deleteUser(req.params.uid);
@@ -91,7 +152,29 @@ app.delete("/users/:uid", async (req, res) => {
     };
 })
 
-// Update User W/ ID
+// Admin Delete User with UID
+app.delete("/admin/deleteEmployee", (req, res) => {
+    try {
+        console.log(req.body)
+
+        let uid = req.body
+
+        admin.auth().deleteUser(uid.uid)
+            .then(async () => {
+                console.log(`Successfully deleted firebase user with uid ${uid.uid}`);
+                await users.deleteUser(uid.uid)
+            })
+            .then( () => {
+                console.log(`Successfully deleted mongodb user with uid ${uid.uid}`);
+                res.status(200).json(true);
+            })
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    }
+
+})
+
+// Update User W/ MONGO ID
 app.post("/users/:id", async (req, res) => {
     try {
         const update = await users.updateUser(req.params.id, req.body);

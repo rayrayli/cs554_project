@@ -64,10 +64,8 @@ const abrev = {
 };
 
 async function main() {
-
     const db = await dbConnection();
    
-
     const state = mongoCollections.covidStStats;
     const nation = mongoCollections.covidNaStats;
     const population = mongoCollections.covidPopStats;

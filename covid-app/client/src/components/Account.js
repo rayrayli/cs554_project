@@ -16,7 +16,7 @@ const Account = (props) => {
     console.log('#####', currentUser)
 
     return <Container className='main' fluid>
-        {(currentUser.dbUser.role === 'admin' || currentUser.dbUser.role === 'facilityUser') ? <AccountFacility /> : <AccountPatient />}
+        {(currentUser.dbUser.role === 'admin' || currentUser.dbUser.role === 'employee') ? <AccountFacility /> : <AccountPatient />}
     </Container>
 }
 

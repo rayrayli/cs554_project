@@ -10,7 +10,7 @@ const Navigation = () => {
 
     if (role === 'admin') {
         return <Row> {<NavigationAdmin />} </Row>
-    } else if (role === 'patient' || role === 'facilityUser') {
+    } else if (role === 'patient' || role === 'employee') {
         return <Row> {<NavigationAuth />} </Row>
     } else {
         return <Row> <NavigationNoAuth /> </Row>
