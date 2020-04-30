@@ -108,7 +108,7 @@ const SearchDetails = (props) => {
                     strictBounds: false,
                 },
                 disableDefaultUI: true,
-                zoom: 12,
+                zoom: 14,
                 styles: [
                     { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
                     { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },

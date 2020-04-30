@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Redirect } from 'react-router-dom';
 import { Container, Row, Col, Figure, Tab, Tabs, Button } from 'react-bootstrap';
 import { AuthContext } from '../firebase/Auth';
-import SearchDetails from './SearchDetails';
 import SearchBar from './SearchBar';
 import axios from 'axios';
 
@@ -17,15 +15,15 @@ const Landing = () => {
 };
 
 const FacilityLanding = () => {
-    const { currentUser } = useContext(AuthContext);
-    const [employees, setEmployees] = useState([])
+    // const { currentUser } = useContext(AuthContext);
+    // const [employees, setEmployees] = useState([])
 
     useEffect(
         () => {
 
         }, []
     )
-    const li = null
+    // const li = null
 
     return (
         <div>
@@ -57,9 +55,9 @@ const FacilityLanding = () => {
 
 const PatientLanding = () => {
     const { currentUser } = useContext(AuthContext);
-    const [statesCurrVals, setStatesCurrVals] = useState(undefined);
-    const [nationCurrVals, setNationCurrVals] = useState(undefined);
-    const [stateSite, setStateSite] = useState(undefined)
+    const [ statesCurrVals, setStatesCurrVals ] = useState(undefined);
+    const [ nationCurrVals, setNationCurrVals ] = useState(undefined);
+    const [ stateSite, setStateSite] = useState(undefined)
 
     let stateData = undefined
 
@@ -90,7 +88,7 @@ const PatientLanding = () => {
 
             fetchData();
             fetchSites();
-        }, []
+        }, [ currentUser ]
     );
 
 
@@ -117,7 +115,7 @@ const PatientLanding = () => {
         let head = ['State', 'Positive Cases', 'Total Deaths'];
         stateData = [head].concat(stateData);
         let data = window.google.visualization.arrayToDataTable(stateData);
-        let view = new window.google.visualization.DataView(data);
+        new window.google.visualization.DataView(data);
 
         var options = {
             region: 'US',

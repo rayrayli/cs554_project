@@ -11,8 +11,6 @@ const getData = data.statData;
 const users = data.users;
 const cors = require('cors');
 
-
-
 // Serve the static files from the React app
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'client/build')));
@@ -82,6 +80,16 @@ app.get("/users/:uid", async (req, res) => {
         res.status(400).json({ "error": err.message });
     };
 });
+
+app.delete("/users/:uid", async (req, res) => {
+    try {
+        const deleted = await users.deleteUser(req.params.uid);
+        res.status(200).json(deleted);
+
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+})
 
 // Update User W/ ID
 app.post("/users/:id", async (req, res) => {

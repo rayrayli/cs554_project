@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Container, Row, Col, Image, Form, Button, FormControl, Nav, NavLink, FormGroup } from 'react-bootstrap';
+import { Container, Row, Col, Image, Form, Button, Nav, FormGroup } from 'react-bootstrap';
 import { AuthContext } from '../firebase/Auth';
 import { Redirect } from 'react-router-dom';
 import { doSocialSignIn, doSignInWithEmailAndPassword } from '../firebase/FirebaseFunctions';

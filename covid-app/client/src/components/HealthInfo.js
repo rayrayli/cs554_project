@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Redirect } from 'react-router-dom';
 import { AuthContext } from '../firebase/Auth';
-import { Container, Row, Col, Modal, Form, Button, FormControl, Nav, Tab, NavLink, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import AddressModal from './AddressModal';
 

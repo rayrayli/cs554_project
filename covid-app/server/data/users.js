@@ -13,6 +13,18 @@ let exportedMethods = {
         }
     },
 
+    async deleteUser(uid) {
+        try {
+            const userCollection = await users();
+            let deletedUser = await userCollection.deleteOne({ uid: uid })
+            return true 
+
+        } catch (err) {
+            return err;
+        }
+
+    },
+
     async getAllUsers() {
         const userCollection = await users();
         let userFound = await userCollection.find({}).toArray();
