@@ -2,7 +2,7 @@ import React from 'react';
 import { doPasswordReset } from '../firebase/FirebaseFunctions';
 import { Modal, Col, Form, Button } from 'react-bootstrap';
 
-
+// Sends Reset Email To Users Who Forgot Their Password
 const ForgotPassword = (props) => {
 
     const handleReset = async (e) => {

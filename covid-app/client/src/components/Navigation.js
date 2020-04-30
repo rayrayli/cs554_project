@@ -17,22 +17,18 @@ const Navigation = () => {
     }
 };
 
-// RENDERED FOR USERS WITH ADMIN ACCOUNT TYPE
+// Navigation For Admin Users
 const NavigationAdmin = () => {
     const { currentUser } = useContext(AuthContext);
-    let displayName
-    if (currentUser.dbUser.firstName) {
-        displayName = `${currentUser.dbUser.firstName}  ${currentUser.dbUser.lastName}`
-    } else {
-        displayName = currentUser.dbUser.facilityName
-    }
+
+    let displayName = currentUser.dbUser.facilityName
 
     return (
         <Navbar className='App-nav' fixed='top'>
             <Navbar.Brand href='/' > COVID-19 Admin Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
-                    <a href="#login"> {displayName} | </a>
+                    <a> {displayName} | </a>
                 </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
                 <Nav.Link to='/' onClick={doSignOut}> Logout </Nav.Link>
@@ -41,22 +37,18 @@ const NavigationAdmin = () => {
     );
 }
 
-// RENDERED FOR USERS WITH PATIENT AND FACILITYUSER ACCOUNT TYPES
+// Navigation For Patient Users
 const NavigationAuth = () => {
     const { currentUser } = useContext(AuthContext);
-    let displayName
-    if (currentUser.dbUser.firstName) {
-        displayName = currentUser.dbUser.firstName + currentUser.dbUser.lastName
-    } else {
-        displayName = currentUser.dbUser.facilityName
-    }
+
+    let displayName = currentUser.dbUser.firstName + currentUser.dbUser.lastName
 
     return (
         <Navbar className='App-nav' fixed='top'>
             <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
-                    <a href="#login"> {displayName} | </a>
+                    <a> {displayName} | </a>
                 </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
                 <Nav.Link href='/messages'> Messages </Nav.Link>
@@ -66,7 +58,7 @@ const NavigationAuth = () => {
     );
 };
 
-// RENDERED FOR USERS WHO ARE NOT LOGGED INTO AN ACCOUNT
+// Navigation for Unauthorized Users
 const NavigationNoAuth = () => {
     return (
         <Navbar className='App-nav' fixed='top'>

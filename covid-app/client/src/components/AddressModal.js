@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
+// Modal Used to Confirm Addresses for ALL Users 
 const AddressModal = (props) => {
     return (
         <Modal

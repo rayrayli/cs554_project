@@ -31,13 +31,13 @@ const HealthInfo = (props) => {
         return <option value={state}> {state} </option>
     });
 
-    // Query User Input Address to Google GeoCode API
+    // Validate User Input Address to Google GeoCode API
     const validateAddress = async (address) => {
         const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
         return find.data.results[0].formatted_address
     };
 
-    // Update User Input Address
+    // Set Address to GoogleAPI Confirmed Address
     const confirmModal = () => {
         let info = userInfo
         info.address1 = correctedAddress.split(',')[0]
@@ -49,6 +49,7 @@ const HealthInfo = (props) => {
         updateDbUser(info)
     }
 
+    // Update MongoDB With Facility Details (address, pre-existing conditions, ssn (NEEDS TO BE ENCRYPTED WITH BCRYPT), etc)
     const updateDbUser = async (info) => {
         try {
             await fetch(`/users/${currentUser.dbUser._id}`, {
@@ -66,12 +67,11 @@ const HealthInfo = (props) => {
         
     }
 
-    // Submit Form
+    // Handle Form Submission
     const handlePatientProfile = async (e) => {
-        // Clear Errors on Form Change
         e.preventDefault();
-        setIsDobValid(null)
-        setIsSsnValid(null)
+        setIsDobValid(null)     // Clear DOB Errors on Form Change
+        setIsSsnValid(null)     // Clear SSN Errors on Form Change
 
         // Add Form Data to State
         let { dob, gender, ssn, address1, address2, city, state, zip, conditions, insuranceProvider, insuranceID } = e.target.elements
@@ -107,16 +107,17 @@ const HealthInfo = (props) => {
         setCorrectedAddress(corrected)
 
         if (corrected !== entered) {
-            setHideModal(false);
+            setHideModal(false);        // If User Input Address Does not EXACTLY Match GoogleAPI Query, show Address Modal   
 
         } else if (!!isSsnValid || !!isDobValid) {
-            return
+            return false                // If User Input SSN is Less Than/Greater Than 9 Numbers OR DOB is Less Than 18/Greater Than 105
             
         } else {
             updateDbUser(info);
         }
     };
 
+    // Redirect User On Form Successful Submission
     if (formComplete) {
         return (
             <Redirect to='/'></Redirect>
@@ -290,7 +291,5 @@ const HealthInfo = (props) => {
         </Container >
     )
 };
-
-
 
 export default HealthInfo;

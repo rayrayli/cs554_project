@@ -15,8 +15,7 @@ const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
                         console.log(data[0].role)
                     })
             }
-
-        }, [ currentUser ]
+        }, [currentUser]
     )
 
     return (

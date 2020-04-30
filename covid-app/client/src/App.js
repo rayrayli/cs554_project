@@ -13,8 +13,6 @@ import HealthInfo from './components/HealthInfo';
 import FacilityInfo from './components/FacilityInfo';
 import Navigation from './components/Navigation';
 
-
-
 import './App.css';
 
 function App() {
@@ -35,9 +33,6 @@ function App() {
             <Route exact path='/' component={Landing} />
             <Route path='/searchDetails' component={SearchDetails} />
             <Switch>
-              {/* ROUTES FOR PATIENT USERS */}
-              {/* ROUTES FOR FACILITY USERS */}
-              {/* ROUTES FOR ADMIN USERS */}
               <PrivateRoute path='/account' component={Account} />
               <PrivateRoute path='/register/health-details' component={HealthInfo} />
               <PrivateRoute path='/register/facility-details' component={FacilityInfo} />
