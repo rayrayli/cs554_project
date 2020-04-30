@@ -42,7 +42,7 @@ const FacilityInfo = (props) => {
         };
     }
 
-    // Query User Input Address to Google GeoCode API
+    // Validate User Input Address to Google GeoCode API
     const validateAddress = async (address) => {
         const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
         console.log(find.data)
@@ -59,7 +59,7 @@ const FacilityInfo = (props) => {
         return [find.data.results[0].formatted_address, geoJson]
     };
 
-    // Update User Input Address
+    // Set Address to GoogleAPI Confirmed Address
     const confirmModal = () => {
         let info = userInfo
         info.address1 = correctedAddress.split(',')[0]
@@ -71,6 +71,7 @@ const FacilityInfo = (props) => {
         updateDbUser(info)
     }
 
+    // Update MongoDB With Facility Details (hours, address, phone, etc)
     const updateDbUser = async (inf) => {
         let info = userInfo
         try {
@@ -85,16 +86,14 @@ const FacilityInfo = (props) => {
             })
         } catch (err) {
             return err
-        }
+        };
+    };
 
-    }
-
-    // Submit Form
+    // Handle Form Submission
     const handleAdminProfile = async (e) => {
         e.preventDefault();
 
         let elem = [...e.target.elements]
-        console.log(elem)
         let info = {}
 
         elem.forEach((element) => {
@@ -125,17 +124,16 @@ const FacilityInfo = (props) => {
         info.geoJSON = geoJSON
         setCorrectedAddress(corrected)
 
-        console.log('*******',info)
-
         if (corrected !== entered) {
-            setHideModal(false);
+            setHideModal(false);        // If User Input Address Does not EXACTLY Match GoogleAPI Query, show Address Modal
 
         } else {
-            console.log("UPFATE DB USER")
+            console.log("UPDATING DB USER")
             updateDbUser(info);
         }
     };
 
+    // Redirect User On Form Successful Submission
     if (formComplete) {
         return (
             <Redirect to='/'></Redirect>

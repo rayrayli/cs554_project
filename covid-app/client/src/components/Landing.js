@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Figure, Tab, Tabs, Button, Modal, Form } from 'react-bootstrap';
-import { doCreateUserWithEmailAndPassword, doPasswordReset, deleteAccount } from '../firebase/FirebaseFunctions';
+import { doPasswordReset } from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
 import SearchBar from './SearchBar';
 import axios from 'axios';
@@ -15,6 +15,7 @@ const Landing = () => {
 
 };
 
+// Landing Page for Admin Users
 const FacilityLanding = () => {
     const { currentUser } = useContext(AuthContext);
     const [ hideModal, setHideModal ] = useState(true)
@@ -117,6 +118,7 @@ const FacilityLanding = () => {
     )
 }
 
+// Landing Page for Patient Users
 const PatientLanding = () => {
     const { currentUser } = useContext(AuthContext);
     const [statesCurrVals, setStatesCurrVals] = useState(undefined);
@@ -431,6 +433,7 @@ const PatientLanding = () => {
     };
 }
 
+// Modal for Creating Facility Employee Users (ADMIN ACCESS ONLY)
 const AdminNewUserModal = (props) => {
     const { currentUser } = useContext(AuthContext);
 

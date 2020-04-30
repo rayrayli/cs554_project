@@ -19,7 +19,7 @@ const Register = () => {
 
     useEffect(
         () => {
-        }, [currentUser]
+        }, [currentUser]        // Reload Component on User Change
     )
 
     const handleChange = (e) => {
@@ -34,10 +34,12 @@ const Register = () => {
         console.log(passwordMatch)
     }
 
+    // Submit Patient User Registration
     const handlePatientRegister = async (e) => {
         e.preventDefault();
         const { firstName, lastName, email, password1, password2 } = e.target.elements;
 
+        // Ensure Passwords Match
         if (password1.value !== password2.value) {
             setPasswordMatch("Passwords do not match");
             return false;
@@ -48,6 +50,7 @@ const Register = () => {
         try {
             let displayName = firstName.value + lastName.value;
 
+            // Add Patient User To MongoDb
             await fetch('/users/', {
                 method: 'POST',
                 headers: {
@@ -72,13 +75,14 @@ const Register = () => {
                     messages: [null]
                 })
 
+                // Add Patient User To Firebase
             }).then(async (res) => {
                 let { _id } = await res.json();
-                console.log(_id);
                 await doCreateUserWithEmailAndPassword(email.value, password1.value, displayName, _id);
+
             }).then((res2) => {
                 console.log("PATIENT USER ADDED TO FIREBASE AND DB")
-                
+
             });
 
         } catch (err) {
@@ -86,12 +90,12 @@ const Register = () => {
         }
     }
 
+    // Submit Admin User Registration
     const handleFacilityRegister = async (e) => {
         e.preventDefault();
         const { facilityName, admin_email, admin_password1, admin_password2 } = e.target.elements;
-        console.log(admin_password1)
-        console.log(admin_password2)
 
+        // Ensure Passwords Match
         if (admin_password1.value !== admin_password2.value) {
             setPasswordMatch("Passwords do not match");
             return false;
@@ -99,49 +103,59 @@ const Register = () => {
             setPasswordMatch(null);
         };
 
-        await fetch('/users/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            },
-            body: JSON.stringify({
-                role: 'admin',
-                uid: null,
-                facilityName: facilityName.value,
-                email: admin_email.value,
-                address: {},
-                phone: null,
-                url: null,
-                hours: {
-                    Monday: {},
-                    Tuesday: {},
-                    Wednesday: {},
-                    Thursday: {},
-                    Friday: {},
-                    Saturday: {},
-                    Sunday: {}
+        try {
+            // Add Admin User To MongoDB
+            await fetch('/users/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
                 },
-                app_slots: {
-                    Monday: [null],
-                    Tuesday: [null],
-                    Wednesday: [null],
-                    Thursday: [null],
-                    Friday: [null],
-                    Saturday: [null],
-                    Sunday: [null]
-                },
-                employees: [null],
-                geoJSON: null
-            })
-        }).then(async (res) => {
-            let { _id } = await res.json();
-            await doCreateUserWithEmailAndPassword(admin_email.value, admin_password1.value, facilityName.value, _id);
-        }).then((res2) => {
-            console.log("ADMIN USER ADDED TO FIREBASE AND DB");
+                body: JSON.stringify({
+                    role: 'admin',
+                    uid: null,
+                    facilityName: facilityName.value,
+                    email: admin_email.value,
+                    address: {},
+                    phone: null,
+                    url: null,
+                    hours: {
+                        Monday: {},
+                        Tuesday: {},
+                        Wednesday: {},
+                        Thursday: {},
+                        Friday: {},
+                        Saturday: {},
+                        Sunday: {}
+                    },
+                    app_slots: {
+                        Monday: [null],
+                        Tuesday: [null],
+                        Wednesday: [null],
+                        Thursday: [null],
+                        Friday: [null],
+                        Saturday: [null],
+                        Sunday: [null]
+                    },
+                    employees: [null],
+                    geoJSON: null
+                })
 
-        })
+                // Add Admin User to Firebase
+            }).then(async (res) => {
+
+                let { _id } = await res.json();
+                await doCreateUserWithEmailAndPassword(admin_email.value, admin_password1.value, facilityName.value, _id);
+
+            }).then((res2) => {
+                console.log("ADMIN USER ADDED TO FIREBASE AND DB");
+
+            })
+        } catch (err) {
+            alert(err)
+        }
     };
 
+    // Redirect User to Respective Details Form On Successful Register
     if (currentUser && currentUser.dbUser) {
         if (currentUser.dbUser.role === 'patient') {
             return (<Redirect to='/register/health-details' />)

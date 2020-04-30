@@ -1,20 +1,22 @@
 import React, { useContext, useState } from 'react';
-import { Container, Row, Col, Image, Form, Button, Nav, FormGroup } from 'react-bootstrap';
+import { Container, Row, Col, Image, Form, Button, FormGroup } from 'react-bootstrap';
 import { AuthContext } from '../firebase/Auth';
 import { Redirect } from 'react-router-dom';
 import { doSocialSignIn, doSignInWithEmailAndPassword } from '../firebase/FirebaseFunctions';
 import googleImg from '../img/google_signin.png';
 import ForgotPassword from './ForgotPassword';
 
-
+// User Login With Email and Password
 const Login = () => {
     const { currentUser } = useContext(AuthContext)
     const [ showReset, setShowReset ] = useState(false)
 
+    // If Auth Component Finds Registered User, Redirect to Landing
     if (currentUser) {
         return <Redirect to='/' />;
     }
 
+    // Attempt Login With User Input Email and Password
     const handleLogin = async (e) => {
         e.preventDefault();
         const [ email, password, btn, btn2 ] = e.target.elements;
@@ -22,7 +24,7 @@ const Login = () => {
         try {
             await doSignInWithEmailAndPassword(email.value, password.value);
         } catch (err) {
-            alert(err);
+            alert(err);     // Unable to Login
         }
     }
 
@@ -77,6 +79,7 @@ const Login = () => {
     )
 }
 
+// User Login With Social (i.e. Google, Facebook (still need to add I dont have a FB account))
 const SocialLogin = () => {
     const loginSocial = async (social) => {
         try {
@@ -90,7 +93,6 @@ const SocialLogin = () => {
     return <Form.Row>
         <FormGroup as={Col} controlId="formGmailLogin">
             <Image alt='google-login' src={googleImg} onClick={() => loginSocial('google')} />
-
         </FormGroup>
     </Form.Row>
 };

@@ -13,16 +13,16 @@ const states = [
 
 const Account = (props) => {
     const { currentUser } = useContext(AuthContext);
-    console.log('#####', currentUser)
 
     return <Container className='main' fluid>
         {(currentUser.dbUser.role === 'admin' || currentUser.dbUser.role === 'employee') ? <AccountFacility /> : <AccountPatient />}
     </Container>
 }
 
+// Account Page for Admin Users
 const AccountFacility = () => {
     const { currentUser } = useContext(AuthContext);
-    const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+    const [ days, setDays ] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
 
     const handleClose = (e) => {
         // Use JQuery??!?
@@ -73,7 +73,6 @@ const AccountFacility = () => {
                                                     type='tel'
                                                     placeholder={currentUser.dbUser.phone}
                                                     pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-                                                    required
                                                 />
                                             </Form.Group>
 
@@ -84,7 +83,6 @@ const AccountFacility = () => {
                                                     name='website'
                                                     type='url'
                                                     placeholder={currentUser.dbUser.url}
-                                                    required
                                                 />
                                             </Form.Group>
 
@@ -97,7 +95,6 @@ const AccountFacility = () => {
                                                 name='address1'
                                                 type='text'
                                                 placeholder={(currentUser.dbUser.address && currentUser.dbUser.address.street) || 'Address'}
-                                                required
                                             />
                                         </Form.Group>
 
@@ -120,13 +117,12 @@ const AccountFacility = () => {
                                                     name='city'
                                                     type='text'
                                                     placeholder={(currentUser.dbUser.address && currentUser.dbUser.address.city) || 'City'}
-                                                    required
                                                 />
                                             </Form.Group>
 
                                             <Form.Group as={Col} controlId="state">
                                                 <Form.Label>State</Form.Label>
-                                                <Form.Control as="select" name='state' defaultValue={(currentUser.dbUser.address && currentUser.dbUser.address.state) || 'Choosee'} custom required >
+                                                <Form.Control as="select" name='state' defaultValue={(currentUser.dbUser.address && currentUser.dbUser.address.state) || 'Choosee'} custom >
                                                     <option>Choose...</option>
                                                     {states && states.map((state) => {
                                                         return <option key={state} value={state}> {state} </option>
@@ -141,7 +137,6 @@ const AccountFacility = () => {
                                                     name='zip'
                                                     type='text'
                                                     placeholder={(currentUser.dbUser.address && currentUser.dbUser.address.zip) || 'Zip'}
-                                                    required
                                                 />
                                             </Form.Group>
                                         </Form.Row>
@@ -209,6 +204,7 @@ const AccountFacility = () => {
     )
 }
 
+// Account Page for Patient Users 
 const AccountPatient = () => {
     const { currentUser } = useContext(AuthContext);
     
@@ -435,6 +431,7 @@ const AccountPatient = () => {
     )
 }
 
+// Reusable Change Password Component (For All Users)
 const ChangePassword = () => {
     const { currentUser } = useContext(AuthContext);
     const [passwordMatch, setPasswordMatch] = useState(null);
@@ -446,7 +443,7 @@ const ChangePassword = () => {
 
     const handleChange = (e) => {
         e.preventDefault();
-        setPasswordMatch(null)
+        setPasswordMatch(null)      // Removes Password Mismatch Error Viewed By User
         let form = formData
         form[e.target.name] = e.target.value
         setFormData(form)
@@ -527,8 +524,8 @@ const ChangePassword = () => {
     )
 }
 
+// Reusable Delete Account Button (For All Users)
 const DeleteAccount = () => {
-
     const handleDelete = () => {
         deleteAccount();
     };
