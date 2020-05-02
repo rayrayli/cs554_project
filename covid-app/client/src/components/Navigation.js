@@ -28,7 +28,7 @@ const NavigationAdmin = () => {
             <Navbar.Brand href='/' > COVID-19 Admin Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
-                    <a> {displayName} | </a>
+                    <p> {displayName} | </p>
                 </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
                 <Nav.Link to='/' onClick={doSignOut}> Logout </Nav.Link>
@@ -48,7 +48,7 @@ const NavigationAuth = () => {
             <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
-                    <a> {displayName} | </a>
+                    <p> {displayName} | </p>
                 </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
                 <Nav.Link href='/messages'> Messages </Nav.Link>

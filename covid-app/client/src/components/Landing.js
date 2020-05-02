@@ -18,8 +18,8 @@ const Landing = () => {
 // Landing Page for Admin Users
 const FacilityLanding = () => {
     const { currentUser } = useContext(AuthContext);
-    const [ hideModal, setHideModal ] = useState(true)
-    const [ employees, setEmployees ] = useState([])
+    const [hideModal, setHideModal] = useState(true)
+    const [employees, setEmployees] = useState([])
 
     let li = null
 
@@ -35,7 +35,7 @@ const FacilityLanding = () => {
             };
 
             fetchEmployees();
-        }, [ hideModal ]
+        }, [hideModal]
     )
 
     const adminAddUser = () => {
@@ -55,10 +55,10 @@ const FacilityLanding = () => {
                 body: JSON.stringify({
                     uid: uid
                 })
-            }).then( (res) => {
+            }).then((res) => {
                 window.location.reload()
             })
-            
+
 
         } catch (err) {
             alert(err);
@@ -138,8 +138,9 @@ const PatientLanding = () => {
                     })
             };
 
+            // Get Official COVID-19 Sites for Each State
             async function fetchSites() {
-                await axios.get('https://covidtracking.com/api/states/info')
+                await axios.get('/data/state_sites')
                     .then((siteList) => {
                         if (currentUser && currentUser.dbUser && currentUser.dbUser.address) {
                             let currState = currentUser.dbUser.address.state

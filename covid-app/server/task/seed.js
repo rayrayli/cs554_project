@@ -65,13 +65,13 @@ const abrev = {
 
 async function main() {
     const db = await dbConnection();
-   
+
     const state = mongoCollections.covidStStats;
     const nation = mongoCollections.covidNaStats;
     const population = mongoCollections.covidPopStats;
     const county = mongoCollections.covidCoStats;
     const users = mongoCollections.users;
-  
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     async function clearUsers() {
         collection = await users();
@@ -80,7 +80,7 @@ async function main() {
 
     async function fetchData(url, level) {
         try {
-            
+
             let collection;
 
             if (level === 'state') {
@@ -138,9 +138,20 @@ async function main() {
 
             let today = new Date().toLocaleString().split(/\D/).slice(0, 3)
             let mm = today[0].padStart(2, '0')
-            let dd = (today[1] - 1).toString().padStart(2, '0')
+            let dd = (today[1] - 2).toString().padStart(2, '0')
             let yyyy = today[2]
+            if (dd === '00') {
+                mm = (Number(mm) - 1).toString().padStart(2, '0');
+                if (mm === '09' || mm === '04' || mm === '06' || mm == '11') {
+                    dd = '29';
+                } else if (mm == '02') {
+                    dd = '28';
+                } else {
+                    dd = '30';
+                }
+            }
             let yesterday = mm + '-' + dd + '-' + yyyy
+            console.log(yesterday)
 
             return await axios.get('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/' + yesterday + '.csv')
                 .then(async (countyData) => {

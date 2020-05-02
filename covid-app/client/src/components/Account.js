@@ -144,7 +144,7 @@ const AccountFacility = () => {
 
                                     <Col lg={12} md={12}>
                                         <h2> Hours of Operation </h2>
-                                        <a> Need to find a better way to edit </a>
+                                        <p> Need to find a better way to edit </p>
                                         {/* {days && days.map((day) => {
                                             return (
                                                 <Form.Row key={day}>
