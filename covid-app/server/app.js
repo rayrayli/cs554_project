@@ -6,7 +6,6 @@ const admin = require('firebase-admin')
 const dotenv = require('dotenv');
 dotenv.config();
 const serviceAccount = process.env.FIREBASE_CONFIG
-console.log(JSON.parse(serviceAccount))
 admin.initializeApp({
     credential: admin.credential.cert(JSON.parse(serviceAccount)),
     databaseURL: "https://cs554final-covidapp.firebaseio.com"
@@ -33,6 +32,18 @@ app.get("/data/nation_state", async (req, res) => {
     try {
         const state_nationLevel = await getData.getStateNationData();
         res.status(200).json(state_nationLevel);
+
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+// Get Offical COVID-19 Sites For Each State
+app.get("/data/state_sites", async (req, res) => {
+    try {
+        const stateSites = await getData.getStateSites();
+        res.status(200).json(stateSites);
 
     } catch (err) {
         console.log(err)

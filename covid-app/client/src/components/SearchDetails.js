@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import { Row, Col } from 'react-bootstrap';
 import axios from 'axios';
-import SearchBar from './SearchBar';
+import { setLogLevel } from 'firebase';
 const key = process.env.REACT_APP_GOOGLE_API_KEY
 
 async function loadScript(src) {
@@ -19,8 +19,16 @@ const SearchDetails = (props) => {
     const [facilityData, setFacilityData] = useState(undefined);
     const [searchResult, setSearchResult] = useState(undefined);
     const [countyData, setCountyData] = useState(undefined);
+    const [loaded, setLoaded] = useState(false)
+    const [map, setMap] = useState(undefined)
+
+    const [selected, setSelected] = useState(null);
+
 
     const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
+    let marker;
+    let li;
+    let row = null
 
     useEffect(
         () => {
@@ -59,6 +67,7 @@ const SearchDetails = (props) => {
                 fetch(`/data/county/${county.substring(0, county.indexOf('County'))}`)
                     .then((res1) => res1.json())
                     .then((data) => {
+                        console.log(data)
                         data.forEach((doc) => {
                             if (doc.Province_State === state) {
                                 console.log(doc);
@@ -76,17 +85,22 @@ const SearchDetails = (props) => {
             };
 
             getLocation(props.location.state.result)
+            console.log("%%%%%%%%%%%%")
             window.initMap = initMap();
 
-        }, [initMap()]
+        }, []
     );
 
-    if (facilityData) {
-        console.log(facilityData)
+    if (searchResult && facilityData && !loaded) {
+        initMap()
+        setLoaded(true)
+    } else {
+        drawMarkers()
     }
 
-    if (searchResult && facilityData) {
-        initMap()
+    // https://stackoverflow.com
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
     function initMap() {
@@ -152,90 +166,83 @@ const SearchDetails = (props) => {
                 ]
             });
 
-            facilityData && facilityData.forEach((facility) => {
-                let marker = new window.google.maps.Marker({
-                    position: new window.google.maps.LatLng(facility.geoJSON.geometry.coordinates[0], facility.geoJSON.geometry.coordinates[1]),
-                    map: map
-                });
-            })
+            drawMarkers()
+            setMap(map)
+
         };
     };
 
-    if (searchResult && countyData) {
+    function drawMarkers() {
+        facilityData && facilityData.map((facility, i) => {
+            marker = new window.google.maps.Marker({
+                position: { lat: facility.geoJSON.geometry.coordinates[0], lng: facility.geoJSON.geometry.coordinates[1] },
+                map: map,
+                info: facility
+            });
 
-        return (
-            <Container className='main' fluid >
-                <Row>
-                    <Link to='/'>Go Back</Link>
-                </Row>
-                <Row>
-                    <Col lg={6} md={12} sm={12} id='left-comp'>
-                        <Row> <h1> DENSITY MAP HERE </h1> </Row>
-                        <div id='map' />
-                    </Col>
-
-                    <Col lg={6} md={12} sm={12} id='right-comp'>
-                        {/* <Row className='land-row'> */}
-                        <h1> COVID FACTS HERE </h1>
-
-                        <p>County: {countyData.Admin2}</p>
-                        <p>State: {countyData.Province_State}</p>
-                        <p>Confirmed Cases: {countyData.Confirmed}</p>
-                        <p>Deaths: {countyData.Deaths}</p>
-                        <p>Recovered Patiends: {countyData.Recovered}</p>
-
-                        {/* </Row> */}
-
-
-                        {/* <Row className='testing-info'>
-                            <Row> <h1> TESTING CENTER INFO HERE </h1></Row>
-                            <Row>
-                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                                info info info info info
-                                info info info info infoinfo info info info infoinfo info info info info
-                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                                info info info info info
-                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                                info info info info infoinfo info info info infoinfo info info info infoinfo info info info info
-                                info info info info info
-                            </Row>
-                        </Row> */}
-
-                    </Col>
-                </Row>
-            </Container>
-        )
-
-    } else {
-        return (
-            <Container className='main' fluid>
-                <Row>
-                    <Link to='/'>Go Back</Link>
-                </Row>
-                <Row>
-                    <Col lg={6} md={12} sm={12} id='left-comp'>
-                        <Row> <h1> DENSITY MAP HERE </h1> </Row>
-                        <div id='map' />
-                    </Col>
-
-                    <Col lg={6} md={12} sm={12} id='right-comp'>
-                        <h1> COVID FACTS HERE </h1>
-
-                        <p>County: Data Unavailable</p>
-                        <p> State: Data Unavailable</p>
-                        <p> Confirmed Cases: Data Unavailable</p>
-                        <p>Deaths: Data Unavailable</p>
-                        <p>Recovered Patiends: Data Unavailable</p>
-
-                    </Col>
-                </Row>
-            </Container>
-        )
+            window.google.maps.event.addListener(marker, 'click', ((marker, i) => {
+                return () => {
+                    // console.log(marker.info)
+                    // console.log(marker.info)
+                    if (!!selected) {
+                        if (selected === marker.info) {
+                            setSelected(null)
+                        } else {
+                            setSelected(marker.info)
+                        }
+                    } else {
+                        setSelected(marker.info)
+                    }
+                }
+            })(marker, i));
+        })
     }
+
+    console.log(selected)
+
+    // Populate County Data
+    return (
+        <Container className='main' fluid >
+            <Row>
+                <Link to='/'>Go Back</Link>
+            </Row>
+            <Row>
+                <Col lg={6} md={12} sm={12} id='left-comp'>
+                    <Row> <h1> LOCATION MAP HERE </h1> </Row>
+                    <div id='map' />
+                </Col>
+
+                <Col lg={6} md={12} sm={12} id='right-comp'>
+                    <Row>
+                        <div>
+                            <h1> COVID FACTS HERE </h1>
+
+                            <p>County: {(countyData && countyData.Admin2) || 'Data Unavailable'}</p>
+                            <p>State: {(countyData && countyData.Province_State) || 'Data Unavailable'}</p>
+                            <p>Confirmed Cases: {(countyData && numberWithCommas(countyData.Confirmed)) || 'Data Unavailable'}</p>
+                            <p>Deaths: {(countyData && numberWithCommas(countyData.Deaths)) || 'Data Unavailable'}</p>
+                            <p>Recovered Patiends: {(countyData && countyData.Recovered > 0) ? numberWithCommas(countyData.Recovered) : 'Not Reported'}</p>
+                        </div>
+                    </Row>
+
+                    <Row >
+                        <div>
+                            <h1> TESTING CENTER INFO HERE </h1>
+
+                            <div>
+                                <h1> {selected && selected.facilityName} </h1>
+                                <h3> {selected && selected.email}   {selected && selected.phone} </h3>
+                                <h3> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </h3>
+                            </div>
+
+                        </div>
+                    </Row>
+
+                </Col>
+            </Row>
+        </Container>
+    )
 }
+
 
 export default SearchDetails;
