@@ -64,7 +64,6 @@ const NavigationEmployee = () => {
     );
 }
 
-
 // Navigation For Patient Users
 const NavigationAuth = () => {
     const { currentUser } = useContext(AuthContext);

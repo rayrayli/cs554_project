@@ -26,6 +26,7 @@ const Login = () => {
                 return (<Redirect to='/' />)
             }
         } else if (currentUser.dbUser.role === 'employee') {
+            return (<Redirect to='/' />)
             // if () {
             //     return (<Redirect to='/register/facility-details' />)
             // } else {

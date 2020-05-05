@@ -497,6 +497,7 @@ const AdminNewUserModal = (props) => {
                 })
             })
                 .then((res) => {
+                    
                     doPasswordReset(email.value)
                     alert('Employee Created and Password Reset Sent')
                 })

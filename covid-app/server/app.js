@@ -85,6 +85,9 @@ app.post("/admin/newEmployee", (req, res) => {
             displayName: employeeInfo.firstName + ' ' + employeeInfo.lastName
         })
             .then(async (userRecord) => {
+                if (userRecord === []) {
+                    res.status(400).json({ 'error': 'Unable to create user' })
+                }
                 console.log('Successfully created new firebase user:', userRecord.uid);
                 await users.addNewUser({
                     role: "employee",
