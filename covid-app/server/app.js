@@ -110,6 +110,28 @@ app.post("/admin/newEmployee", (req, res) => {
     }
 })
 
+// Admin Delete User with FIREBASE UID
+app.delete("/admin/deleteEmployee", (req, res) => {
+    try {
+        console.log(req.body)
+
+        let uid = req.body
+
+        admin.auth().deleteUser(uid.uid)
+            .then(async () => {
+                console.log(`Successfully deleted firebase user with uid ${uid.uid}`);
+                await users.deleteUser(uid.uid)
+            })
+            .then( () => {
+                console.log(`Successfully deleted mongodb user with uid ${uid.uid}`);
+                res.status(200).json(true);
+            })
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    }
+
+})
+
 // Get All Users
 app.get("/users/", async (req, res) => {
     try {
@@ -141,7 +163,7 @@ app.get("/users/:facility/employee", async (req, res) => {
     }
 })
 
-// Get User By UID
+// Get User By FIREBASE UID
 app.get("/users/:uid", async (req, res) => {
     try {
         const userFound = await users.getUserById(req.params.uid);
@@ -152,37 +174,15 @@ app.get("/users/:uid", async (req, res) => {
     };
 });
 
-// Delete User With UID
-app.delete("/users/:uid", async (req, res) => {
+// Update Part of User W/ FIREBASE UID
+app.patch("/users/:uid", async (req, res) => {
     try {
-        const deleted = await users.deleteUser(req.params.uid);
-        res.status(200).json(deleted);
+        const patched = await users.patchUser(req.params.uid, req.body);
+        res.status(200).json(patched);
 
     } catch (err) {
         res.status(400).json({ "error": err.message });
     };
-})
-
-// Admin Delete User with UID
-app.delete("/admin/deleteEmployee", (req, res) => {
-    try {
-        console.log(req.body)
-
-        let uid = req.body
-
-        admin.auth().deleteUser(uid.uid)
-            .then(async () => {
-                console.log(`Successfully deleted firebase user with uid ${uid.uid}`);
-                await users.deleteUser(uid.uid)
-            })
-            .then( () => {
-                console.log(`Successfully deleted mongodb user with uid ${uid.uid}`);
-                res.status(200).json(true);
-            })
-    } catch (err) {
-        res.status(400).json({ "error": err.message });
-    }
-
 })
 
 // Update User W/ MONGO ID
@@ -195,6 +195,19 @@ app.post("/users/:id", async (req, res) => {
         res.status(400).json({ "error": err.message });
     };
 })
+
+// Delete User With FIREBASE UID
+app.delete("/users/:uid", async (req, res) => {
+    try {
+        const deleted = await users.deleteUser(req.params.uid);
+        res.status(200).json(deleted);
+
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+})
+
+
 
 // RUN SERVER
 app.listen(PORT, () => {        // Listen For Requests on Port 3001

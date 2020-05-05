@@ -158,9 +158,11 @@ const Register = () => {
     // Redirect User to Respective Details Form On Successful Register
     if (currentUser && currentUser.dbUser) {
         if (currentUser.dbUser.role === 'patient') {
-            return (<Redirect to='/register/health-details' />)
+            return (<Redirect to='/user/health-details' />)
         } else if (currentUser.dbUser.role === 'admin') {
-            return (<Redirect to='/register/facility-details' />)
+            return (<Redirect to='/user/facility-details' />)
+        } else if (currentUser.dbUser.role === 'employee') {
+            return (<Redirect to='/user/employee-details' />)
         }
     }
 

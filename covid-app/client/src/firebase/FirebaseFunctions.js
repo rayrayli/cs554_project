@@ -46,6 +46,10 @@ async function doSignOut() {
     await firebase.auth().signOut()
 };
 
+async function doUpdateEmail(newEmail) {
+    await firebase.auth().currentUser.updateEmail(newEmail)
+}
+
 async function deleteAccount() {
     let uid = firebase.auth().currentUser.uid
     await firebase.auth().currentUser.delete()
@@ -59,6 +63,12 @@ async function deleteAccount() {
                 console.log('User Deleted')
             })
         });
+}
+
+async function reauthenticate (currentPassword) {
+    var user = firebase.auth().currentUser;
+    var cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+    return user.reauthenticateWithCredential(cred);
 }
 
 async function onAuthUserListen(next, redirect) {
@@ -100,6 +110,8 @@ export {
     doPasswordReset,
     doSignOut,
     doChangePassword,
+    doUpdateEmail,
     deleteAccount,
+    reauthenticate,
     onAuthUserListen
 };

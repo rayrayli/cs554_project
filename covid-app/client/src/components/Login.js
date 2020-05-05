@@ -13,8 +13,29 @@ const Login = () => {
 
     // If Auth Component Finds Registered User, Redirect to Landing
     if (currentUser) {
-        return <Redirect to='/' />;
+        if (currentUser.dbUser.role === 'patient') {
+            if (!currentUser.dbUser.dob || !currentUser.dbUser.address.street || !currentUser.dbUser.gender || !currentUser.dbUser.insurance.id) {
+                return (<Redirect to='/user/health-details' />)
+            } else {
+                return (<Redirect to='/' />)
+            }
+        } else if (currentUser.dbUser.role === 'admin') {
+            if (!currentUser.dbUser.address.street || !currentUser.dbUser.hours || !currentUser.dbUser.phone || !currentUser.dbUser.url) {
+                return (<Redirect to='/user/facility-details' />)
+            } else {
+                return (<Redirect to='/' />)
+            }
+        } else if (currentUser.dbUser.role === 'employee') {
+            // if () {
+            //     return (<Redirect to='/register/facility-details' />)
+            // } else {
+            //     return (<Redirect to='/' />)
+            // }
+            return
+        }
     }
+
+    
 
     // Attempt Login With User Input Email and Password
     const handleLogin = async (e) => {

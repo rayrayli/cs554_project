@@ -12,6 +12,8 @@ import PrivateRoute from './components/PrivateRoute';
 import HealthInfo from './components/HealthInfo';
 import FacilityInfo from './components/FacilityInfo';
 import Navigation from './components/Navigation';
+import Inbox from './components/Inbox';
+
 
 import './App.css';
 
@@ -34,9 +36,9 @@ function App() {
             <Route path='/searchDetails' component={SearchDetails} />
             <Switch>
               <PrivateRoute path='/account' component={Account} />
-              <PrivateRoute path='/register/health-details' component={HealthInfo} />
-              <PrivateRoute path='/register/facility-details' component={FacilityInfo} />
-              <PrivateRoute path='/messages' component={Account} />
+              <PrivateRoute path='/user/health-details' component={HealthInfo} />
+              <PrivateRoute path='/user/facility-details' component={FacilityInfo} />
+              <PrivateRoute path='/messages' component={Inbox} />
             </Switch>
           </Row>
         </Container>

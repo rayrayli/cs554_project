@@ -1,8 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../firebase/Auth';
-import { doChangePassword } from '../firebase/FirebaseFunctions'
-import { deleteAccount } from '../firebase/FirebaseFunctions';
-import { Container, Nav, Col, Row, Tab, Form, Button } from 'react-bootstrap';
+import { doChangePassword, deleteAccount, doUpdateEmail, reauthenticate } from '../firebase/FirebaseFunctions';
+import { Container, Nav, Col, Row, Tab, Form, Button, Modal } from 'react-bootstrap';
 const states = [
     'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
     'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
@@ -22,7 +21,7 @@ const Account = (props) => {
 // Account Page for Admin Users
 const AccountFacility = () => {
     const { currentUser } = useContext(AuthContext);
-    const [ days, setDays ] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
+    const [days, setDays] = useState(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'])
 
     const handleClose = (e) => {
         // Use JQuery??!?
@@ -207,11 +206,87 @@ const AccountFacility = () => {
 // Account Page for Patient Users 
 const AccountPatient = () => {
     const { currentUser } = useContext(AuthContext);
-    
+    const [updateInfo, setUpdateInfo] = useState(undefined)
+    const [reauth, setReauth] = useState(undefined)
+    const [hideModal, setHideModal] = useState(true)
+
+    const patchDbUser = async (info) => {
+        try {
+            if (!info) {
+                info = updateInfo
+            }
+
+            await doUpdateEmail(info.email)
+                .then(async () => {
+                    await fetch(`/users/${currentUser.dbUser.uid}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        },
+                        body: JSON.stringify(info)
+                    })
+                        .then((res) => {
+                            console.log(res)
+                            alert('Profile Updated')
+                        })
+                })
+
+        } catch (err) {
+            alert('Unable To Update Profile')
+        }
+    }
+
+    const confirmPassword = async (password) => {
+        let res
+        try {
+            res = await reauthenticate(password)
+                .then((res) => {
+                    console.log(updateInfo)
+                    patchDbUser()
+                })
+        } catch (err) {
+            alert("Incorrect Password")
+        }
+    }
+
+    const handlePatientDetailsUpdate = async (e) => {
+        e.preventDefault();
+        let { firstName, lastName, email, dob, gender, address1, address2, city, state, zip } = e.target.elements
+        let info = {
+            'firstName': firstName.value,
+            'lastName': lastName.value,
+            'email': email.value,
+            'dob': dob.value.toLocaleString(),
+            'gender': gender.value,
+            'address': {
+                'street': address1.value,
+                'unit': address2.value,
+                'city': city.value,
+                'state': state.value,
+                'zip': zip.value,
+            }
+        }
+        setUpdateInfo(info)
+
+        if (email.value !== currentUser.dbUser.email) {
+            setHideModal(false)
+        } else {
+            patchDbUser(info)
+        }
+    }
+
+    const handlePatientHealthUpdate = (e) => {
+        e.preventDefault();
+        let { conditions, insuranceProvider, insuranceID } = e.target.elements
+
+        // 'conditions': [...conditions.selectedOptions].map((op) => op.value),
+        // 'insuranceProvider': insuranceProvider.value,
+        // 'insuranceID': insuranceID.value
+    }
+
     return (
         <div>
             <h1> PATIENT ACCOUNT PAGE</h1>
-
             <Tab.Container defaultActiveKey="Profile">
                 <Row>
                     <Col sm={3}>
@@ -234,7 +309,7 @@ const AccountPatient = () => {
                         <Tab.Content>
                             <Tab.Pane eventKey="Profile">
                                 ACCOUNT
-                                <Form  >
+                                <Form onSubmit={handlePatientDetailsUpdate}>
                                     <Col lg={12} md={12}>
                                         <Form.Row>
                                             <Form.Group as={Col} controlId="firstName">
@@ -243,9 +318,7 @@ const AccountPatient = () => {
                                                     className='register-form'
                                                     name='firstName'
                                                     type='text'
-                                                    placeholder={currentUser.dbUser.firstName}
-
-                                                    required
+                                                    defaultValue={currentUser.dbUser.firstName}
                                                 />
                                             </Form.Group>
 
@@ -255,9 +328,7 @@ const AccountPatient = () => {
                                                     className='register-form'
                                                     name='lastName'
                                                     type='text'
-                                                    placeholder={currentUser.dbUser.lastName}
-
-                                                    required
+                                                    defaultValue={currentUser.dbUser.lastName}
                                                 />
                                             </Form.Group>
                                         </Form.Row>
@@ -269,10 +340,8 @@ const AccountPatient = () => {
                                                     className='register-form'
                                                     name='email'
                                                     type="email"
-                                                    placeholder={currentUser.dbUser.email}
+                                                    defaultValue={currentUser.dbUser.email}
                                                     autoComplete="username"
-
-                                                    required
                                                 />
                                             </Form.Group>
                                         </Form.Row>
@@ -285,12 +354,11 @@ const AccountPatient = () => {
                                                     type='date'
                                                     defaultValue={currentUser.dbUser.dob || "MM/DD/YYYY"}
                                                     placeholder="MM/DD/YYYY"
-                                                    required
                                                 />
                                             </Form.Group>
                                             <Form.Group as={Col} controlId="gender">
                                                 <Form.Label>Gender</Form.Label>
-                                                <Form.Control as="select" name='gender' defaultValue={currentUser.dbUser.gender || 'Choose...'} custom required>
+                                                <Form.Control as="select" name='gender' defaultValue={currentUser.dbUser.gender || 'Choose...'} custom >
                                                     <option>Choose...</option>
                                                     <option value='male'>Male</option>
                                                     <option value='female'>Female</option>
@@ -305,8 +373,7 @@ const AccountPatient = () => {
                                                 className='register-form'
                                                 name='address1'
                                                 type='text'
-                                                placeholder={(currentUser.dbUser.address && currentUser.dbUser.address.street) || 'Address'}
-                                                required
+                                                defaultValue={(currentUser.dbUser.address && currentUser.dbUser.address.street) || 'Address'}
                                             />
                                         </Form.Group>
 
@@ -328,8 +395,7 @@ const AccountPatient = () => {
                                                     className='register-form'
                                                     name='city'
                                                     type='text'
-                                                    placeholder={(currentUser.dbUser.address && currentUser.dbUser.address.city) || 'City'}
-                                                    required
+                                                    defaultValue={(currentUser.dbUser.address && currentUser.dbUser.address.city) || 'City'}
                                                 />
                                             </Form.Group>
 
@@ -349,8 +415,7 @@ const AccountPatient = () => {
                                                     className='register-form'
                                                     name='zip'
                                                     type='text'
-                                                    placeholder={(currentUser.dbUser.address && currentUser.dbUser.address.zip) || 'Zip'}
-                                                    required
+                                                    defaultValue={(currentUser.dbUser.address && currentUser.dbUser.address.zip) || 'Zip'}
                                                 />
                                             </Form.Group>
                                         </Form.Row>
@@ -427,8 +492,61 @@ const AccountPatient = () => {
                     </Col>
                 </Row>
             </Tab.Container>
+
+            <UpdateEmailModal
+                show={!hideModal}
+                setPassword={setReauth}
+                onHide={() => setHideModal(true)}
+                confirm={confirmPassword}
+            />
         </div >
     )
+}
+
+// Reauthenticate On Email Change
+const UpdateEmailModal = (props) => {
+
+    const handleUpdate = (e) => {
+        e.preventDefault()
+
+        let { email_update } = e.target.elements
+
+        props.setPassword(email_update.value)
+        props.confirm(email_update.value);
+        props.onHide()
+    }
+
+    return (
+        <Modal
+            {...props}
+            size="lg"
+            aria-labelledby="contained-modal-title-vcenter"
+            centered
+        >
+            <Modal.Header>
+                <Modal.Title id="contained-modal-title-vcenter">
+                    Please Re-Enter Your Password to Update Your Email
+                </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form onSubmit={handleUpdate}>
+                    <Form.Row>
+                        <Form.Group as={Col} controlId="email_update">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control
+                                className='login-form'
+                                name='email_update'
+                                type='password'
+                                placeholder='Password'
+                                required
+                            />
+                        </Form.Group>
+                        <Button type='submit'>Submit</Button>
+                    </Form.Row>
+                </Form>
+            </Modal.Body>
+        </Modal>
+    );
 }
 
 // Reusable Change Password Component (For All Users)

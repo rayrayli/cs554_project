@@ -10,7 +10,7 @@ const Landing = () => {
     console.log('#####', currentUser)
 
     return <Container className='main' fluid>
-        {(!currentUser || currentUser.dbUser.role === 'patient' || currentUser.dbUser.role === 'employee') ? <PatientLanding /> : <FacilityLanding />}
+        {(!currentUser || currentUser.dbUser.role === 'patient') ? <PatientLanding /> : (currentUser.dbUser.role === 'employee') ? <EmployeeLanding /> :  <FacilityLanding />}
     </Container>
 
 };
@@ -114,6 +114,42 @@ const FacilityLanding = () => {
                 show={!hideModal}
                 onHide={() => setHideModal(true)}
             />
+        </div>
+    )
+}
+
+const EmployeeLanding = () => {
+    const { currentUser } = useContext(AuthContext);
+    const [hideModal, setHideModal] = useState(true)
+
+    useEffect(
+        () => {
+
+        }, [hideModal]
+    )
+
+    return (
+        <div>
+            <h1> EMPLOYEE LANDING </h1>
+            <Row>
+                <Col>
+                    <Row>
+                        <h3> Todays Appointments</h3>
+                    </Row>
+                    <Row>
+                        <div>
+                        </div>
+                    </Row>
+                </Col>
+
+
+                <Col>
+                    <div>
+                        <h3> Facility Appointment Manager </h3>
+
+                    </div>
+                </Col>
+            </Row>
         </div>
     )
 }
