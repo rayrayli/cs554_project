@@ -73,22 +73,26 @@ let exportedMethods = {
                     'provider': (updateInfo.insuranceProvider) ? updateInfo.insuranceProvider.trim() : doc.insurance.provider
                 };
             } else if (doc.role === 'employee') {
+                doc.firstName = (updateInfo.firstName) ? updateInfo.firstName : doc.firstName,
+                doc.lastName = (updateInfo.lastName) ? updateInfo.lastName : doc.lastName,
+                doc.email = (updateInfo.email) ? updateInfo.email : doc.email
+                doc.phone = (updateInfo.phone) ? updateInfo.phone.trim() : doc.phone
 
             } else if (doc.role === 'admin') {
-                doc.email = updateInfo.email || doc.email
-                doc.phone = updateInfo.phone.trim();
-                doc.url = updateInfo.website.trim();
-                doc.address = updateInfo.address || doc.address
+                doc.email = (updateInfo.email) ? updateInfo.email : doc.email
+                doc.phone = (updateInfo.phone) ? updateInfo.phone.trim() : doc.phone
+                doc.url = (updateInfo.website) ? updateInfo.website.trim() : doc.website
+                doc.address = (updateInfo.address) ? updateInfo.address : doc.address
                 doc.hours = {
-                    'Monday': updateInfo.Monday,
-                    'Tuesday': updateInfo.Tuesday,
-                    'Wednesday': updateInfo.Wednesday,
-                    'Thursday': updateInfo.Thursday,
-                    'Friday': updateInfo.Friday,
-                    'Saturday': updateInfo.Saturday,
-                    'Sunday': updateInfo.Sunday
-                } || doc.hours,
-                    doc.geoJSON = updateInfo.geoJSON || doc.geoJSON
+                    'Monday': (updateInfo.Monday) ? updateInfo.Monday : doc.hours.Monday,
+                    'Tuesday': (updateInfo.Tuesday) ? updateInfo.Tuesday : doc.hours.Tuesday,
+                    'Wednesday': (updateInfo.Wednesday) ? updateInfo.Wednesday : doc.hours.Wednesday,
+                    'Thursday': (updateInfo.Thursday) ? updateInfo.Thursday : doc.hours.Thursday,
+                    'Friday': (updateInfo.Friday) ? updateInfo.Friday : doc.hours.Friday,
+                    'Saturday': (updateInfo.Saturday) ? updateInfo.Saturday : doc.hours.Saturday,
+                    'Sunday': (updateInfo.Sunday) ? updateInfo.Sunday : doc.hours.Sunday
+                },
+                    doc.geoJSON = (updateInfo.geoJSON) ? updateInfo.geoJSON : doc.geoJSON
 
             } else {
                 return false

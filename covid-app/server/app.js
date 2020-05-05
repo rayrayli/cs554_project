@@ -95,7 +95,7 @@ app.post("/admin/newEmployee", (req, res) => {
                     firstName: employeeInfo.firstName,
                     lastName: employeeInfo.lastName,
                     email: employeeInfo.email,
-                    phone: null,
+                    phone: employeeInfo.phone,
                     facility: employeeInfo.facility,
                     appointments: [
                         null

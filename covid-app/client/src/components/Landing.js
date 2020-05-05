@@ -10,7 +10,7 @@ const Landing = () => {
     console.log('#####', currentUser)
 
     return <Container className='main' fluid>
-        {(!currentUser || currentUser.dbUser.role === 'patient') ? <PatientLanding /> : (currentUser.dbUser.role === 'employee') ? <EmployeeLanding /> :  <FacilityLanding />}
+        {(!currentUser || currentUser.dbUser.role === 'patient') ? <PatientLanding /> : (currentUser.dbUser.role === 'employee') ? <EmployeeLanding /> : <FacilityLanding />}
     </Container>
 
 };
@@ -476,7 +476,7 @@ const AdminNewUserModal = (props) => {
 
     const handleNewUser = async (e) => {
         e.preventDefault();
-        const { firstName, lastName, email } = e.target.elements;
+        const { firstName, lastName, email, phone } = e.target.elements;
 
         try {
             let tempPassword = Math.random().toString(36).substr(2, 8)
@@ -492,12 +492,13 @@ const AdminNewUserModal = (props) => {
                     firstName: firstName.value,
                     lastName: lastName.value,
                     email: email.value,
+                    phone: phone.value,
                     password: tempPassword,
                     facility: currentUser.dbUser.facilityName
                 })
             })
                 .then((res) => {
-                    
+
                     doPasswordReset(email.value)
                     alert('Employee Created and Password Reset Sent')
                 })
@@ -560,6 +561,16 @@ const AdminNewUserModal = (props) => {
                                     placeholder="Enter Email"
                                     autoComplete="username"
                                     required
+                                />
+                            </Form.Group>
+                            <Form.Group as={Col} controlId="phone">
+                                <Form.Label>Phone Number</Form.Label>
+                                <Form.Control
+                                    className='register-form'
+                                    name='phone'
+                                    type='tel'
+                                    defaultValue={currentUser.dbUser.phone}
+                                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
                                 />
                             </Form.Group>
                         </Form.Row>
