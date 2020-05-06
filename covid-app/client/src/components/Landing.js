@@ -3,6 +3,7 @@ import { Container, Row, Col, Figure, Tab, Tabs, Button, Modal, Form } from 'rea
 import { doPasswordReset } from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
 import SearchBar from './SearchBar';
+import Calendar from './Calendar';
 import axios from 'axios';
 
 const Landing = () => {
@@ -82,7 +83,7 @@ const FacilityLanding = () => {
         <div>
             <h1> ADMIN LANDING </h1>
             <Row>
-                <Col>
+                <Col lg={4} md={12} sm={12}>
                     <Row>
                         <h3> Facility Employees</h3>
                         <Button onClick={adminAddUser}> Add Employee </Button>
@@ -102,10 +103,10 @@ const FacilityLanding = () => {
                 </Col>
 
 
-                <Col>
+                <Col lg={8} md={12} sm={12}>
                     <div>
                         <h3> Facility Appointment Manager </h3>
-
+                        <Calendar />
                     </div>
                 </Col>
             </Row>
@@ -118,6 +119,7 @@ const FacilityLanding = () => {
     )
 }
 
+// Landing Page for Facility Employee Users
 const EmployeeLanding = () => {
     const { currentUser } = useContext(AuthContext);
     const [hideModal, setHideModal] = useState(true)
@@ -132,7 +134,7 @@ const EmployeeLanding = () => {
         <div>
             <h1> EMPLOYEE LANDING </h1>
             <Row>
-                <Col>
+                <Col lg={4} md={12} sm={12}>
                     <Row>
                         <h3> Todays Appointments</h3>
                     </Row>
@@ -143,10 +145,10 @@ const EmployeeLanding = () => {
                 </Col>
 
 
-                <Col>
+                <Col lg={8} md={12} sm={12}>
                     <div>
                         <h3> Facility Appointment Manager </h3>
-
+                        <Calendar />
                     </div>
                 </Col>
             </Row>
