@@ -6,6 +6,22 @@ import SearchBar from './SearchBar';
 import Calendar from './Calendar';
 import axios from 'axios';
 
+// https://davidwalsh.name/function-debounce
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+        var context = this, args = arguments;
+        var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+};
+
 const Landing = () => {
     const { currentUser } = useContext(AuthContext);
     console.log('#####', currentUser)
@@ -162,6 +178,7 @@ const PatientLanding = () => {
     const [statesCurrVals, setStatesCurrVals] = useState(undefined);
     const [nationCurrVals, setNationCurrVals] = useState(undefined);
     const [stateSite, setStateSite] = useState(undefined)
+    const [mapData, setMapData] = useState(undefined)
 
     let stateData = undefined
 
@@ -192,10 +209,10 @@ const PatientLanding = () => {
             };
 
             fetchData();
-            fetchSites();
+            fetchSites();            
+
         }, [currentUser]
     );
-
 
     if (statesCurrVals && nationCurrVals) {
         // Load the Visualization API and the piechart package.
@@ -204,9 +221,12 @@ const PatientLanding = () => {
         });
         // Set a callback to run when the Google Visualization API is loaded.
         window.google.charts.setOnLoadCallback(drawGeoChart);
+        window.onresize = debounce(() => {
+            drawGeoChart()
+        }, 250)
     }
 
-    function drawGeoChart() {
+    function formatMapData() {
         if (statesCurrVals) {
             stateData = (statesCurrVals && statesCurrVals.map((stateStat) => {
                 return [
@@ -220,6 +240,16 @@ const PatientLanding = () => {
         let head = ['State', 'Positive Cases', 'Total Deaths'];
         stateData = [head].concat(stateData);
         let data = window.google.visualization.arrayToDataTable(stateData);
+
+        setMapData(data)
+        return data
+    }
+
+    function drawGeoChart() {
+        console.log("$$$$$$", mapData)
+
+        let data = (!mapData) ? formatMapData() : mapData
+
         new window.google.visualization.DataView(data);
 
         var options = {
@@ -238,6 +268,7 @@ const PatientLanding = () => {
         var chart = new window.google.visualization.GeoChart(document.getElementById('gMap'));
         chart.draw(data, options);
     };
+
 
     // https://stackoverflow.com
     function numberWithCommas(x) {
