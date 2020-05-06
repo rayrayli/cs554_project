@@ -1,0 +1,174 @@
+.App {
+  justify-content: center;
+  align-content: center;
+  width: 95%
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  /* background-color: #282c34; */
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.main {
+  align-content: center;
+  margin-top: 3rem;
+}
+
+.landing-form, #landingform {
+  align-content: center;
+  justify-content: center;
+}
+#landingform {
+  width: 35%;
+}
+
+
+
+
+
+
+
+#map-hold {
+  justify-content: center;
+  align-content: center;
+}
+#gMap {
+  /* height: 600px;
+  width: 90%; */
+  /* justify-content: center;
+  align-content: center; */
+  width: 100%;
+  height: 500px;
+
+}
+.rect {
+  max-width: 95% ;
+}
+/* #left-comp, #right-comp, #map-comp {
+  justify-content: center;
+  align-content: center;
+} */
+
+.legend {
+  text-align: left;
+  font-size: 11pt;
+  height: fit-content;
+}
+
+.leg-item {
+  padding-right: 1px;
+  padding-left: 1px;
+  width: 7.5rem;
+}
+#zero{
+  height: .75rem;
+  width: 7rem;
+  background-color: #02e66c;
+  margin: 0px;
+}
+#one{
+  height: .75rem;
+  width: 7rem;
+  min-width: 50px;
+  max-width: 115px;
+  background-color: #06c961;
+  margin: 0px;
+}
+#two{
+  height: .75rem;
+  width: 7rem;
+  background-color: #02a34d;
+  margin: 0px;
+}
+#three{
+  height: .75rem;
+  width: 7rem;
+  background-color: #246b3b;
+  margin: 0px;
+}
+#four{
+  height: .75rem;
+  width: 7rem;
+  background-color: #174726;
+  margin: 0px;
+}
+
+#search {
+  display: block;
+  border-bottom-width: 1px;
+  border-top-width: 0px;
+  border-right-width: 0px;
+  border-left-width: 0px;
+  border-radius: 0px;
+  border-color: black;
+  text-align: center;
+  align-content: center;
+}
+#form {
+  align-content: center;
+  justify-content: center;
+}
+
+
+
+.stat-header{
+  align-content: center;
+  justify-content: center;
+  /* font-style: italic; */
+  font-weight: bold;
+
+}
+.stat-cont {
+  align-content: center;
+  justify-content: center;
+}
+
+#acct{
+  width: 25px;
+  height: auto;
+}
+
+
+#map{
+  height:500px;
+  width: auto;
+}
+
+#patient-register{
+  width: 550px;
+}
+
+.App-nav{
+  background-color: white;
+}
+
