@@ -27,6 +27,18 @@ let exportedMethods = {
         }
     },
 
+    async retractUser(id) {
+        try {
+            const userCollection = await users();
+            let retractedUser = await userCollection.deleteOne({ _id: ObjectId(id) })
+            return true
+
+        } catch (err) {
+            return err;
+        }
+
+    },
+
     async getAllUsers() {
         const userCollection = await users();
         let userFound = await userCollection.find({}).toArray();

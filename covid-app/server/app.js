@@ -199,6 +199,18 @@ app.post("/users/:id", async (req, res) => {
     };
 })
 
+// Delete User With MONGO ID
+app.delete("/users/retract/:id", async (req, res) => {
+    try {
+        const deleted = await users.retractUser(req.params.id);
+        res.status(200).json(deleted);
+
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+})
+
+
 // Delete User With FIREBASE UID
 app.delete("/users/:uid", async (req, res) => {
     try {
