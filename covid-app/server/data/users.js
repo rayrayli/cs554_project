@@ -1,10 +1,13 @@
 const mongoCollections = require('../config/mongoCollections');
-const users = mongoCollections.users;
 const { ObjectId } = require('mongodb');
+const bcrypt = require('brcrypt')
+const users = mongoCollections.users;
+const saltRounds = 16;
 
 let exportedMethods = {
     async addNewUser(userInfo) {
         try {
+            
             const userCollection = await users();
             let newUser = await userCollection.insertOne(userInfo)
             return newUser.insertedId;
@@ -130,9 +133,11 @@ let exportedMethods = {
                 }
 
                 if (type === 'patient') {
+                    const ssn = await bcrypt.hash(updateInfo.ssn, saltRounds);
+
                     doc.dob = updateInfo.dob;
                     doc.gender = updateInfo.gender;
-                    doc.ssn = updateInfo.ssn;
+                    doc.ssn = ssn;
                     doc.conditions = updateInfo.conditions;
                     doc.insurance = {
                         'id': updateInfo.insuranceID.trim(),
