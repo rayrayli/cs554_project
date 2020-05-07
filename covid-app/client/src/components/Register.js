@@ -88,7 +88,6 @@ const Register = () => {
             });
 
         } catch (err) {
-            console.log(dbId)
             await fetch(`/users/retract/${dbId}`, {
                 method: "DELETE",
                 headers: {
@@ -105,6 +104,7 @@ const Register = () => {
     // Submit Admin User Registration
     const handleFacilityRegister = async (e) => {
         e.preventDefault();
+        let dbId;
         const { facilityName, admin_email, admin_password1, admin_password2 } = e.target.elements;
 
         // Ensure Passwords Match
@@ -154,8 +154,8 @@ const Register = () => {
 
                 // Add Admin User to Firebase
             }).then(async (res) => {
-
                 let { _id } = await res.json();
+                dbId = _id;
                 await doCreateUserWithEmailAndPassword(admin_email.value, admin_password1.value, facilityName.value, _id);
 
             }).then((res2) => {
@@ -163,7 +163,16 @@ const Register = () => {
 
             })
         } catch (err) {
-            alert(err)
+            await fetch(`/users/retract/${dbId}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                }
+            }).then( (conf) => {
+                console.log('DB User Retracted')
+            })
+            
+            alert(err);
         }
     };
 
