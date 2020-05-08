@@ -59,7 +59,9 @@ const HealthInfo = (props) => {
                 },
                 body: JSON.stringify(info)
             }).then( (res) => {
-                setFormComplete(true);            
+                setTimeout(() => {
+                    setFormComplete(true);  
+                }, 200);          
             })
         } catch (err) {
             return err

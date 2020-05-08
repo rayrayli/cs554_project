@@ -6,15 +6,6 @@ import '../App.css'
 
 const Navigation = () => {
     const { currentUser } = useContext(AuthContext);
-    // const role = currentUser && currentUser.dbUser.role
-
-    // if (role === 'admin') {
-    //     return <Row> {<NavigationAdmin />} </Row>
-    // } else if (role === 'patient' || role === 'employee') {
-    //     return <Row> {<NavigationAuth />} </Row>
-    // } else {
-    //     return <Row> <NavigationNoAuth /> </Row>
-    // }
 
     return (
         <Row>
@@ -68,7 +59,7 @@ const NavigationEmployee = () => {
 const NavigationAuth = () => {
     const { currentUser } = useContext(AuthContext);
 
-    let displayName = currentUser.dbUser.firstName + currentUser.dbUser.lastName
+    let displayName = currentUser.dbUser.firstName + ' ' + currentUser.dbUser.lastName
 
     return (
         <Navbar className='App-nav' fixed='top'>

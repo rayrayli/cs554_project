@@ -7,11 +7,12 @@ import Calendar from './Calendar';
 import axios from 'axios';
 
 // https://davidwalsh.name/function-debounce
+// Limit Map Redraw on Window Resizes
 function debounce(func, wait, immediate) {
     var timeout;
-    return function() {
+    return function () {
         var context = this, args = arguments;
-        var later = function() {
+        var later = function () {
             timeout = null;
             if (!immediate) func.apply(context, args);
         };
@@ -22,23 +23,24 @@ function debounce(func, wait, immediate) {
     };
 };
 
+// Landing Container
 const Landing = () => {
     const { currentUser } = useContext(AuthContext);
-    console.log('#####', currentUser)
 
-    return <Container className='main' fluid>
-        {(!currentUser || currentUser.dbUser.role === 'patient') ? <PatientLanding /> : (currentUser.dbUser.role === 'employee') ? <EmployeeLanding /> : <FacilityLanding />}
-    </Container>
-
+    return (
+        <Container className='main' fluid>
+            {(!currentUser || currentUser.dbUser.role === 'patient') ? <PatientLanding /> : (currentUser.dbUser.role === 'employee') ? <EmployeeLanding /> : <FacilityLanding />}
+        </Container>
+    )
 };
 
 // Landing Page for Admin Users
 const FacilityLanding = () => {
     const { currentUser } = useContext(AuthContext);
-    const [hideModal, setHideModal] = useState(true)
-    const [employees, setEmployees] = useState([])
+    const [hideModal, setHideModal] = useState(true);
+    const [employees, setEmployees] = useState([]);
 
-    let li = null
+    let li = null;
 
     useEffect(
         () => {
@@ -46,20 +48,19 @@ const FacilityLanding = () => {
                 fetch(`/users/${currentUser.dbUser.facilityName}/employee`)
                     .then((res1) => res1.json())
                     .then((data) => {
-                        console.log(data)
-                        setEmployees(data)
+                        setEmployees(data);
                     })
             };
 
             fetchEmployees();
         }, [hideModal]
-    )
+    );
 
     const adminAddUser = () => {
         if (currentUser && currentUser.dbUser.role === 'admin') {
-            setHideModal(false)
-        }
-    }
+            setHideModal(false);
+        };
+    };
 
     const adminDeleteUser = async (uid) => {
         try {
@@ -73,14 +74,13 @@ const FacilityLanding = () => {
                     uid: uid
                 })
             }).then((res) => {
-                window.location.reload()
-            })
-
+                window.location.reload();
+            });
 
         } catch (err) {
             alert(err);
-        }
-    }
+        };
+    };
 
     if (employees) {
         li = employees && employees.map((employee) => {
@@ -91,9 +91,9 @@ const FacilityLanding = () => {
                         <Button onClick={() => adminDeleteUser(employee.uid)}> Delete </Button>
                     </div>
                 </li>
-            )
-        })
-    }
+            );
+        });
+    };
 
     return (
         <div>
@@ -132,19 +132,19 @@ const FacilityLanding = () => {
                 onHide={() => setHideModal(true)}
             />
         </div>
-    )
-}
+    );
+};
 
 // Landing Page for Facility Employee Users
 const EmployeeLanding = () => {
     const { currentUser } = useContext(AuthContext);
-    const [hideModal, setHideModal] = useState(true)
+    const [hideModal, setHideModal] = useState(true);
 
     useEffect(
         () => {
 
         }, [hideModal]
-    )
+    );
 
     return (
         <div>
@@ -169,28 +169,29 @@ const EmployeeLanding = () => {
                 </Col>
             </Row>
         </div>
-    )
-}
+    );
+};
 
 // Landing Page for Patient Users
 const PatientLanding = () => {
     const { currentUser } = useContext(AuthContext);
     const [statesCurrVals, setStatesCurrVals] = useState(undefined);
     const [nationCurrVals, setNationCurrVals] = useState(undefined);
-    const [stateSite, setStateSite] = useState(undefined)
-    const [mapData, setMapData] = useState(undefined)
+    const [stateSite, setStateSite] = useState(undefined);
+    const [mapData, setMapData] = useState(undefined);
 
-    let stateData = undefined
+    let stateData = undefined;
 
     useEffect(
         () => {
+            // Get Official COVID-19 Stats for US & Each State 
             async function fetchData() {
                 fetch('/data/nation_state')
                     .then((res1) => res1.json())
                     .then((data) => {
-                        setStatesCurrVals(data.state)
-                        setNationCurrVals(data.nation)
-                    })
+                        setStatesCurrVals(data.state);
+                        setNationCurrVals(data.nation);
+                    });
             };
 
             // Get Official COVID-19 Sites for Each State
@@ -198,10 +199,10 @@ const PatientLanding = () => {
                 await axios.get('/data/state_sites')
                     .then((siteList) => {
                         if (currentUser && currentUser.dbUser && currentUser.dbUser.address) {
-                            let currState = currentUser.dbUser.address.state
+                            let currState = currentUser.dbUser.address.state;
                             siteList.data.forEach((stateObj) => {
                                 if (stateObj.state === currState) {
-                                    setStateSite(stateObj.covid19Site)
+                                    setStateSite(stateObj.covid19Site);
                                 };
                             });
                         };
@@ -209,7 +210,7 @@ const PatientLanding = () => {
             };
 
             fetchData();
-            fetchSites();            
+            fetchSites();
 
         }, [currentUser]
     );
@@ -223,8 +224,8 @@ const PatientLanding = () => {
         window.google.charts.setOnLoadCallback(drawGeoChart);
         window.onresize = debounce(() => {
             drawGeoChart()
-        }, 250)
-    }
+        }, 250);
+    };
 
     function formatMapData() {
         if (statesCurrVals) {
@@ -241,14 +242,12 @@ const PatientLanding = () => {
         stateData = [head].concat(stateData);
         let data = window.google.visualization.arrayToDataTable(stateData);
 
-        setMapData(data)
-        return data
+        setMapData(data);
+        return data;
     }
 
     function drawGeoChart() {
-        console.log("$$$$$$", mapData)
-
-        let data = (!mapData) ? formatMapData() : mapData
+        let data = (!mapData) ? formatMapData() : mapData;
 
         new window.google.visualization.DataView(data);
 
@@ -271,6 +270,7 @@ const PatientLanding = () => {
 
 
     // https://stackoverflow.com
+    // Add Commas to Numbers
     function numberWithCommas(x) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
@@ -501,7 +501,7 @@ const PatientLanding = () => {
             </Container>
         );
     };
-}
+};
 
 // Modal for Creating Facility Employee Users (ADMIN ACCESS ONLY)
 const AdminNewUserModal = (props) => {
@@ -512,8 +512,8 @@ const AdminNewUserModal = (props) => {
         const { firstName, lastName, email, phone } = e.target.elements;
 
         try {
-            let tempPassword = Math.random().toString(36).substr(2, 8)
-            console.log(tempPassword)
+            let tempPassword = Math.random().toString(36).substr(2, 8);
+            console.log(tempPassword);
 
             // Add User to Firbease via Admin SDK
             await fetch('/admin/newEmployee', {
@@ -529,21 +529,18 @@ const AdminNewUserModal = (props) => {
                     password: tempPassword,
                     facility: currentUser.dbUser.facilityName
                 })
-            })
-                .then((res) => {
+            }).then((res) => {
+                doPasswordReset(email.value)
+                alert('Employee Created and Password Reset Sent');
+            });
 
-                    doPasswordReset(email.value)
-                    alert('Employee Created and Password Reset Sent')
-                })
-
-
-            console.log("EMPLOYEE USER ADDED TO FIREBASE AND DB")
-            props.onHide()
+            console.log("EMPLOYEE USER ADDED TO FIREBASE AND DB");
+            props.onHide();
 
         } catch (err) {
             alert(err);
-        }
-    }
+        };
+    };
 
     return (
         <Modal
@@ -615,6 +612,6 @@ const AdminNewUserModal = (props) => {
             </Modal.Body>
         </Modal>
     );
-}
+};
 
 export default Landing;

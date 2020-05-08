@@ -29,7 +29,6 @@ function App() {
           </Row>
 
           <Row>
-            {/* ROUTES FOR ALL USERS */}
             <Route path='/login' component={Login} />
             <Route exact path='/register' component={Register} />
             <Route exact path='/' component={Landing} />

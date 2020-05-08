@@ -5,18 +5,20 @@ export const AuthContext = React.createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(undefined);
-    const [loadingUser, setLoadingUser] = useState(true)
+    const [loadingUser, setLoadingUser] = useState(true);
 
     useEffect(
         () => {
             async function listener() {
                 await onAuthUserListen((user) => {
-                    console.log("USER FOUND: ", user)
-                    setCurrentUser({ 'user': user.user, 'dbUser': user.dbUser })
-                    setLoadingUser(false)
+                    console.log("USER FOUND: ", user);
+
+                    setCurrentUser({ 'user': user.user, 'dbUser': user.dbUser });
+                    setLoadingUser(false);
 
                 }, () => {
-                    console.log(("NO USER FOUND"))
+                    console.log(("NO USER FOUND"));
+
                     setCurrentUser(null);
                     setLoadingUser(false);
 
