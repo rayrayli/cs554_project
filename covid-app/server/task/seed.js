@@ -1,6 +1,8 @@
 const dbConnection = require('../config/mongoConnection');
 const mongoCollections = require('../config/mongoCollections');
 const axios = require('axios')
+const data = require('../data')
+const users = data.users;
 const abrev = {
     "AL": "Alabama",
     "AK": "Alaska",
@@ -62,6 +64,17 @@ const abrev = {
     "WI": "Wisconsin",
     "WY": "Wyoming"
 };
+
+// SET UP FIREBASE ADMIN SDK
+const admin = require('firebase-admin')
+const dotenv = require('dotenv');
+dotenv.config();
+const serviceAccount = process.env.FIREBASE_CONFIG
+admin.initializeApp({
+    credential: admin.credential.cert(JSON.parse(serviceAccount)),
+    databaseURL: "https://cs554final-covidapp.firebaseio.com"
+});
+
 
 async function main() {
     const db = await dbConnection();
@@ -193,6 +206,42 @@ async function main() {
     await fetchData('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest', 'pop');
     await fetchCountyLevel()
     // await clearUsers()
+
+    //////////// SEED USERS
+    // try {
+    //     let employeeInfo = req.body
+
+    //     admin.auth().createUser({
+    //         email: employeeInfo.email,
+    //         emailVerified: false,
+    //         password: employeeInfo.password,
+    //         displayName: employeeInfo.firstName + ' ' + employeeInfo.lastName
+    //     })
+    //         .then(async (userRecord) => {
+    //             if (userRecord === []) {
+    //                 res.status(400).json({ 'error': 'Unable to create user' })
+    //             }
+    //             console.log('Successfully created new firebase user:', userRecord.uid);
+    //             await users.addNewUser({
+    //                 role: "employee",
+    //                 uid: userRecord.uid,
+    //                 firstName: employeeInfo.firstName,
+    //                 lastName: employeeInfo.lastName,
+    //                 email: employeeInfo.email,
+    //                 phone: employeeInfo.phone,
+    //                 facility: employeeInfo.facility,
+    //                 appointments: [
+    //                     null
+    //                 ],
+    //                 messages: [
+    //                     null
+    //                 ]
+    //             })
+    //         })
+
+    // } catch (err) {
+    //     console.log(err)
+    // }
 
     return true
 }

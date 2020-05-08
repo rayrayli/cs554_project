@@ -1,19 +1,19 @@
 import firebaseApp from './Firebase';
 import firebase from 'firebase/app';
+import { userInfo } from 'os';
 
-async function doCreateUserWithEmailAndPassword(email, password, displayName, _id) {
+async function doCreateUserWithEmailAndPassword(email, password, displayName, info) {
     await firebase.auth().createUserWithEmailAndPassword(email, password)
         .then(async (res) => {
-            await fetch(`/users/${_id}`, {
+            info.uid = res.user.uid
+            await fetch('/users/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify({
-                    uid: firebase.auth().currentUser.uid,
-                })
-            });
-        });
+                body: JSON.stringify(info)
+            })
+        })
 
     firebase.auth().currentUser.updateProfile({ displayName: displayName });
     return firebase.auth().currentUser.uid
@@ -59,13 +59,13 @@ async function deleteAccount() {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 }
-            }).then( (conf) => {
+            }).then((conf) => {
                 console.log('User Deleted')
             })
         });
 }
 
-async function reauthenticate (currentPassword) {
+async function reauthenticate(currentPassword) {
     var user = firebase.auth().currentUser;
     var cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
     return user.reauthenticateWithCredential(cred);
