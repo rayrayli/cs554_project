@@ -11,7 +11,6 @@ const Navigation = () => {
         <Row>
             {(!currentUser ? <NavigationNoAuth /> : (currentUser.dbUser.role === 'admin') ? <NavigationAdmin /> : (currentUser.dbUser.role === 'employee') ? <NavigationEmployee /> : <NavigationAuth />) }
         </Row>
-        
     )
 };
 
@@ -35,6 +34,7 @@ const NavigationAdmin = () => {
     );
 }
 
+// Navigation for Employee Users
 const NavigationEmployee = () => {
     const { currentUser } = useContext(AuthContext);
 

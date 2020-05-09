@@ -335,7 +335,6 @@ const PatientLanding = () => {
 
                         <Row id='map-hold'>
                             <br />
-                            !! Need FUNC to Redraw Map When Window Size Changes !! Make As Own Component?
                             <Row id='gMap' />
                         </Row>
                         <Row className='legend' >

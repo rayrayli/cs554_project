@@ -198,8 +198,6 @@ const SearchDetails = (props) => {
         })
     }
 
-    console.log(selected)
-
     // Populate County Data
     return (
         <Container className='main' fluid >
@@ -234,7 +232,6 @@ const SearchDetails = (props) => {
                                 <h3> {selected && selected.email}   {selected && selected.phone} </h3>
                                 <h3> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </h3>
                             </div>
-
                         </div>
                     </Row>
 

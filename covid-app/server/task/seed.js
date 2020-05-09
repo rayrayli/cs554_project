@@ -160,7 +160,7 @@ async function main() {
     await fetchData('https://covidtracking.com/api/v1/us/current.json', 'nation');
     await fetchData('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest', 'pop');
     await fetchCountyLevel()
-    // await clearUsers()
+    await clearUsers()
 
     //////////// SEED USERS
     // try {
