@@ -495,7 +495,7 @@ const PatientLanding = () => {
         return (
             <Container className='main'>
                 <Row className='landing-form'>
-                    LOADING>>>>
+                    LOADING MAP DATA
                 </Row>
             </Container>
         );

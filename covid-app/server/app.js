@@ -35,7 +35,6 @@ app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 /*
 ######################### ROUTES #########################
 */
@@ -232,6 +231,10 @@ app.delete("/users/:uid", async (req, res) => {
     };
 });
 
+// Send 404 On All Other Routes
+app.use("*", (req, res) => {
+    res.sendStatus(404);
+});
 
 /*
 ################## GET STATS DAILY @ 5:00AM ##################

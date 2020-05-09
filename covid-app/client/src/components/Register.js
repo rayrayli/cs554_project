@@ -177,7 +177,7 @@ const Register = () => {
                         <Row>
                             <Tab.Content id='register'>
                                 <Tab.Pane eventKey="patient" title='patient'>
-                                    <div id='form-error'>>
+                                    <div id='form-error'>
                                         {passwordMatch && <h4 className='error'> {passwordMatch} </h4>}
                                     </div>
                                     <Form onSubmit={handlePatientRegister} >
