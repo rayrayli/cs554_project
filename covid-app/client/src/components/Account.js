@@ -83,6 +83,7 @@ const AccountFacility = () => {
     }
 
     const confirmPassword = async (password) => {
+        password = (reauth) ? reauth : password
         let res
         try {
             res = await reauthenticate(password)
@@ -358,6 +359,7 @@ const AccountPatient = () => {
     }
 
     const confirmPassword = async (password) => {
+        password = (reauth) ? reauth : password
         let res
         try {
             res = await reauthenticate(password)
@@ -680,6 +682,7 @@ const AccountEmployee = () => {
     }
 
     const confirmPassword = async (password) => {
+        password = (reauth) ? reauth : password
         let res
         try {
             res = await reauthenticate(password)
