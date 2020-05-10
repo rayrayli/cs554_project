@@ -40,8 +40,8 @@ module.exports = {
     try {
       response = await emailDriver.sendMessageAsync({
         qname: "emailqueue",
-        message: JSON.stringify({recipients: recipients, subject: subject, contents: contents});
-      }, )
+        message: JSON.stringify({recipients: recipients, subject: subject, contents: contents})
+      }, );
       if (response) {
         console.log("Message sent. ID:", response);
       }
