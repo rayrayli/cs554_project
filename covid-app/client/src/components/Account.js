@@ -305,7 +305,6 @@ const AccountFacility = () => {
                     confirm={confirmPassword}
                 />
             </Tab.Container>
-
         </div>
     )
 }

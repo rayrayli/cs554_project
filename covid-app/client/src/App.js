@@ -13,6 +13,7 @@ import HealthInfo from './components/HealthInfo';
 import FacilityInfo from './components/FacilityInfo';
 import Navigation from './components/Navigation';
 import Inbox from './components/Inbox';
+import NotFound from './components/NotFound'
 
 
 import './App.css';
@@ -28,18 +29,19 @@ function App() {
             <Navigation />
           </Row>
 
-          <Row>
-            <Route path='/login' component={Login} />
+
+          <Switch>
+            <Route exact path='/login' component={Login} />
             <Route exact path='/register' component={Register} />
             <Route exact path='/' component={Landing} />
-            <Route path='/searchDetails' component={SearchDetails} />
-            <Switch>
-              <PrivateRoute path='/account' component={Account} />
-              <PrivateRoute path='/user/health-details' component={HealthInfo} />
-              <PrivateRoute path='/user/facility-details' component={FacilityInfo} />
-              <PrivateRoute path='/messages' component={Inbox} />
-            </Switch>
-          </Row>
+            <Route exact path='/searchDetails' component={SearchDetails} />
+            <PrivateRoute exact path='/account' component={Account} />
+            <PrivateRoute exact path='/user/health-details' component={HealthInfo} />
+            <PrivateRoute exact path='/user/facility-details' component={FacilityInfo} />
+            <PrivateRoute exact path='/messages' component={Inbox} />
+            <Route path='*' component={NotFound} />
+          </Switch>
+
         </Container>
 
       </Router>
