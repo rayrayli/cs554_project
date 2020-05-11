@@ -35,11 +35,11 @@ function App() {
             <Route exact path='/register' component={Register} />
             <Route exact path='/' component={Landing} />
             <Route exact path='/searchDetails' component={SearchDetails} />
-            <Route path='*' component={NotFound} />
             <PrivateRoute exact path='/account' component={Account} />
             <PrivateRoute exact path='/user/health-details' component={HealthInfo} />
             <PrivateRoute exact path='/user/facility-details' component={FacilityInfo} />
             <PrivateRoute exact path='/messages' component={Inbox} />
+            <Route path='*' component={NotFound} />
           </Switch>
 
         </Container>
