@@ -7,8 +7,14 @@ WORKDIR /usr/src/server
 # copy package.json into the container at /server
 COPY package*.json ./
 
+# packages needed for bcrypt.js (https://github.com/kelektiv/node.bcrypt.js/wiki/Installation-Instructions)
+RUN apk --no-cache add --virtual builds-deps build-base python
+
 # install dependencies
 RUN npm install
+
+# force recompiling the bcrypt native addon (https://github.com/kelektiv/node.bcrypt.js/wiki/Installation-Instructions)
+RUN npm rebuild bcrypt --build-from-source
 
 # Copy the current directory contents into the container at /server
 COPY . .

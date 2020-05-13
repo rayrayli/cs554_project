@@ -6,15 +6,12 @@ import '../App.css'
 
 const Navigation = () => {
     const { currentUser } = useContext(AuthContext);
-    const role = currentUser && currentUser.dbUser.role
 
-    if (role === 'admin') {
-        return <Row> {<NavigationAdmin />} </Row>
-    } else if (role === 'patient' || role === 'employee') {
-        return <Row> {<NavigationAuth />} </Row>
-    } else {
-        return <Row> <NavigationNoAuth /> </Row>
-    }
+    return (
+        <Row>
+            {(!currentUser ? <NavigationNoAuth /> : (currentUser.dbUser.role === 'admin') ? <NavigationAdmin /> : (currentUser.dbUser.role === 'employee') ? <NavigationEmployee /> : <NavigationAuth />) }
+        </Row>
+    )
 };
 
 // Navigation For Admin Users
@@ -28,9 +25,30 @@ const NavigationAdmin = () => {
             <Navbar.Brand href='/' > COVID-19 Admin Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
-                    <a> {displayName} | </a>
+                    {displayName} | 
                 </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
+                <Nav.Link to='/' onClick={doSignOut}> Logout </Nav.Link>
+            </Navbar.Collapse>
+        </Navbar>
+    );
+}
+
+// Navigation for Employee Users
+const NavigationEmployee = () => {
+    const { currentUser } = useContext(AuthContext);
+
+    let displayName = currentUser.dbUser.firstName + currentUser.dbUser.lastName
+
+    return (
+        <Navbar className='App-nav' fixed='top'>
+            <Navbar.Brand href='/' > COVID-19 Facility Console </Navbar.Brand>
+            <Navbar.Collapse className="justify-content-end">
+                <Navbar.Text>
+                    {displayName} | 
+                </Navbar.Text>
+                <Nav.Link href='/account'> Account </Nav.Link>
+                <Nav.Link href='/messages'> Messages </Nav.Link>
                 <Nav.Link to='/' onClick={doSignOut}> Logout </Nav.Link>
             </Navbar.Collapse>
         </Navbar>
@@ -41,14 +59,14 @@ const NavigationAdmin = () => {
 const NavigationAuth = () => {
     const { currentUser } = useContext(AuthContext);
 
-    let displayName = currentUser.dbUser.firstName + currentUser.dbUser.lastName
+    let displayName = currentUser.dbUser.firstName + ' ' + currentUser.dbUser.lastName
 
     return (
         <Navbar className='App-nav' fixed='top'>
             <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
-                    <a> {displayName} | </a>
+                    {displayName} | 
                 </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
                 <Nav.Link href='/messages'> Messages </Nav.Link>
