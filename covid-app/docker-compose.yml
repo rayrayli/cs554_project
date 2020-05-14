@@ -35,18 +35,6 @@ services:
         environment:
             env_file: .env
             NODE_ENV: development
-    chat:
-        build:
-            constext: ./chat
-            dockerfile: Dockerfile
-        restart: always
-        ports:
-            - "7076:7076"
-        volumes:
-            - /chat/node_modules
-            - ./chat:/chat
-        links:
-            - server
     mongo:
         image: mongo
         ports:

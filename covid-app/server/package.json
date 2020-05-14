@@ -6,7 +6,8 @@
   "scripts": {
     "seed": "node ./task/seed.js",
     "dev": "nodemon app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "heroku-postbuild": "node ./task/seed.js && cd client && npm install && npm run build"
   },
   "author": "",
   "license": "ISC",
@@ -24,7 +25,6 @@
     "socket.io-client": "^2.3.0",
     "fs": "0.0.1-security",
     "html-pdf": "^2.2.0",
-    "mongodb": "^3.5.5",
     "node-cron": "^2.0.3"
   },
   "devDependencies": {

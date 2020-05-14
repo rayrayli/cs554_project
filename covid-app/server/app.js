@@ -14,7 +14,7 @@ admin.initializeApp({
 /*
 ####################### RUN SERVER #######################
 */
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const express = require("express");     // Utilize Express Module
 const path = require('path');
 const app = express();                  // Generate Express Application
@@ -34,6 +34,14 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('client/build'));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    });
+}
 
 /*
 ######################### ROUTES #########################

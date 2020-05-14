@@ -1,4 +1,6 @@
 import React from 'react';
+import { Container } from 'react-bootstrap';
+
 
 // Modal Used to Confirm Addresses for ALL Users 
 const Inbox = (props) => {
