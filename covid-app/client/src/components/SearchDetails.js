@@ -174,16 +174,16 @@ const SearchDetails = (props) => {
 
     function drawMarkers() {
         facilityData && facilityData.map((facility, i) => {
-            marker = new window.google.maps.Marker({
-                position: { lat: facility.geoJSON.geometry.coordinates[0], lng: facility.geoJSON.geometry.coordinates[1] },
-                map: map,
-                info: facility
-            });
+            if (facility.geoJSON.geometry && facility.geoJSON.geometry.coordinates) {
+                marker = new window.google.maps.Marker({
+                    position: { lat: facility.geoJSON.geometry.coordinates[0], lng: facility.geoJSON.geometry.coordinates[1] },
+                    map: map,
+                    info: facility
+                });
+            }
 
             window.google.maps.event.addListener(marker, 'click', ((marker, i) => {
                 return () => {
-                    // console.log(marker.info)
-                    // console.log(marker.info)
                     if (!!selected) {
                         if (selected === marker.info) {
                             setSelected(null)

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Covid Chat</title>
+  </head>
+
+  <body>
+    <div id="chat">
+      <div id="chat_box">
+      </div>
+      <input type="text" id="text_box">
+      <input type="submit" name="submit" id="submit">  
+    </div>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script> 
+      $(document).ready(function() {
+        io = io.connect();
+        // get chatroom id
+        const url = window.location.href.split("/");
+        const id = url[url.length - 1];
+
+        // set up event listener on submit
+        $("#submit").on("click", function(){
+          console.log("clicked");
+          let contents = document.getElementById("text_box").value;
+          if (contents != "") {
+            document.getElementById("text_box").value = "";
+            let ack = io.emit('send_msg', {id: id, msg: contents});
+            if (ack != null && ack != undefined) {
+              $("#text_box").text("");
+              $('#chat_box').append('<p>'+ contents + '</p>')
+            }
+          }
+        });
+
+        // window.addEventListener('beforeunload', function(e) {
+        //   e.preventDefault();
+        //   io.emit('disconnect', {id: id, user: "<REPLACE THIS AT SOME POINT>"});
+        //   delete e['returnValue'];
+        // });
+
+        window.onunload = function leaving() {
+          io.emit('disc', {id: id, user: "REPLACE THIS AT SOME POINT"});
+        }
+
+        // tell everyone in chatroom that you've joined
+        io.emit('join_chat', id);
+  
+        // Listen for the announce event.
+        io.on('announce', function(data) {
+          console.log(data);
+          $('#chat_box').append('<p>'+ data.message + '</p>')
+        });
+      });
+    </script>
+  </body>
+</html>
