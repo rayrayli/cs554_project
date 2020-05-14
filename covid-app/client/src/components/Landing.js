@@ -12,7 +12,7 @@ function debounce(func, wait, immediate) {
     var timeout;
     return function () {
         var context = this;
-        args = arguments;
+        let args = arguments;
         
         var later = function () {
             timeout = null;
