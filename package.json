@@ -7,7 +7,7 @@
     "seed": "node ./task/seed.js",
     "dev": "nodemon app.js",
     "start": "node app.js",
-    "heroku-postbuild": "node ./task/seed.js && cd client && npm install && npm run build"
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "author": "",
   "license": "ISC",
