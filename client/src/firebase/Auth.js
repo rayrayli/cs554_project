@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthUserListen } from '../firebase/FirebaseFunctions';
+import { onAuthUserListen } from './FirebaseFunctions';
 
 export const AuthContext = React.createContext(null);
 
