@@ -34,7 +34,7 @@ const HealthInfo = (props) => {
     // Validate User Input Address to Google GeoCode API
     const validateAddress = async (address) => {
         const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
-        return find.data.results[0].formatted_address
+        return find.data.data.results[0].formatted_address
     };
 
     // Set Address to GoogleAPI Confirmed Address
@@ -52,12 +52,13 @@ const HealthInfo = (props) => {
     // Update MongoDB With Facility Details (address, pre-existing conditions, ssn (NEEDS TO BE ENCRYPTED WITH BCRYPT), etc)
     const updateDbUser = async (info) => {
         try {
-            await fetch(`/users/${currentUser.dbUser._id}`, {
+            await axios({
                 method: 'POST',
+                url: `/users/${currentUser.dbUser._id}`, 
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify(info)
+                data: info
             }).then( (res) => {
                 setTimeout(() => {
                     setFormComplete(true);  

@@ -108,13 +108,11 @@ app.post("/admin/newEmployee", (req, res) => {
                     email: employeeInfo.email,
                     phone: employeeInfo.phone,
                     facility: employeeInfo.facility,
-                    appointments: [
-                        null
-                    ],
-                    messages: [
-                        null
-                    ]
-                });
+                    appointments: [],
+                    messages: []
+                }).then(async (res) => {
+                    await users.addEmployeeToFacility(employeeInfo.facility, res[1])
+                })
 
                 res.status(200).send(userRecord.uid);
             })
@@ -127,15 +125,18 @@ app.post("/admin/newEmployee", (req, res) => {
 // Admin Delete User with FIREBASE UID
 app.delete("/admin/deleteEmployee", (req, res) => {
     try {
-        let uid = req.body;
+        let deleteInfo = req.body;
 
-        admin.auth().deleteUser(uid.uid)
+        admin.auth().deleteUser(deleteInfo.employeeUid)
             .then(async () => {
-                console.log(`Successfully deleted firebase user with uid ${uid.uid}`);
-                await users.deleteUser(uid.uid);
+                console.log(`Successfully deleted firebase user with uid ${deleteInfo.employeeUid}`);
+                await users.deleteUser(deleteInfo.employeeUid);
+            })
+            .then(async () => {
+                await users.removeEmployeeFromFacility(deleteInfo.facilityUid, deleteInfo.employeeUid)
             })
             .then(() => {
-                console.log(`Successfully deleted mongodb user with uid ${uid.uid}`);
+                console.log(`Successfully deleted mongodb user with uid ${deleteInfo.employeeUid}`);
                 res.status(200).json(true);
             })
     } catch (err) {

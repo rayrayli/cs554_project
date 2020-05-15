@@ -2,7 +2,7 @@ const dbConnection = require('../config/mongoConnection');
 const mongoCollections = require('../config/mongoCollections');
 const axios = require('axios')
 const data = require('../data')
-const users = data.users;
+const user = data.users;
 const abrev = {
     "AL": "Alabama", "AK": "Alaska", "AS": "American Samoa", "AZ": "Arizona", "AR": "Arkansas", "CA": "California", "CO": "Colorado",
     "CT": "Connecticut", "DE": "Delaware", "DC": "District Of Columbia", "FM": "Federated States Of Micronesia", "FL": "Florida", "GA": "Georgia",
@@ -16,18 +16,17 @@ const abrev = {
     "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming"
 };
 
-// SET UP FIREBASE ADMIN SDK FOR SEEDING USERS
-const admin = require('firebase-admin')
-const dotenv = require('dotenv');
-dotenv.config();
-const serviceAccount = process.env.FIREBASE_CONFIG
-admin.initializeApp({
-    credential: admin.credential.cert(JSON.parse(serviceAccount)),
-    databaseURL: "https://cs554final-covidapp.firebaseio.com"
-});
-
-
 async function main() {
+    // SET UP FIREBASE ADMIN SDK FOR SEEDING USERS
+    const admin = require('firebase-admin');
+    const dotenv = require('dotenv');
+    dotenv.config();
+    const serviceAccount = process.env.FIREBASE_CONFIG
+    admin.initializeApp({
+        credential: admin.credential.cert(JSON.parse(serviceAccount)),
+        databaseURL: "https://cs554final-covidapp.firebaseio.com"
+    });
+
     const db = await dbConnection();
 
     const state = mongoCollections.covidStStats;
@@ -39,7 +38,7 @@ async function main() {
     async function clearUsers() {
         try {
             collection = await users();
-            let conf = collection.deleteMany({});
+            let conf = collection.deleteMany({type: undefined});
 
         } catch (err) {
             return err;
@@ -156,47 +155,195 @@ async function main() {
         };
     }
 
+    async function seedAdmin() {
+        try {
+            let adminUser = await admin.auth().createUser({
+                email: 'testfacilityseed@gmail.com',
+                password: 'password1',
+            })
+                .then(async (userRecord) => {
+                    if (userRecord === []) {
+                        return 'Seeded Useres Exist'
+                    }
+                    console.log('Successfully created new firebase user:', userRecord.uid);
+                    await user.addNewUser({
+                        role: "admin",
+                        type: 'seed',
+                        uid: userRecord.uid,
+                        email: 'testfacilityseed@gmail.com',
+                        phone: "201-344-2222",
+                        facilityName: "TestFacilitySeed",
+                        phone: "201-234-5678",
+                        url: "https://www.testfacilityseed.com",
+                        address: {
+                            street: "100 Washington St",
+                            unit: "Suite 3C",
+                            city: "Hoboken",
+                            state: "NJ",
+                            zip: "07030"
+                        },
+                        hours: {
+                            Monday: {
+                                Start: "08:00",
+                                End: "17:00",
+                                Closed: "on"
+                            },
+                            Tuesday: {
+                                Start: "08:00",
+                                End: "17:00",
+                                Closed: "on"
+                            },
+                            Wednesday: {
+                                Start: "08:00",
+                                End: "17:00",
+                                Closed: "on"
+                            },
+                            Thursday: {
+                                Start: "08:00",
+                                End: "20:00",
+                                Closed: "on"
+                            },
+                            Friday: {
+                                Start: "08:00",
+                                End: "20:00",
+                                Closed: "on"
+                            },
+                            Saturday: {
+                                Start: "08:00",
+                                End: "20:00",
+                                Closed: "Closed"
+                            },
+                            Sunday: {
+                                Start: "08:00",
+                                End: "20:00",
+                                Closed: "Closed"
+                            }
+                        },
+                        app_slots: {
+                            Monday: [],
+                            Tuesday: [],
+                            Wednesday: [],
+                            Thursday: [],
+                            Friday: [],
+                            Saturday: [],
+                            Sunday: []
+                        },
+                        employees: [],
+                        geoJSON: {
+                            type: "Feature",
+                            geometry: {
+                                type: "Point",
+                                coordinates: [
+                                    40.7375821,
+                                    -74.031105
+                                ]
+                            }
+                        }
+                    })
+
+                    let adminUid = (userRecord.uid).toString()
+                    return adminUid
+                    
+                })
+            return adminUser
+
+        } catch (err) {
+            return 'Seeded Useres Exist'
+        }
+    }
+
+    async function seedEmployee(adminUser) {
+        try {
+            await admin.auth().createUser({
+                email: 'employeeseed1@gmail.com',
+                password: 'password1',
+            })
+                .then(async (userRecord) => {
+                    if (userRecord === []) {
+                        return 'Seeded Useres Exist'
+                    }
+                    console.log('Successfully created new firebase user:', userRecord.uid);
+                    await user.addNewUser({
+                        role: "employee",
+                        type: 'seed',
+                        uid: userRecord.uid,
+                        email: 'employeeseed1@gmail.com',
+                        firstName: 'Employee1First',
+                        lastName: 'Employee1Last',
+                        phone: "201-220-1220",
+                        facility: adminUser,
+                        appointments: [],
+                        messages: []
+                    }).then(async (res) => {
+                        await user.addEmployeeToFacility(adminUser, res[1])
+                    })
+                })
+
+        } catch (err) {
+            return 'Seeded Useres Exist'
+        }
+    }
+
+    async function seedPatient() {
+        try {
+            await admin.auth().createUser({
+                email: "patientseed@gmail.com",
+                password: 'password1',
+            })
+                .then(async (userRecord) => {
+                    if (userRecord === []) {
+                        return 'Seeded Useres Exist'
+                    }
+                    console.log('Successfully created new firebase user:', userRecord.uid);
+                    await user.addNewUser({
+                        role: "patient",
+                        type: 'seed',
+                        uid: userRecord.uid,
+                        firstName: "Patient1First",
+                        lastName: "Patient1Last",
+                        email: "patientseed@gmail.com",
+                        gender: "male",
+                        dob: "1995-03-27",
+                        ssn: "$2b$16$AdPa6IjpOoX3CW/M8xuKHu8kMvqYKMn9YwQlpGyLNIA.R8f11miRu",
+                        address: {
+                            street: "1 Harrison Ave",
+                            unit: null,
+                            city: "Harrison",
+                            state: "NJ",
+                            zip: "07029"
+                        },
+                        conditions: [
+                            "kidney"
+                        ],
+                        insurance: {
+                            id: "R111222123",
+                            provider: "Blue Cross Blue Shield"
+                        },
+                        appointments: [],
+                        messages: []
+                    })
+                })
+
+        } catch (err) {
+            return 'Seeded Useres Exist'
+        }
+
+
+    }
+
     await fetchData('https://covidtracking.com/api/v1/states/current.json', 'state');
     await fetchData('https://covidtracking.com/api/v1/us/current.json', 'nation');
     await fetchData('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest', 'pop');
     await fetchCountyLevel()
-    // await clearUsers()
 
-    //////////// SEED USERS
-    // try {
-    //     let employeeInfo = req.body
-
-    //     admin.auth().createUser({
-    //         email: employeeInfo.email,
-    //         emailVerified: false,
-    //         password: employeeInfo.password,
-    //         displayName: employeeInfo.firstName + ' ' + employeeInfo.lastName
-    //     })
-    //         .then(async (userRecord) => {
-    //             if (userRecord === []) {
-    //                 res.status(400).json({ 'error': 'Unable to create user' })
-    //             }
-    //             console.log('Successfully created new firebase user:', userRecord.uid);
-    //             await users.addNewUser({
-    //                 role: "employee",
-    //                 uid: userRecord.uid,
-    //                 firstName: employeeInfo.firstName,
-    //                 lastName: employeeInfo.lastName,
-    //                 email: employeeInfo.email,
-    //                 phone: employeeInfo.phone,
-    //                 facility: employeeInfo.facility,
-    //                 appointments: [
-    //                     null
-    //                 ],
-    //                 messages: [
-    //                     null
-    //                 ]
-    //             })
-    //         })
-
-    // } catch (err) {
-    //     console.log(err)
-    // }
+    await clearUsers()
+    await seedPatient()
+    await seedAdmin().then(async (adminUser) => {
+        console.log(adminUser)
+        await seedEmployee(adminUser)
+    })
+    
+    
 
     return true
 }

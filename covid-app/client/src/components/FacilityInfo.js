@@ -51,8 +51,8 @@ const FacilityInfo = (props) => {
             geometry: {
                 type: "Point",
                 coordinates: [
-                    find.data.results[0].geometry.location.lat,
-                    find.data.results[0].geometry.location.lng
+                    find.data.data.results[0].geometry.location.lat,
+                    find.data.data.results[0].geometry.location.lng
                 ]
             }
         }
@@ -75,12 +75,13 @@ const FacilityInfo = (props) => {
     const updateDbUser = async (inf) => {
         let info = userInfo
         try {
-            await fetch(`/users/${currentUser.dbUser._id}`, {
+            await axios({
                 method: 'POST',
+                url: `/users/${currentUser.dbUser._id}`, 
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify(info)
+                data: info
             }).then((res) => {
                 setFormComplete(true);
             })
