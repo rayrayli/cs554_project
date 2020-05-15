@@ -1,43 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
+import {Container , Button}from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import { setLogLevel } from 'firebase';
-
-// begin ray add for appointment 5/11/2020
-import { makeStyles } from '@material-ui/core/styles';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import StepContent from '@material-ui/core/StepContent';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import DatePicker from 'material-ui/DatePicker'
-import SelectField from 'material-ui/SelectField'
-import MenuItem from 'material-ui/MenuItem'
-import { RadioButton,RadioButtonGroup } from 'material-ui/RadioButton'
-import moment from 'moment'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-      width: '100%',
-    },
-    button: {
-      marginTop: theme.spacing(1),
-      marginRight: theme.spacing(1),
-    },
-    actionsContainer: {
-      marginBottom: theme.spacing(2),
-    },
-    resetContainer: {
-      padding: theme.spacing(3),
-    },
-  }));
-
-// end ray add for appointment 5/11/2020
 
 const key = process.env.REACT_APP_GOOGLE_API_KEY
 
@@ -235,86 +201,12 @@ const SearchDetails = (props) => {
 
 
     //add fro appointment picker
-    function getSteps() {
-      return ['Choose an available day for your appointment', 'Choose an available time for your appointment', 'Confirm your appointment'];
+    function handleredirecttoAppointment(){
+        
+        return (<Redirect to='/appointment' />);
+
     }
-    const classes = useStyles();
-    const [activeStep, setActiveStep] = React.useState(0);
-    const steps = getSteps();
 
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    };
-
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
-
-    const handleReset = () => {
-        setActiveStep(0);
-    };
-
-
-    function checkDisableDate(day) {
-        const dateString = moment(day).format('YYYY-DD-MM')
-        return moment(day).startOf('day').diff(moment().startOf('day')) < 0
-      }
-    
-    const [selectedDate, setSelectedDate] = React.useState(new Date('2019-08-18T21:11:54'));  
-    const handleDateChange = (date) => {
-          setSelectedDate(date);
-        };
-
-    function getStepContent(step) {
-
-      switch (step) {
-        case 0:
-            return  ( <MuiThemeProvider ><DatePicker
-                style={{
-                    marginTop: 10,
-                    marginLeft: 10
-                }}
-                value={selectedDate}
-                hintText="Select a date"
-                mode={'landscape'}
-                onChange={handleDateChange}
-                shouldDisableDate={day => checkDisableDate(day)}
-            /> </MuiThemeProvider>);
-        // case 1:
-        //   return (<div>
-        //         <SelectField
-        //             floatingLabelText="AM or PM"
-        //             value={selectedDate}
-        //             onChange={handleDateChange}
-        //             selectionRenderer={value => value ? 'PM' : 'AM'}>
-        //             <MenuItem value={0}>AM</MenuItem>
-        //             <MenuItem value={1}>PM</MenuItem>
-        //         </SelectField>
-
-        //         <RadioButtonGroup
-        //             style={{ marginTop: 15,
-        //                     marginLeft: 15
-        //                 }}
-        //             name="appointmentTimes"
-        //             defaultSelected={data.appointmentSlot}
-        //             onChange={(evt, val) => this.handleSetAppointmentSlot(val)}>
-        //             {this.renderAppointmentTimes()}
-        //         </RadioButtonGroup></div>);
-        // case 2:
-        //   return (<h2 style={{ textAlign: this.state.smallScreen ? 'center' : 'left', color: '#bdbdbd', lineHeight: 1.5, padding: '0 10px', fontFamily: 'Roboto'}}>
-        //   { <span>
-        //     Scheduling a
-        //       <span style={spanStyle}> 1 hour </span>
-        //     appointment {this.state.appointmentDate && <span>
-        //       on <span style={spanStyle}>{moment(this.state.appointmentDate).format('dddd[,] MMMM Do')}</span>
-        //   </span>} {Number.isInteger(this.state.appointmentSlot) && <span>at <span style={spanStyle}>{moment().hour(9).minute(0).add(this.state.appointmentSlot, 'hours').format('h:mm a')}</span></span>}
-        //   </span>}
-        //   </h2>);
-        default:
-          return 'Unknown step';
-      }
-    }
-    
 
     // Populate County Data
     return (
@@ -350,48 +242,9 @@ const SearchDetails = (props) => {
                                 <h1> {selected && selected.facilityName} </h1>
                                 <h3> {selected && selected.email}   {selected && selected.phone} </h3>
                                 <h3> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </h3>
+                                {selected && (<Button onClick={handleredirecttoAppointment}> Create an appointment</Button>)}
                             </div>
-                            {selected &&(
-                            <div className={classes.root}>
-                            <Stepper activeStep={activeStep} orientation="vertical">
-                                {steps.map((label, index) => (
-                                <Step key={label}>
-                                    <StepLabel>{label}</StepLabel>
-                                    <StepContent>
-                                        { getStepContent(index) }
-                                        <div className={classes.actionsContainer}>
-                                            <div>
-                                            <Button
-                                                disabled={activeStep === 0}
-                                                onClick={handleBack}
-                                                className={classes.button}
-                                            >
-                                                Back
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                color="primary"
-                                                onClick={handleNext}
-                                                className={classes.button}
-                                            >
-                                                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                                            </Button>
-                                            </div>
-                                        </div>
-                                    </StepContent>
-                                </Step>
-                                ))}
-                            </Stepper>
-                            {activeStep === steps.length && (
-                                <Paper square elevation={0} className={classes.resetContainer}>
-                                <Typography>All steps completed - you&apos;re finished</Typography>
-                                <Button onClick={handleReset} className={classes.button}>
-                                    Reset
-                                </Button>
-                                </Paper>
-                            )}
-                            </div>
-                            )}
+                            
                         </div>
                     </Row>       
                 </Col>

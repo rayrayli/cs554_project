@@ -14,7 +14,7 @@ import FacilityInfo from './components/FacilityInfo';
 import Navigation from './components/Navigation';
 import Inbox from './components/Inbox';
 import NotFound from './components/NotFound'
-
+import Appointment from './components/Appointment'
 
 import './App.css';
 
@@ -35,6 +35,7 @@ function App() {
             <Route exact path='/register' component={Register} />
             <Route exact path='/' component={Landing} />
             <Route exact path='/searchDetails' component={SearchDetails} />
+            <Route exact path='/appointment' component={Appointment} />
             <PrivateRoute exact path='/account' component={Account} />
             <PrivateRoute exact path='/user/health-details' component={HealthInfo} />
             <PrivateRoute exact path='/user/facility-details' component={FacilityInfo} />
