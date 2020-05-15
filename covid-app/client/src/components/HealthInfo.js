@@ -34,7 +34,7 @@ const HealthInfo = (props) => {
     // Validate User Input Address to Google GeoCode API
     const validateAddress = async (address) => {
         const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
-        return find.data.data.results[0].formatted_address
+        return find.data.results[0].formatted_address
     };
 
     // Set Address to GoogleAPI Confirmed Address

@@ -11,7 +11,7 @@ const states = [
     'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
 
-const Account = (props) => {
+const Account = () => {
     const { currentUser } = useContext(AuthContext);
 
     return <Container className='main' fluid>
@@ -881,7 +881,7 @@ const ChangePassword = () => {
         form[e.target.name] = e.target.value
         setFormData(form)
 
-        if (formData && (formData.newPassword1 !== formData.newPassword2 && formData.newPassword2)) {
+        if (formData && (formData.newPassword2 && formData.newPassword1 !== formData.newPassword2)) {
             setPasswordMatch('Passwords Do Not Match')
         }
     };

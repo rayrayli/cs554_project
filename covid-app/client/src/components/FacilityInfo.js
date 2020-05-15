@@ -51,8 +51,8 @@ const FacilityInfo = (props) => {
             geometry: {
                 type: "Point",
                 coordinates: [
-                    find.data.data.results[0].geometry.location.lat,
-                    find.data.data.results[0].geometry.location.lng
+                    find.data.results[0].geometry.location.lat,
+                    find.data.results[0].geometry.location.lng
                 ]
             }
         }
