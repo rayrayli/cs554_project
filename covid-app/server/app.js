@@ -250,7 +250,8 @@ cron.schedule("00 5 * * *", async () => {
 /*
 ####################### RUN SERVER #######################
 */
-app.listen(PORT, () => {       
+app.listen(PORT, () => {
     console.log("We've now got a server!");
     console.log(`Your routes will be running on http://localhost:${PORT}`);
 });
+
