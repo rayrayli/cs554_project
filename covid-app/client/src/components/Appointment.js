@@ -97,7 +97,7 @@ const Appointment = (props) => {
       }
     
     function handlefetch(data) {
-        const { appointments } = data
+        const appointments = data
         const initSchedule = {}
         const today = moment().startOf('day')
         initSchedule[today.format('YYYY-DD-MM')] = true
@@ -129,7 +129,10 @@ const Appointment = (props) => {
 
       useEffect(
         () => {
+          console.log(currentUser)
+          console.log(facilityId)
           if (currentUser && facilityId) {
+            
             async function fetchAppointment() {
                 fetch(`/appointment/facility/${facilityId}`)
                     .then((res1) => res1.json())
@@ -272,7 +275,7 @@ const Appointment = (props) => {
                 appointment {selectedDate && <span>
                   on <span style={spanStyle}>{moment(selectedDate).format('dddd[,] MMMM Do')}</span>
               </span>} 
-              {Number.isInteger(appointmentSlot) && <span>at <span style={spanStyle}>{moment().hour(9).minute(0).add(appointmentSlot, 'hours').format('h:mm a')}</span></span>}
+              {Number.isInteger(appointmentSlot) && <span> at <span style={spanStyle}>{moment().hour(9).minute(0).add(appointmentSlot, 'hours').format('h:mm a')}</span></span>}
               </span>}
             </h2>
           </MuiThemeProvider>);
