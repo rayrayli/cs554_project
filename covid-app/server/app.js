@@ -17,9 +17,7 @@ admin.initializeApp({
 const PORT = 3001;
 const express = require("express");     // Utilize Express Module
 const path = require('path');
-app = require('express.io')()
-app.http().io()
-// const app = express();                  // Generate Express Application
+const app = express();
 const bodyParser = require("body-parser"); // JSON Parsing
 const data = require('./data');
 const getData = data.statData;
@@ -27,6 +25,8 @@ const users = data.users;
 const cors = require('cors');
 const cron = require("node-cron");
 const fs = require("fs");
+// const http = require('http').createServer(app);
+// const io = require('socket.io')(http);
 const eq = require("./emailqueue");
 eq.create_queue();
 
@@ -235,30 +235,6 @@ app.delete("/users/:uid", async (req, res) => {
     };
 });
 
-/*
-    Socket listeners
-*/
-app.io.route('join_chat', function(req) {
-    req.io.join(req.data);
-    req.io.room(req.data).broadcast('announce', {
-        message: `New client in the req.data room @ ${new Date().toString()}`
-    })
-});
-  
-app.io.route('send_msg', function(req) {
-    req.io.join(req.data.id);
-    req.io.room(req.data.id).broadcast('announce', {
-        message: req.data.msg.toString()
-    });
-    req.io.respond({msg: "ok"});
-});
-  
-app.io.route('disc', function(req) {
-    req.io.join(req.data.id);
-    req.io.room(req.data.id).broadcast('announce', {
-        message: `${req.data.user} has disconnected`
-    });
-});
 
 // Send 404 On All Other Routes
 app.use("*", (req, res) => {
@@ -279,11 +255,40 @@ cron.schedule("00 5 * * *", async () => {
 /*
 ####################### RUN SERVER #######################
 */
-app.listen(PORT, async () => {
+let server = app.listen(PORT, async () => {
     console.log("We've now got a server!");
     console.log(`Your routes will be running on http://localhost:${PORT}`);
-    // data.chatData.createChat("5eb74a16f90426360893db48", "5ebe9db7cc4d5d5174938771");
-    // data.chatData.addToHistory("5ebea5845ec9e007bcc892de", "ahjsgbkjhagbjd");
-    // eq.send_email(["kahsoonyap98@gmail.com", "covidappcs554@gmail.com"], "hello", "test");
 });
 
+let io = require('socket.io').listen(server);
+
+/*
+    Socket stuff
+*/
+io.on('connection', function(socket) {
+    let chat_id = "";
+    let user = ""
+  
+    socket.on('join_chat', function(req) {
+      chat_id = req.id;
+      user = req.user;
+      socket.join(chat_id);
+      
+      io.in(chat_id).emit("announce", {message: `${req.user} joined @ ${new Date().toString()}`});
+      console.log(`${req.user} joined @ ${new Date().toString()}`);
+});
+  
+    socket.on('send_msg', function(req) {
+      io.in(chat_id).emit("announce", {message: `${req.msg}`});
+    });
+  
+    socket.on('disc', function(req) {
+      console.log(`${req.user} left @ ${new Date().toString()}`);
+      io.in(chat_id).emit("announce", {message: `${req.user} has disconnected`});
+    });
+
+    socket.on('disconnect', function() {
+        console.log(`${user} left @ ${new Date().toString()}`);
+        io.in(chat_id).emit("announce", {message: `${user} has disconnected`});
+    });
+});
