@@ -15,7 +15,7 @@ function debounce(func, wait, immediate) {
     return function () {
         var context = this;
         let args = arguments;
-        
+
         var later = function () {
             timeout = null;
             if (!immediate) func.apply(context, args);
@@ -74,9 +74,9 @@ const FacilityLanding = () => {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                data: { 
+                data: {
                     facilityUid: currentUser.dbUser.uid,
-                    employeeUid: uid 
+                    employeeUid: uid
                 }
             }).then((res) => {
                 window.location.reload();
@@ -381,7 +381,7 @@ const PatientLanding = () => {
                     </Col>
                     <Col id='land-right' lg={6} md={12} sm={12}>
                         <div>
-                            <div class="landing-header">Coronavirus Disease (COVID-19)</div>
+                            <div className="landing-header">Coronavirus Disease (COVID-19)</div>
                             <Tabs defaultActiveKey="Overview" id='covid-info-tab'>
                                 <Tab eventKey="Overview" title="Overview">
                                     <div role="tabpanel" className="fade tab-pane active show" aria-labelledby="covid-info-tab-tab-Overview">
@@ -405,7 +405,27 @@ const PatientLanding = () => {
                                             Most people who fall sick with COVID-19 will experience mild to moderate symptoms and recover without
                                             special treatment.
                                         </p>
-                                        <hr />
+                                    </div>
+                                </Tab>
+                                <Tab eventKey="Symptoms" title="Symptoms">
+                                    <div>
+                                        <br />
+                                        <p className="info-header"> What Are Common Symptoms of COVID-19?</p>
+                                        <p>
+                                            The most common symptoms of COVID-19 are fever, dry cough, and tiredness. Some patients may have aches and pains, nasal
+                                            congestion, sore throat or diarrhea. These symptoms are usually mild and begin gradually. Some people become infected but
+                                            only have very mild symptoms. Most people (about 80%) recover from the disease without needing hospital treatment. Around
+                                            1 out of every 5 people who gets COVID-19 becomes seriously ill and develops difficulty breathing. Older people, and those
+                                            with underlying medical problems like high blood pressure, heart and lung problems, diabetes, or cancer , are at higher
+                                            risk of developing serious illness. However anyone can catch COVID-19 and become seriously ill. Even people with very mild
+                                            symptoms of COVID-19 can transmit the virus. People of all ages who experience fever, cough and difficulty breathing should
+                                            seek medical attention.
+                                        </p>
+                                    </div>
+                                </Tab>
+                                <Tab eventKey="Prevention" title="Prevention" >
+                                    <div>
+                                        <br />
                                         <p className="info-header"> How Does COVID-19 Spread?</p>
                                         <p>
                                             People can catch COVID-19 from others who have the virus. The disease spreads primarily from person to person
@@ -418,34 +438,15 @@ const PatientLanding = () => {
                                             or clean with alcohol-based hand rub.
                                             WHO is assessing ongoing research on the ways that COVID-19 is spread and will continue to share updated findings.
                                         </p>
-                                    </div>
-                                </Tab>
-                                <Tab eventKey="Symptoms" title="Symptoms">
-                                    <div>
-                                        <br />
-                                        <p className="info-header"> What Are Common Symptoms of COVID-19?</p>
-                                        <p>
-                                                The most common symptoms of COVID-19 are fever, dry cough, and tiredness. Some patients may have aches and pains, nasal
-                                                congestion, sore throat or diarrhea. These symptoms are usually mild and begin gradually. Some people become infected but
-                                                only have very mild symptoms. Most people (about 80%) recover from the disease without needing hospital treatment. Around
-                                                1 out of every 5 people who gets COVID-19 becomes seriously ill and develops difficulty breathing. Older people, and those
-                                                with underlying medical problems like high blood pressure, heart and lung problems, diabetes, or cancer , are at higher
-                                                risk of developing serious illness. However anyone can catch COVID-19 and become seriously ill. Even people with very mild
-                                                symptoms of COVID-19 can transmit the virus. People of all ages who experience fever, cough and difficulty breathing should
-                                                seek medical attention.
-                                        </p>
-                                    </div>
-                                </Tab>
-                                <Tab eventKey="Prevention" title="Prevention" >
-                                    <div>
-                                        <br />
+
+                                        <hr />
                                         <p className="info-header"> How Can I Stay Healthy?</p>
                                         <p>
-                                                Practicing hand and respiratory hygiene is important at ALL times and is the best way to protect others and yourself.
+                                            Practicing hand and respiratory hygiene is important at ALL times and is the best way to protect others and yourself.
 
-                                                When possible maintain at least a 1 metre (3 feet) distance between yourself and others. This is especially important if you are
-                                                standing by someone who is coughing or sneezing. Since some infected persons may not yet be exhibiting symptoms or their symptoms
-                                                may be mild, maintaining a physical distance with everyone is a good idea if you are in an area where COVID-19 is circulating.
+                                            When possible maintain at least a 1 metre (3 feet) distance between yourself and others. This is especially important if you are
+                                            standing by someone who is coughing or sneezing. Since some infected persons may not yet be exhibiting symptoms or their symptoms
+                                            may be mild, maintaining a physical distance with everyone is a good idea if you are in an area where COVID-19 is circulating.
                                         </p>
 
                                     </div>
@@ -455,19 +456,19 @@ const PatientLanding = () => {
                                         <br />
                                         <p className="info-header">Is There A Vaccine or Cure?</p>
                                         <p>
-                                                Not yet. To date, there is no vaccine and no specific antiviral medicines against COVID-19. However, .people, particularly those with
-                                                serious illness, may need to be hospitalized so that they can receive life-saving treatment for complications.. Most patients recover
-                                                thanks to such care.
+                                            Not yet. To date, there is no vaccine and no specific antiviral medicines against COVID-19. However, .people, particularly those with
+                                            serious illness, may need to be hospitalized so that they can receive life-saving treatment for complications.. Most patients recover
+                                            thanks to such care.
 
-                                                Possible vaccines and some specific drug treatments are currently under investigation. They are being tested through clinical trials.
-                                                WHO is coordinating efforts to develop vaccines and medicines to prevent and treat COVID-19.
+                                            Possible vaccines and some specific drug treatments are currently under investigation. They are being tested through clinical trials.
+                                            WHO is coordinating efforts to develop vaccines and medicines to prevent and treat COVID-19.
 
-                                                The most effective ways to protect yourself and others against COVID-19 are to:
+                                            The most effective ways to protect yourself and others against COVID-19 are to:
 
-                                                Clean your hands frequently and thoroughly
-                                                Avoid touching your eyes, mouth and nose
-                                                Cover your cough with the bend of elbow or tissue. If a tissue is used, discard it immediately and wash your hands.
-                                                Maintain a distance of at least 1 metre (3 feet) from others.
+                                            Clean your hands frequently and thoroughly
+                                            Avoid touching your eyes, mouth and nose
+                                            Cover your cough with the bend of elbow or tissue. If a tissue is used, discard it immediately and wash your hands.
+                                            Maintain a distance of at least 1 metre (3 feet) from others.
                                         </p>
                                     </div>
 
@@ -483,12 +484,12 @@ const PatientLanding = () => {
                 <Row className="logos">
                     <div className="img-container">
                         <a href='https://www.who.int/news-room/q-a-detail/q-a-coronaviruses#:~:text=protect'>
-                            <Image alt="WHO Logo" src={who} className="logo"/>
+                            <Image alt="WHO Logo" src={who} className="logo" />
                         </a>
                     </div>
                     <div className="img-container">
                         <a href='https://www.cdc.gov/coronavirus/2019-nCoV/index.html'>
-                            <Image alt="CDC logo" src={cdc} className="logo"/>
+                            <Image alt="CDC logo" src={cdc} className="logo" />
                         </a>
                     </div>
                 </Row>
