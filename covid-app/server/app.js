@@ -116,6 +116,24 @@ app.get("/appointment/patient/:patientId", async (req, res) => {
 app.post("/appointment/:facilityid", async (req, res) => {
     try {
         const newAppt = await appointments.addNewAppointmentToFacility(req.params.facilityid, req.body);
+        
+        // create new chat
+        console.log(newAppt.patientId);
+        console.log(newAppt.assignedToEmployee);
+        const newChatId = await chatData.createChat(newAppt.patientId, newAppt.assignedToEmployee._id);
+        users.addToMessage(patientId, newChatId);
+        users.addToMessage(newAppt.assignedToEmployee._id, newChatId);
+
+        // email to patient and employee about chat
+        eq.send_email(
+            [
+                users.getEmail(newAppt.patientId), 
+                users.getEmail(newAppt.assignedToEmployee)
+            ], 
+            "New Chat Started!",
+            `Go to chat at localhost:3000/chat/${newChatId}`
+        );
+
         res.status(200).send({ '_id': newAppt });
     } catch (err) {
         res.status(400).json({ "error": err.message });
@@ -367,7 +385,7 @@ io.on('connection', async function(socket) {
     socket.on('send_msg', async function(req) {
       let line = `${req.user}: ${req.msg}`;
       try {
-        chatData.addToHistory(chat_id, line);
+        await chatData.addToHistory(chat_id, line);
       } catch (e) {
         console.log(e);
       }
