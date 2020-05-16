@@ -35,6 +35,8 @@ async function main() {
     const population = mongoCollections.covidPopStats;
     const county = mongoCollections.covidCoStats;
     const users = mongoCollections.users;
+    db.createCollection("chats");
+
 
     async function clearUsers() {
         try {
