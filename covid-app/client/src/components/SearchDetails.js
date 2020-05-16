@@ -42,26 +42,13 @@ const SearchDetails = (props) => {
                 let county;
                 let state;
                 console.log(data);
-
-                if ((data.address_components.length >= 2) && (data.address_components[1].long_name.includes('County'))) {
-                    county = data.address_components[1].long_name;
-                    console.log(county)
-                    state = data.address_components[2].long_name
-
-                } else if ((data.address_components.length >= 3) && (data.address_components[2].long_name.includes('County'))) {
-                    county = data.address_components[2].long_name
-                    console.log(county)
-                    state = data.address_components[3].long_name
-
-                } else if ((data.address_components.length >= 4) && (data.address_components[3].long_name.includes('County'))) {
-                    county = data.address_components[3].long_name
-                    console.log(county)
-                    state = data.address_components[4].long_name
-
-                } else {
-                    setSearchResult({ lat: data.geometry.location.lat, lng: data.geometry.location.lng });
-                    return
-                };
+                
+                data && data.address_components.forEach( (arrInd, i) => {
+                    if (arrInd.types[0] === 'administrative_area_level_2') {
+                        county = data.address_components[i].long_name;
+                        state = data.address_components[i + 1].long_name
+                    }
+                })
 
                 setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
 
