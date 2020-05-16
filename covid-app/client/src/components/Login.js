@@ -27,16 +27,8 @@ const Login = () => {
             }
         } else if (currentUser.dbUser.role === 'employee') {
             return (<Redirect to='/' />)
-            // if () {
-            //     return (<Redirect to='/register/facility-details' />)
-            // } else {
-            //     return (<Redirect to='/' />)
-            // }
-            return
         }
     }
-
-    
 
     // Attempt Login With User Input Email and Password
     const handleLogin = async (e) => {

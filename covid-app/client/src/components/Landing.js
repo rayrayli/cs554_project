@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Row, Col, Figure, Tab, Tabs, Button, Modal, Form } from 'react-bootstrap';
+import { Container, Row, Col, Figure, Tab, Tabs, Button, Modal, Form, Image } from 'react-bootstrap';
 import { doPasswordReset } from '../firebase/FirebaseFunctions';
 import { AuthContext } from '../firebase/Auth';
 import SearchBar from './SearchBar';
 import Calendar from './Calendar';
 import axios from 'axios';
+import who from '../img/who.png';
+import cdc from '../img/cdc.png';
 
 // https://davidwalsh.name/function-debounce
 // Limit Map Redraw on Window Resizes
@@ -47,10 +49,9 @@ const FacilityLanding = () => {
     useEffect(
         () => {
             async function fetchEmployees() {
-                fetch(`/users/${currentUser.dbUser.facilityName}/employee`)
-                    .then((res1) => res1.json())
+                axios.get(`/users/${currentUser.dbUser.facilityName}/employee`)
                     .then((data) => {
-                        setEmployees(data);
+                        setEmployees(data.data);
                     })
             };
 
@@ -67,14 +68,16 @@ const FacilityLanding = () => {
     const adminDeleteUser = async (uid) => {
         try {
             // Remove User From Firbease via Admin SDK
-            await fetch('/admin/deleteEmployee', {
+            await axios({
                 method: 'DELETE',
+                url: '/admin/deleteEmployee',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify({
-                    uid: uid
-                })
+                data: { 
+                    facilityUid: currentUser.dbUser.uid,
+                    employeeUid: uid 
+                }
             }).then((res) => {
                 window.location.reload();
             });
@@ -188,11 +191,11 @@ const PatientLanding = () => {
         () => {
             // Get Official COVID-19 Stats for US & Each State 
             async function fetchData() {
-                fetch('/data/nation_state')
-                    .then((res1) => res1.json())
+                axios.get('/data/nation_state')
                     .then((data) => {
-                        setStatesCurrVals(data.state);
-                        setNationCurrVals(data.nation);
+                        console.log(data)
+                        setStatesCurrVals(data.data.state);
+                        setNationCurrVals(data.data.nation);
                     });
             };
 
@@ -202,6 +205,7 @@ const PatientLanding = () => {
                     .then((siteList) => {
                         if (currentUser && currentUser.dbUser && currentUser.dbUser.address) {
                             let currState = currentUser.dbUser.address.state;
+                            console.log(siteList)
                             siteList.data.forEach((stateObj) => {
                                 if (stateObj.state === currState) {
                                     setStateSite(stateObj.covid19Site);
@@ -282,11 +286,11 @@ const PatientLanding = () => {
             <div>
                 <SearchBar />
                 <br />
-                <Row>
+                <Row className="landing-body">
                     <Col id='land-left' lg={6} md={12} sm={12}>
-                        <Row className='stat-header'>
+                        <div className='landing-header'>
                             US STATS
-                        </Row>
+                        </div>
                         <br />
                         <Row id='stats'>
                             <Col>
@@ -339,6 +343,9 @@ const PatientLanding = () => {
                             <br />
                             <Row id='gMap' />
                         </Row>
+                        <div>
+                            <p className='stat-header'>Number of Cases</p>
+                        </div>
                         <Row className='legend' >
                             <Figure className='leg-item'>
                                 <Row id='zero' />
@@ -346,29 +353,24 @@ const PatientLanding = () => {
                                     1 - 499
                                 </Figure.Caption>
                             </Figure>
-
                             <Figure className='leg-item'>
                                 <Row id='one' />
                                 <Figure.Caption>
                                     500 - 4,999
                                 </Figure.Caption>
                             </Figure>
-
-
                             <Figure className='leg-item'>
                                 <Row id='two' />
                                 <Figure.Caption>
                                     5,000 - 9,999
                                 </Figure.Caption>
                             </Figure>
-
                             <Figure className='leg-item'>
                                 <Row id='three' />
                                 <Figure.Caption>
                                     10,000 - 14,999
                                 </Figure.Caption>
                             </Figure>
-
                             <Figure className='leg-item'>
                                 <Row id='four' />
                                 <Figure.Caption>
@@ -379,47 +381,50 @@ const PatientLanding = () => {
                     </Col>
                     <Col id='land-right' lg={6} md={12} sm={12}>
                         <div>
-                            <Row>
-                                <div> <p> Coronavirus Disease (COVID-19)</p></div>
-                                <Tabs defaultActiveKey="Overview" id='covid-info-tab'>
-                                    <Tab eventKey="Overview" title="Overview">
-                                        <div role="tabpanel" className="fade tab-pane active show" aria-labelledby="covid-info-tab-tab-Overview">
-                                            <br />
-                                            <p>
-                                                Coronaviruses are a large family of viruses which may cause illness in animals or humans.
-                                                In humans, several coronaviruses are known to cause respiratory infections ranging from the
-                                                common cold to more severe diseases such as Middle East Respiratory Syndrome (MERS) and Severe
-                                                Acute Respiratory Syndrome (SARS). The most recently discovered coronavirus causes coronavirus
-                                                disease COVID-19.
-                                            </p>
-                                            <hr />
-                                            <p>
-                                                COVID-19 is the infectious disease caused by the most recently discovered coronavirus. This new
-                                                virus and disease were unknown before the outbreak began in Wuhan, China, in December 2019. COVID-19
-                                                is now a pandemic affecting many countries globally.
-                                                Most people who fall sick with COVID-19 will experience mild to moderate symptoms and recover without
-                                                special treatment.
-                                            </p>
-                                            <hr />
-                                            <h6> How Does COVID-19 Spread?</h6>
-                                            <p>
-                                                People can catch COVID-19 from others who have the virus. The disease spreads primarily from person to person
-                                                through small droplets from the nose or mouth, which are expelled when a person with COVID-19 coughs, sneezes,
-                                                or speaks. These droplets are relatively heavy, do not travel far and quickly sink to the ground. People can
-                                                catch COVID-19 if they breathe in these droplets from a person infected with the virus. This is why it is important
-                                                to stay at least 1 metre (3 feet) away from others. These droplets can land on objects and surfaces around the
-                                                person such as tables, doorknobs and handrails. People can become infected by touching these objects or surfaces,
-                                                then touching their eyes, nose or mouth. This is why it is important to wash your hands regularly with soap and water
-                                                or clean with alcohol-based hand rub.
+                            <div class="landing-header">Coronavirus Disease (COVID-19)</div>
+                            <Tabs defaultActiveKey="Overview" id='covid-info-tab'>
+                                <Tab eventKey="Overview" title="Overview">
+                                    <div role="tabpanel" className="fade tab-pane active show" aria-labelledby="covid-info-tab-tab-Overview">
+                                        <br />
+                                        <p className="info-header"> What is Corona Virus?</p>
 
-                                                WHO is assessing ongoing research on the ways that COVID-19 is spread and will continue to share updated findings.
-                                            </p>
-                                        </div>
-                                    </Tab>
-                                    <Tab eventKey="Symptoms" title="Symptoms">
-                                        <div>
-                                            <br />
-                                            <p>
+                                        <p>
+                                            Coronaviruses are a large family of viruses which may cause illness in animals or humans.
+                                            In humans, several coronaviruses are known to cause respiratory infections ranging from the
+                                            common cold to more severe diseases such as Middle East Respiratory Syndrome (MERS) and Severe
+                                            Acute Respiratory Syndrome (SARS). The most recently discovered coronavirus causes coronavirus
+                                            disease COVID-19.
+                                        </p>
+                                        <hr />
+                                        <p className="info-header"> What is COVID-19?</p>
+
+                                        <p>
+                                            COVID-19 is the infectious disease caused by the most recently discovered coronavirus. This new
+                                            virus and disease were unknown before the outbreak began in Wuhan, China, in December 2019. COVID-19
+                                            is now a pandemic affecting many countries globally.
+                                            Most people who fall sick with COVID-19 will experience mild to moderate symptoms and recover without
+                                            special treatment.
+                                        </p>
+                                        <hr />
+                                        <p className="info-header"> How Does COVID-19 Spread?</p>
+                                        <p>
+                                            People can catch COVID-19 from others who have the virus. The disease spreads primarily from person to person
+                                            through small droplets from the nose or mouth, which are expelled when a person with COVID-19 coughs, sneezes,
+                                            or speaks. These droplets are relatively heavy, do not travel far and quickly sink to the ground. People can
+                                            catch COVID-19 if they breathe in these droplets from a person infected with the virus. This is why it is important
+                                            to stay at least 1 metre (3 feet) away from others. These droplets can land on objects and surfaces around the
+                                            person such as tables, doorknobs and handrails. People can become infected by touching these objects or surfaces,
+                                            then touching their eyes, nose or mouth. This is why it is important to wash your hands regularly with soap and water
+                                            or clean with alcohol-based hand rub.
+                                            WHO is assessing ongoing research on the ways that COVID-19 is spread and will continue to share updated findings.
+                                        </p>
+                                    </div>
+                                </Tab>
+                                <Tab eventKey="Symptoms" title="Symptoms">
+                                    <div>
+                                        <br />
+                                        <p className="info-header"> What Are Common Symptoms of COVID-19?</p>
+                                        <p>
                                                 The most common symptoms of COVID-19 are fever, dry cough, and tiredness. Some patients may have aches and pains, nasal
                                                 congestion, sore throat or diarrhea. These symptoms are usually mild and begin gradually. Some people become infected but
                                                 only have very mild symptoms. Most people (about 80%) recover from the disease without needing hospital treatment. Around
@@ -428,26 +433,28 @@ const PatientLanding = () => {
                                                 risk of developing serious illness. However anyone can catch COVID-19 and become seriously ill. Even people with very mild
                                                 symptoms of COVID-19 can transmit the virus. People of all ages who experience fever, cough and difficulty breathing should
                                                 seek medical attention.
-                                            </p>
-                                        </div>
-                                    </Tab>
-                                    <Tab eventKey="Prevention" title="Prevention" >
-                                        <div>
-                                            <br />
-                                            <p>
+                                        </p>
+                                    </div>
+                                </Tab>
+                                <Tab eventKey="Prevention" title="Prevention" >
+                                    <div>
+                                        <br />
+                                        <p className="info-header"> How Can I Stay Healthy?</p>
+                                        <p>
                                                 Practicing hand and respiratory hygiene is important at ALL times and is the best way to protect others and yourself.
 
                                                 When possible maintain at least a 1 metre (3 feet) distance between yourself and others. This is especially important if you are
                                                 standing by someone who is coughing or sneezing. Since some infected persons may not yet be exhibiting symptoms or their symptoms
                                                 may be mild, maintaining a physical distance with everyone is a good idea if you are in an area where COVID-19 is circulating.
-                                            </p>
+                                        </p>
 
-                                        </div>
-                                    </Tab>
-                                    <Tab eventKey="Treatment" title="Treatment" >
-                                        <div>
-                                            <br />
-                                            <p>
+                                    </div>
+                                </Tab>
+                                <Tab eventKey="Treatment" title="Treatment">
+                                    <div>
+                                        <br />
+                                        <p className="info-header">Is There A Vaccine or Cure?</p>
+                                        <p>
                                                 Not yet. To date, there is no vaccine and no specific antiviral medicines against COVID-19. However, .people, particularly those with
                                                 serious illness, may need to be hospitalized so that they can receive life-saving treatment for complications.. Most patients recover
                                                 thanks to such care.
@@ -461,35 +468,29 @@ const PatientLanding = () => {
                                                 Avoid touching your eyes, mouth and nose
                                                 Cover your cough with the bend of elbow or tissue. If a tissue is used, discard it immediately and wash your hands.
                                                 Maintain a distance of at least 1 metre (3 feet) from others.
-                                            </p>
-                                        </div>
+                                        </p>
+                                    </div>
 
-                                    </Tab>
-                                </Tabs>
-                            </Row>
+                                </Tab>
+                            </Tabs>
                             <br />
-                            <Row>
-                                <Col>
-                                    <Button href='https://www.who.int/news-room/q-a-detail/q-a-coronaviruses#:~:text=protect'>
-                                        <span> who.int</span>
-                                    </Button>
-                                </Col>
-                                <Col>
-                                    <Button href='https://www.cdc.gov/coronavirus/2019-nCoV/index.html'>
-                                        <span> cdc.gov </span>
-                                    </Button>
-                                </Col>
-
-                                {currentUser && stateSite &&
-                                    <Col>
-                                        <Button href={stateSite}>
-                                            <span> {stateSite && currentUser && currentUser.dbUser && currentUser.dbUser.address.state.toLowerCase()}.gov</span>
-                                        </Button>
-                                    </Col>
-                                }
-                            </Row>
                         </div>
                     </Col>
+                </Row>
+                <Row className="footer">
+                    <p>For more up-to-date info and news, please visit the World Health Organization or Center for Disease Control websites.</p>
+                </Row>
+                <Row className="logos">
+                    <div className="img-container">
+                        <a href='https://www.who.int/news-room/q-a-detail/q-a-coronaviruses#:~:text=protect'>
+                            <Image alt="WHO Logo" src={who} className="logo"/>
+                        </a>
+                    </div>
+                    <div className="img-container">
+                        <a href='https://www.cdc.gov/coronavirus/2019-nCoV/index.html'>
+                            <Image alt="CDC logo" src={cdc} className="logo"/>
+                        </a>
+                    </div>
                 </Row>
             </div>
         )
@@ -514,23 +515,23 @@ const AdminNewUserModal = (props) => {
 
         try {
             let tempPassword = Math.random().toString(36).substr(2, 8);
-            console.log(tempPassword);
 
             // Add User to Firbease via Admin SDK
-            await fetch('/admin/newEmployee', {
+            await axios({
                 method: 'POST',
+                url: '/admin/newEmployee',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify({
+                data: {
                     firstName: firstName.value,
                     lastName: lastName.value,
                     email: email.value,
                     phone: phone.value,
                     password: tempPassword,
-                    facility: currentUser.dbUser.facilityName
-                })
-            }).then((res) => {
+                    facility: currentUser.dbUser.uid
+                }
+            }).then(async (res) => {
                 doPasswordReset(email.value)
                 alert('Employee Created and Password Reset Sent');
             });

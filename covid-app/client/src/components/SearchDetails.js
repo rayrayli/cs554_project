@@ -3,7 +3,6 @@ import { Link, Redirect } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import { Row, Col } from 'react-bootstrap';
 import axios from 'axios';
-import { setLogLevel } from 'firebase';
 const key = process.env.REACT_APP_GOOGLE_API_KEY
 
 async function loadScript(src) {
@@ -64,11 +63,10 @@ const SearchDetails = (props) => {
 
                 setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
 
-                fetch(`/data/county/${county.substring(0, county.indexOf('County'))}`)
-                    .then((res1) => res1.json())
+                axios.get(`/data/county/${county.substring(0, county.indexOf('County'))}`)
                     .then((data) => {
                         console.log(data)
-                        data.forEach((doc) => {
+                        data.data.forEach((doc) => {
                             if (doc.Province_State === state) {
                                 console.log(doc);
                                 setCountyData(doc);
@@ -77,10 +75,9 @@ const SearchDetails = (props) => {
                         });
                     });
 
-                fetch('/users/admin/')
-                    .then((res1) => res1.json())
+                axios.get('/users/admin/')
                     .then((data) => {
-                        setFacilityData(data)
+                        setFacilityData(data.data)
                     })
             };
 

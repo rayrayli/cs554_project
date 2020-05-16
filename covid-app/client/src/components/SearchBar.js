@@ -35,7 +35,7 @@ const SearchBar = (props) => {
             <Row className='landing-form'>
                 <Form id='landingform' method='POST' name='formSearchLocal' onSubmit={handleSubmit} >
                     <InputGroup>
-                        <FormControl type='text' id="search" placeholder='Search Testing Facilities in Your Area' onChange={handleChange} />
+                        <FormControl type='text' id="search" aria-label="Search for Testing Facilities" placeholder='Search For Your County' onChange={handleChange} />
                         {/* <button> SEARCH </button> */}
                     </InputGroup>
                 </Form>

@@ -60,13 +60,13 @@ const Register = () => {
                 dob: null,
                 ssn: null,
                 address: null,
-                conditions: [null],
+                conditions: [],
                 insurance: {
                     id: null,
                     provider: null,
                 },
-                appointments: [null],
-                messages: [null]
+                appointments: [],
+                messages: []
             }
 
             await doCreateUserWithEmailAndPassword(email.value, password1.value, displayName, info)
@@ -113,15 +113,15 @@ const Register = () => {
                     Sunday: {}
                 },
                 app_slots: {
-                    Monday: [null],
-                    Tuesday: [null],
-                    Wednesday: [null],
-                    Thursday: [null],
-                    Friday: [null],
-                    Saturday: [null],
-                    Sunday: [null]
+                    Monday: [],
+                    Tuesday: [],
+                    Wednesday: [],
+                    Thursday: [],
+                    Friday: [],
+                    Saturday: [],
+                    Sunday: []
                 },
-                employees: [null],
+                employees: [],
                 geoJSON: null
             }
 
@@ -138,7 +138,10 @@ const Register = () => {
     };
 
     // Redirect User to Respective Details Form On Successful Register
-    if (currentUser && currentUser.dbUser) {
+    if (currentUser) {
+        setTimeout(() => {
+            
+        }, 500);
         if (currentUser.dbUser.role === 'patient') {
             return (<Redirect to='/user/health-details' />)
         } else if (currentUser.dbUser.role === 'admin') {

@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { AuthContext } from '../firebase/Auth';
+import axios from 'axios';
 
 const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
     // Check If User Logged In
@@ -9,10 +10,9 @@ const PrivateRoute = ({ component: RouteComponent, ...rest }) => {
     useEffect(
         () => {
             if (currentUser && currentUser.uid) {
-                fetch(`/users/${currentUser.uid}`)
-                    .then((res1) => res1.json())
+                axios.get(`/users/${currentUser.uid}`)
                     .then((data) => {
-                        console.log(data[0].role)
+                        console.log(data.data[0].role)
                     })
             }
         }, [currentUser]

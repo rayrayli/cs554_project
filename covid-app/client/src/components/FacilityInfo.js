@@ -75,12 +75,13 @@ const FacilityInfo = (props) => {
     const updateDbUser = async (inf) => {
         let info = userInfo
         try {
-            await fetch(`/users/${currentUser.dbUser._id}`, {
+            await axios({
                 method: 'POST',
+                url: `/users/${currentUser.dbUser._id}`, 
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify(info)
+                data: info
             }).then((res) => {
                 setFormComplete(true);
             })

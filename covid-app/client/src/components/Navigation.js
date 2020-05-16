@@ -8,9 +8,9 @@ const Navigation = () => {
     const { currentUser } = useContext(AuthContext);
 
     return (
-        <Row>
+        <div>
             {(!currentUser ? <NavigationNoAuth /> : (currentUser.dbUser.role === 'admin') ? <NavigationAdmin /> : (currentUser.dbUser.role === 'employee') ? <NavigationEmployee /> : <NavigationAuth />) }
-        </Row>
+        </div>
     )
 };
 
@@ -21,7 +21,7 @@ const NavigationAdmin = () => {
     let displayName = currentUser.dbUser.facilityName
 
     return (
-        <Navbar className='App-nav' fixed='top'>
+        <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Admin Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
@@ -38,10 +38,10 @@ const NavigationAdmin = () => {
 const NavigationEmployee = () => {
     const { currentUser } = useContext(AuthContext);
 
-    let displayName = currentUser.dbUser.firstName + currentUser.dbUser.lastName
+    let displayName = currentUser.dbUser.firstName + ' ' + currentUser.dbUser.lastName
 
     return (
-        <Navbar className='App-nav' fixed='top'>
+        <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Facility Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
@@ -62,7 +62,7 @@ const NavigationAuth = () => {
     let displayName = currentUser.dbUser.firstName + ' ' + currentUser.dbUser.lastName
 
     return (
-        <Navbar className='App-nav' fixed='top'>
+        <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
                 <Navbar.Text>
@@ -80,10 +80,10 @@ const NavigationAuth = () => {
 // Navigation for Unauthorized Users
 const NavigationNoAuth = () => {
     return (
-        <Navbar className='App-nav' fixed='top'>
+        <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
-                <Nav.Link href='/register'>  Login / Register </Nav.Link>
+                <Nav.Link href='/register' className="login">  Login / Register </Nav.Link>
             </Navbar.Collapse>
         </Navbar>
     );
