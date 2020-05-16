@@ -17,29 +17,15 @@ const Inbox = () => {
     }
 
     const AllChats = currentUser.dbUser.messages.map((chat) =>
-        <tr>
-            <td>
-                {chat}
-            </td>
-            <td>
-                {chat}
-            </td>
-        </tr>
+        <div>
+            <Link to={`/chat/${chat.cid}`}>{chat.other}</Link>
+        </div>
     );
 
     return (
         <Container className='main' fluid>
-            <table>
-                <tr>
-                    <th>
-                        Patient
-                    </th>
-                    <th>
-                        Chat
-                    </th>
-                </tr>
-                {AllChats}
-            </table>
+            <h1>All Chats</h1>            
+            {AllChats}
         </Container >
     )
 }

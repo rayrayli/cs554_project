@@ -26,6 +26,7 @@ const users = data.users;
 const appointments = data.appointments;
 const cors = require('cors');
 const cron = require("node-cron");
+const katex = require('katex');
 const fs = require("fs");
 // const http = require('http').createServer(app);
 // const io = require('socket.io')(http);
@@ -121,8 +122,7 @@ app.post("/appointment/:facilityid", async (req, res) => {
         console.log(newAppt.patientId);
         console.log(newAppt.assignedToEmployee);
         const newChatId = await chatData.createChat(newAppt.patientId, newAppt.assignedToEmployee._id);
-        users.addToMessage(patientId, newChatId);
-        users.addToMessage(newAppt.assignedToEmployee._id, newChatId);
+        users.addToMessage(newAppt.assignedToEmployee, newAppt.patientId, newChatId);
 
         // email to patient and employee about chat
         eq.send_email(
@@ -131,7 +131,7 @@ app.post("/appointment/:facilityid", async (req, res) => {
                 users.getEmail(newAppt.assignedToEmployee)
             ], 
             "New Chat Started!",
-            `Go to chat at localhost:3000/chat/${newChatId}`
+            `localhost:3000/chat/${newChatId}`
         );
 
         res.status(200).send({ '_id': newAppt });
