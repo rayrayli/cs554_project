@@ -482,7 +482,7 @@ const PatientLanding = () => {
                 </Row>
                 <Row className="logos">
                     <div className="img-container">
-                        <a href='https://www.who.int/news-room/q-a-detail/q-a-coronaviruses#:~:text=protect'>
+                        <a href='https://www.who.int/news-room/q-a-detail/q-a-coronaviruses#'>
                             <Image alt="WHO Logo" src={who} className="logo"/>
                         </a>
                     </div>

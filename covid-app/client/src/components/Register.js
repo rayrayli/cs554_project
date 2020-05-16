@@ -153,26 +153,22 @@ const Register = () => {
 
     return (
         <Container className='main' fluid>
-            <Row>
-                <Col className='register-left' md={3} lg={3}>
+            <Row className="registration-content">
+                <div className='registration-header'>
                     <h1> Welcome! </h1>
-                    <p> You're one step closer to knowing your COVID-19 status! </p>
+                    <p className="reg-login"> You're one step closer to knowing your COVID-19 status! Register for an account below.</p>
                     <br />
-                    <p> Already have an account? </p>
-                    <NavLink href='/login'>
-                        Login Here
-                    </NavLink><br />
-                </Col>
+                </div>
 
-                <Col className='register-right' md={9} lg={9}>
+                <Col className='register-right registration-body' md={9} lg={9}>
                     <Tab.Container defaultActiveKey="patient">
                         <Row>
                             <Nav variant="pills">
                                 <Nav.Item>
-                                    <Nav.Link eventKey="patient">PATIENT</Nav.Link>
+                                    <Nav.Link eventKey="patient" className="user-tab">PATIENT</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item>
-                                    <Nav.Link eventKey="facility">FACILITY</Nav.Link>
+                                    <Nav.Link eventKey="facility" className="user-tab">FACILITY</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                         </Row>
@@ -254,10 +250,17 @@ const Register = () => {
                                                     />
                                                 </Form.Group>
                                             </Form.Row>
-
-                                            <Button disabled={passwordMatch} variant="primary" type="submit">
-                                                Submit
-                                            </Button>
+                                            <div>
+                                                <Button disabled={passwordMatch} variant="primary" type="submit" block className="submit">
+                                                    Submit
+                                                </Button>
+                                            </div>
+                                            <Row className="reg-login">
+                                                <p className="reg-p"> Already have an account? </p>
+                                                    <NavLink href='/login' className="reg-login">
+                                                        Login Here 
+                                                    </NavLink><br />
+                                            </Row>
                                         </Col>
                                     </Form>
                                 </Tab.Pane>
@@ -319,9 +322,15 @@ const Register = () => {
                                             </Form.Row>
                                             {passwordMatch && <h4 className='error'> {passwordMatch} </h4>}
 
-                                            <Button variant="primary" type="submit">
+                                            <Button variant="primary" type="submit" block className="submit"> 
                                                 Submit
                                             </Button>
+                                            <Row className="reg-login">
+                                                <p className="reg-p"> Already have an account? </p>
+                                                    <NavLink href='/login' className="reg-login">
+                                                        Login Here 
+                                                    </NavLink><br />
+                                            </Row>
                                         </Col>
                                     </Form>
                                 </Tab.Pane>
