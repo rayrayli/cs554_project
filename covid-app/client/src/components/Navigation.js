@@ -38,7 +38,7 @@ const NavigationAdmin = () => {
 const NavigationEmployee = () => {
     const { currentUser } = useContext(AuthContext);
 
-    let displayName = currentUser.dbUser.firstName + currentUser.dbUser.lastName
+    let displayName = currentUser.dbUser.firstName + ' ' + currentUser.dbUser.lastName
 
     return (
         <Navbar className='App-nav'>

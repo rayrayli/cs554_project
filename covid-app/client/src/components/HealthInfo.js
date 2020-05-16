@@ -52,12 +52,13 @@ const HealthInfo = (props) => {
     // Update MongoDB With Facility Details (address, pre-existing conditions, ssn (NEEDS TO BE ENCRYPTED WITH BCRYPT), etc)
     const updateDbUser = async (info) => {
         try {
-            await fetch(`/users/${currentUser.dbUser._id}`, {
+            await axios({
                 method: 'POST',
+                url: `/users/${currentUser.dbUser._id}`, 
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify(info)
+                data: info
             }).then( (res) => {
                 setTimeout(() => {
                     setFormComplete(true);  

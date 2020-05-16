@@ -10,11 +10,33 @@ let exportedMethods = {
             const userCollection = await users();
 
             let newUser = await userCollection.insertOne(userInfo);
-            return newUser.insertedId;
+            return [newUser.insertedId, userInfo.uid];
 
         } catch (err) {
             return err;
 
+        }
+    },
+
+    async addEmployeeToFacility(facilityUid, employeeUid) {
+        try {
+            const userCollection = await users();
+            let added = await userCollection.updateOne( {uid: facilityUid}, {$push: {employees: employeeUid}} );
+            return added
+
+        } catch (err) {
+            return err;
+        }
+    },
+
+    async removeEmployeeFromFacility(facilityUid, employeeUid) {
+        try {
+            const userCollection = await users();
+            let removed = await userCollection.updateOne( {uid: facilityUid}, {$pull: {employees: employeeUid}} )
+            return removed
+            
+        } catch (err) {
+            return err;
         }
     },
 

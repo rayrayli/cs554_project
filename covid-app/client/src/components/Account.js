@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../firebase/Auth';
 import { doChangePassword, deleteAccount, doUpdateEmail, reauthenticate } from '../firebase/FirebaseFunctions';
 import { Container, Nav, Col, Row, Tab, Form, Button, Modal } from 'react-bootstrap';
+import axios from 'axios';
 const states = [
     'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
     'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
@@ -10,7 +11,7 @@ const states = [
     'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
 
-const Account = (props) => {
+const Account = () => {
     const { currentUser } = useContext(AuthContext);
 
     return <Container className='main' fluid>
@@ -51,24 +52,26 @@ const AccountFacility = () => {
             if (type === 1) {
                 await doUpdateEmail(info.email)
                     .then(async () => {
-                        await fetch(`/users/${currentUser.dbUser.uid}`, {
+                        await axios({
                             method: 'PATCH',
+                            url: `/users/${currentUser.dbUser.uid}`, 
                             headers: {
                                 'Content-Type': 'application/json;charset=utf-8'
                             },
-                            body: JSON.stringify(info)
+                            data: info
                         })
                             .then((res) => {
                                 alert('Profile Updated')
                             })
                     })
             } else {
-                await fetch(`/users/${currentUser.dbUser.uid}`, {
+                await axios({
                     method: 'PATCH',
+                    url: `/users/${currentUser.dbUser.uid}`, 
                     headers: {
                         'Content-Type': 'application/json;charset=utf-8'
                     },
-                    body: JSON.stringify(info)
+                    data: info
                 })
                     .then((res) => {
                         alert('Profile Updated')
@@ -326,24 +329,26 @@ const AccountPatient = () => {
             if (type === 1) {
                 await doUpdateEmail(info.email)
                     .then(async () => {
-                        await fetch(`/users/${currentUser.dbUser.uid}`, {
+                        await axios({
                             method: 'PATCH',
+                            url: `/users/${currentUser.dbUser.uid}`, 
                             headers: {
                                 'Content-Type': 'application/json;charset=utf-8'
                             },
-                            body: JSON.stringify(info)
+                            data: info
                         })
                             .then((res) => {
                                 alert('Profile Updated')
                             })
                     })
             } else {
-                await fetch(`/users/${currentUser.dbUser.uid}`, {
+                await axios({
                     method: 'PATCH',
+                    url: `/users/${currentUser.dbUser.uid}`, 
                     headers: {
                         'Content-Type': 'application/json;charset=utf-8'
                     },
-                    body: JSON.stringify(info)
+                    data: info
                 })
                     .then((res) => {
                         alert('Profile Updated')
@@ -651,24 +656,26 @@ const AccountEmployee = () => {
             if (type === 1) {
                 await doUpdateEmail(info.email)
                     .then(async () => {
-                        await fetch(`/users/${currentUser.dbUser.uid}`, {
+                        await axios({
                             method: 'PATCH',
+                            url: `/users/${currentUser.dbUser.uid}`, 
                             headers: {
                                 'Content-Type': 'application/json;charset=utf-8'
                             },
-                            body: JSON.stringify(info)
+                            data: info
                         })
                             .then((res) => {
                                 alert('Profile Updated')
                             })
                     })
             } else {
-                await fetch(`/users/${currentUser.dbUser.uid}`, {
+                await axios({
                     method: 'PATCH',
+                    url: `/users/${currentUser.dbUser.uid}`, 
                     headers: {
                         'Content-Type': 'application/json;charset=utf-8'
                     },
-                    body: JSON.stringify(info)
+                    data: info
                 })
                     .then((res) => {
                         alert('Profile Updated')
@@ -874,7 +881,7 @@ const ChangePassword = () => {
         form[e.target.name] = e.target.value
         setFormData(form)
 
-        if (formData && (formData.newPassword1 !== formData.newPassword2 && formData.newPassword2)) {
+        if (formData && (formData.newPassword2 && formData.newPassword1 !== formData.newPassword2)) {
             setPasswordMatch('Passwords Do Not Match')
         }
     };

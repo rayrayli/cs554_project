@@ -49,10 +49,9 @@ const FacilityLanding = () => {
     useEffect(
         () => {
             async function fetchEmployees() {
-                fetch(`/users/${currentUser.dbUser.facilityName}/employee`)
-                    .then((res1) => res1.json())
+                axios.get(`/users/${currentUser.dbUser.facilityName}/employee`)
                     .then((data) => {
-                        setEmployees(data);
+                        setEmployees(data.data);
                     })
             };
 
@@ -69,14 +68,16 @@ const FacilityLanding = () => {
     const adminDeleteUser = async (uid) => {
         try {
             // Remove User From Firbease via Admin SDK
-            await fetch('/admin/deleteEmployee', {
+            await axios({
                 method: 'DELETE',
+                url: '/admin/deleteEmployee',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify({
-                    uid: uid
-                })
+                data: { 
+                    facilityUid: currentUser.dbUser.uid,
+                    employeeUid: uid 
+                }
             }).then((res) => {
                 window.location.reload();
             });
@@ -190,11 +191,11 @@ const PatientLanding = () => {
         () => {
             // Get Official COVID-19 Stats for US & Each State 
             async function fetchData() {
-                fetch('/data/nation_state')
-                    .then((res1) => res1.json())
+                axios.get('/data/nation_state')
                     .then((data) => {
-                        setStatesCurrVals(data.state);
-                        setNationCurrVals(data.nation);
+                        console.log(data)
+                        setStatesCurrVals(data.data.state);
+                        setNationCurrVals(data.data.nation);
                     });
             };
 
@@ -204,6 +205,7 @@ const PatientLanding = () => {
                     .then((siteList) => {
                         if (currentUser && currentUser.dbUser && currentUser.dbUser.address) {
                             let currState = currentUser.dbUser.address.state;
+                            console.log(siteList)
                             siteList.data.forEach((stateObj) => {
                                 if (stateObj.state === currState) {
                                     setStateSite(stateObj.covid19Site);
@@ -513,23 +515,23 @@ const AdminNewUserModal = (props) => {
 
         try {
             let tempPassword = Math.random().toString(36).substr(2, 8);
-            console.log(tempPassword);
 
             // Add User to Firbease via Admin SDK
-            await fetch('/admin/newEmployee', {
+            await axios({
                 method: 'POST',
+                url: '/admin/newEmployee',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                body: JSON.stringify({
+                data: {
                     firstName: firstName.value,
                     lastName: lastName.value,
                     email: email.value,
                     phone: phone.value,
                     password: tempPassword,
-                    facility: currentUser.dbUser.facilityName
-                })
-            }).then((res) => {
+                    facility: currentUser.dbUser.uid
+                }
+            }).then(async (res) => {
                 doPasswordReset(email.value)
                 alert('Employee Created and Password Reset Sent');
             });
