@@ -42,7 +42,11 @@ const SearchDetails = (props) => {
                 let county;
                 let state;
                 console.log(data);
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> 6d243f55d333e3a3fb453bbed23f467a5ef002a4
                 data && data.address_components.forEach( (arrInd, i) => {
                     if (arrInd.types[0] === 'administrative_area_level_2') {
                         county = data.address_components[i].long_name;
