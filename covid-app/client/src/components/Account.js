@@ -421,6 +421,9 @@ const AccountPatient = () => {
                                 <Nav.Link eventKey="Profile">Profile</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
+                                <Nav.Link eventKey="Appointments">Appointments</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
                                 <Nav.Link eventKey="Password">Password</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>

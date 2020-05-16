@@ -104,7 +104,7 @@ const Appointment = (props) => {
         //return schedule after today
         const schedule = (!appointments || !appointments.length)  ? initSchedule : appointments.reduce((currentSchedule, appointment) => {
           const { _id, date, slot,...otherdata} = appointment
-          console.log(appointment);
+          // console.log(appointment);
           const dateString = moment(date, 'YYYY-DD-MM').format('YYYY-DD-MM');
           if (!currentSchedule[date]){
             currentSchedule[dateString] = Array(8).fill(false);
@@ -304,8 +304,11 @@ const Appointment = (props) => {
     return ( 
         <Container className='main' fluid > 
         <Row>
-              <Link to='/searchDetails'>Go Back</Link>
-            </Row>
+          <Link to={{
+            pathname: '/searchDetails',
+            state: {result: props.location.state.result }
+        }}>Go Back</Link>
+        </Row>
         <Row>
               <div className={classes.root}>
               <Stepper activeStep={activeStep} orientation="vertical">
