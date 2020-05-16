@@ -288,7 +288,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('disconnect', function() {
-        console.log(`${user} left @ ${new Date().toString()}`);
-        io.in(chat_id).emit("announce", {message: `${user} has disconnected`});
+      console.log(`${user} left @ ${new Date().toString()}`);
+      io.in(chat_id).emit("announce", {message: `${user} has disconnected`});
     });
 });
