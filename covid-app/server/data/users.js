@@ -231,6 +231,31 @@ let exportedMethods = {
             return err;
 
         };
+    },
+
+    async addToMessage(uid, cid) {
+        try {
+            let userFound = await this.getUserById(uid);
+            if (userFound) {
+                userFound.message.push(cid);
+                const userCollection = await users();
+                let newChat = await userCollection.updateOne({_id: ObjectId(uid)}, {$set: {message: userFound.message}});
+                return;
+            }
+        } catch(e) {
+            console.log(e);
+        }
+    },
+
+    async getEmail(uid) {
+        try {
+            let userFound = await this.getUserById(uid);
+            if (userFound) {
+                return userFound.email;
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 };
 
