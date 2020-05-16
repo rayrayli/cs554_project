@@ -45,7 +45,31 @@ const FacilityInfo = (props) => {
     // Validate User Input Address to Google GeoCode API
     const validateAddress = async (address) => {
         const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
+        const results = find.data.results[0] 
         console.log(find.data)
+        let formatted, street_address, city, state, zip
+
+        results && results.address_components.forEach( (arrInd, i) => {
+            if (arrInd.types[0] === 'street_number') {
+                street_address = `${results.address_components[i].long_name} ${results.address_components[i + 1].long_name}`
+            }
+
+            if (arrInd.types[0] === 'locality') {
+                city = `${results.address_components[i].long_name}`
+            }
+
+            if (arrInd.types[0] === 'administrative_area_level_1') {
+                state = `${results.address_components[i].short_name}`
+            }
+
+            if (arrInd.types[0] === 'postal_code') {
+                zip = `${results.address_components[i].long_name}`
+            }
+        })
+
+        formatted = `${street_address}, ${city}, ${state} ${zip}, USA`
+        console.log(formatted)
+
         let geoJson = {
             type: "Feature",
             geometry: {
@@ -56,7 +80,7 @@ const FacilityInfo = (props) => {
                 ]
             }
         }
-        return [find.data.results[0].formatted_address, geoJson]
+        return [formatted, geoJson]
     };
 
     // Set Address to GoogleAPI Confirmed Address

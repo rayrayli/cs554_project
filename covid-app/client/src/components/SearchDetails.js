@@ -43,25 +43,12 @@ const SearchDetails = (props) => {
                 let state;
                 console.log(data);
 
-                if ((data.address_components.length >= 2) && (data.address_components[1].long_name.includes('County'))) {
-                    county = data.address_components[1].long_name;
-                    console.log(county)
-                    state = data.address_components[2].long_name
-
-                } else if ((data.address_components.length >= 3) && (data.address_components[2].long_name.includes('County'))) {
-                    county = data.address_components[2].long_name
-                    console.log(county)
-                    state = data.address_components[3].long_name
-
-                } else if ((data.address_components.length >= 4) && (data.address_components[3].long_name.includes('County'))) {
-                    county = data.address_components[3].long_name
-                    console.log(county)
-                    state = data.address_components[4].long_name
-
-                } else {
-                    setSearchResult({ lat: data.geometry.location.lat, lng: data.geometry.location.lng });
-                    return
-                };
+                data && data.address_components.forEach( (arrInd, i) => {
+                    if (arrInd.types[0] === 'administrative_area_level_2') {
+                        county = data.address_components[i].long_name;
+                        state = data.address_components[i + 1].long_name
+                    }
+                })
 
                 setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
 
@@ -173,7 +160,7 @@ const SearchDetails = (props) => {
 
     function drawMarkers() {
         facilityData && facilityData.map((facility, i) => {
-            if (facility.geoJSON.geometry && facility.geoJSON.geometry.coordinates) {
+            if (facility.geoJSON && facility.geoJSON.geometry.coordinates) {
                 marker = new window.google.maps.Marker({
                     position: { lat: facility.geoJSON.geometry.coordinates[0], lng: facility.geoJSON.geometry.coordinates[1] },
                     map: map,

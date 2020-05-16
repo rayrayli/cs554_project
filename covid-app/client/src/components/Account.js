@@ -3,6 +3,7 @@ import { AuthContext } from '../firebase/Auth';
 import { doChangePassword, deleteAccount, doUpdateEmail, reauthenticate } from '../firebase/FirebaseFunctions';
 import { Container, Nav, Col, Row, Tab, Form, Button, Modal } from 'react-bootstrap';
 import axios from 'axios';
+const key = process.env.REACT_APP_GOOGLE_API_KEY
 const states = [
     'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
     'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
@@ -10,6 +11,7 @@ const states = [
     'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
     'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
+
 
 const Account = () => {
     const { currentUser } = useContext(AuthContext);
@@ -98,21 +100,66 @@ const AccountFacility = () => {
         }
     }
 
-    const handleAdminUpdate = (e) => {
+    const validateAddress = async (address) => {
+        console.log("!!!!!!!!", address)
+        const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
+        console.log(find)
+        const results = find.data.results[0] 
+        let formatted, street_address, city, state, zip
+    
+        results && results.address_components.forEach( (arrInd, i) => {
+            if (arrInd.types[0] === 'street_number') {
+                street_address = `${results.address_components[i].long_name} ${results.address_components[i + 1].long_name}`
+            }
+    
+            if (arrInd.types[0] === 'locality') {
+                city = `${results.address_components[i].long_name}`
+            }
+    
+            if (arrInd.types[0] === 'administrative_area_level_1') {
+                state = `${results.address_components[i].short_name}`
+            }
+    
+            if (arrInd.types[0] === 'postal_code') {
+                zip = `${results.address_components[i].long_name}`
+            }
+        })
+    
+        formatted = `${street_address}, ${city}, ${state} ${zip}, USA`
+        console.log(formatted)
+    
+        let geoJson = {
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: [
+                    find.data.results[0].geometry.location.lat,
+                    find.data.results[0].geometry.location.lng
+                ]
+            }
+        }
+        return [street_address, city, state, zip, geoJson]
+    };
+
+    const handleAdminUpdate = async (e) => {
         e.preventDefault();
 
         let { email, phone, website, address1, address2, city, state, zip } = e.target.elements;
+        let [street_address, conf_city, conf_state, conf_zip, geoJson]  = await validateAddress(`${address1.value}, ${city.value}, ${state.value} ${zip.value}, USA`)
+        console.log(geoJson)
+
         let info = {
             'email': email.value,
             'phone': phone.value,
             'website': website.value,
             'address': {
-                'street': address1.value,
+                'street': street_address,
                 'unit': address2.value,
-                'city': city.value,
-                'state': state.value,
-                'zip': zip.value,
-            }
+                'city': conf_city,
+                'state': conf_state,
+                'zip': conf_zip,
+            },
+            'geoJSON': geoJson
         }
         setUpdateInfo(info)
 
@@ -375,9 +422,47 @@ const AccountPatient = () => {
         }
     }
 
+    const validateAddress = async (address) => {
+        const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
+        const results = find.data.results[0] 
+        let formatted, street_address, city, state, zip
+    
+        results && results.address_components.forEach( (arrInd, i) => {
+            if (arrInd.types[0] === 'street_number') {
+                street_address = `${results.address_components[i].long_name} ${results.address_components[i + 1].long_name}`
+            }
+    
+            if (arrInd.types[0] === 'locality') {
+                city = `${results.address_components[i].long_name}`
+            }
+    
+            if (arrInd.types[0] === 'administrative_area_level_1') {
+                state = `${results.address_components[i].short_name}`
+            }
+    
+            if (arrInd.types[0] === 'postal_code') {
+                zip = `${results.address_components[i].long_name}`
+            }
+        })
+        
+        let geoJson = {
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: [
+                    find.data.results[0].geometry.location.lat,
+                    find.data.results[0].geometry.location.lng
+                ]
+            }
+        }
+        return [street_address, city, state, zip, geoJson]
+    };
+
     const handlePatientDetailsUpdate = async (e) => {
         e.preventDefault();
         let { firstName, lastName, email, dob, gender, address1, address2, city, state, zip } = e.target.elements
+        let [street_address, conf_city, conf_state, conf_zip, geoJson] = await validateAddress(`${address1.value}, ${city.value}, ${state.value} ${zip.value}, USA`)
+
         let info = {
             'firstName': firstName.value,
             'lastName': lastName.value,
@@ -385,11 +470,11 @@ const AccountPatient = () => {
             'dob': dob.value.toLocaleString(),
             'gender': gender.value,
             'address': {
-                'street': address1.value,
+                'street': street_address,
                 'unit': address2.value,
-                'city': city.value,
-                'state': state.value,
-                'zip': zip.value,
+                'city': conf_city,
+                'state': conf_state,
+                'zip': conf_zip,
             }
         }
         setUpdateInfo(info)
