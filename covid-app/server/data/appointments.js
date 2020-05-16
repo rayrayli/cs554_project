@@ -107,8 +107,8 @@ let exportedMethods = {
 
                 let beforeAppointment = await apptCollection.find({ patientId: updateInfo.patientId }).toArray();
 
-                if (!beforeAppointment || beforeAppointment[0].assignedToEmployee === null){
-                    if (adminsFound === []){
+                if ((typeof beforeAppointment === 'undefined') || !beforeAppointment || beforeAppointment[0].assignedToEmployee === null){
+                    if (typeof adminsFound === 'undefined' || !adminsFound){
                         assignTo = null
                     }else{
                         assignTo = adminsFound[Math.floor(Math.random() * adminsFound.length)].uid
@@ -117,8 +117,6 @@ let exportedMethods = {
                 else {
                      assignTo = beforeAppointment.assignTo;
                 }
-                console.log(beforeAppointment);
-                console.log(assignTo);
 
                 let newAppointment = {
                     _id: uuidv4(),
