@@ -281,11 +281,6 @@ io.on('connection', function(socket) {
     socket.on('send_msg', function(req) {
       io.in(chat_id).emit("announce", {message: `${req.msg}`});
     });
-  
-    socket.on('disc', function(req) {
-      console.log(`${req.user} left @ ${new Date().toString()}`);
-      io.in(chat_id).emit("announce", {message: `${req.user} has disconnected`});
-    });
 
     socket.on('disconnect', function() {
       console.log(`${user} left @ ${new Date().toString()}`);
