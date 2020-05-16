@@ -233,15 +233,23 @@ let exportedMethods = {
         };
     },
 
-    async addToMessage(uid, cid) {
+    async addToMessage(eid, pid, cid) {
         try {
-            let userFound = await this.getUserById(uid);
+            let userFound = await this.getUserById(eid);
             if (userFound) {
-                userFound.message.push(cid);
+                userFound.message.push({cid: cid, other: this.getFirstName(pid)});
                 const userCollection = await users();
-                let newChat = await userCollection.updateOne({_id: ObjectId(uid)}, {$set: {message: userFound.message}});
-                return;
+                let newChat = await userCollection.updateOne({_id: ObjectId(eid)}, {$set: {message: userFound.message}});
             }
+
+            let userFound = await this.getUserById(pid);
+            if (userFound) {
+                userFound.message.push({cid: cid, other: this.getFirstName(eid)});
+                const userCollection = await users();
+                let newChat = await userCollection.updateOne({_id: ObjectId(pid)}, {$set: {message: userFound.message}});
+            }
+
+            return;
         } catch(e) {
             console.log(e);
         }
@@ -252,6 +260,17 @@ let exportedMethods = {
             let userFound = await this.getUserById(uid);
             if (userFound) {
                 return userFound.email;
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    },
+
+    async getFirstName(uid) {
+        try {
+            let userFound = await this.getUserById(uid);
+            if (userFound) {
+                return userFound.firstName;
             }
         } catch (e) {
             console.log(e);

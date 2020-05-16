@@ -66,7 +66,7 @@ const Chat = () => {
   const user = currentUser.dbUser;
 
 
-  if (user.messages.length > 0 && user.messages.includes(cid)) {
+  if (user.messages.length > 0 && user.messages.filter(message => message.cid === cid)) {
     return (
       <ChatBox user={user} />
     )
