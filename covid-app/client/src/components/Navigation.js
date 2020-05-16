@@ -71,7 +71,7 @@ const NavigationAuth = () => {
                 <Nav.Link href='/account'> Account </Nav.Link>
                 {/* add check to see if appointment exists later */}
                 <Nav.Link href='/chat'> Chat </Nav.Link>
-                <Nav.Link onClick={doSignOut}> Logout </Nav.Link>
+                <Nav.Link  to='/' onClick={doSignOut}> Logout </Nav.Link>
             </Navbar.Collapse>
         </Navbar>
     );
