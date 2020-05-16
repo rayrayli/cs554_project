@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
+import {Container , Button}from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import axios from 'axios';
+import { setLogLevel } from 'firebase';
+
 const key = process.env.REACT_APP_GOOGLE_API_KEY
 
 async function loadScript(src) {
@@ -22,7 +24,7 @@ const SearchDetails = (props) => {
     const [map, setMap] = useState(undefined)
 
     const [selected, setSelected] = useState(null);
-
+    const [redirectToAppointment, setRedirectToAppointment] = useState(false);
 
     const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
     let marker;
@@ -195,6 +197,16 @@ const SearchDetails = (props) => {
         })
     }
 
+    //add for appointment picker
+    if (redirectToAppointment) {
+        return (
+        <Redirect to={{
+            pathname: '/appointment/',
+            state: {facilityInfo: selected}
+        }}/>
+        )
+    }
+ 
     // Populate County Data
     return (
         <Container className='main' fluid >
@@ -216,11 +228,12 @@ const SearchDetails = (props) => {
                             <p>State: {(countyData && countyData.Province_State) || 'Data Unavailable'}</p>
                             <p>Confirmed Cases: {(countyData && numberWithCommas(countyData.Confirmed)) || 'Data Unavailable'}</p>
                             <p>Deaths: {(countyData && numberWithCommas(countyData.Deaths)) || 'Data Unavailable'}</p>
-                            <p>Recovered Patiends: {(countyData && countyData.Recovered > 0) ? numberWithCommas(countyData.Recovered) : 'Not Reported'}</p>
+                            <p>Recovered Patients: {(countyData && countyData.Recovered > 0) ? numberWithCommas(countyData.Recovered) : 'Not Reported'}</p>
                         </div>
                     </Row>
 
                     <Row >
+
                         <div>
                             <h1> TESTING CENTER INFO HERE </h1>
 
@@ -228,10 +241,13 @@ const SearchDetails = (props) => {
                                 <h1> {selected && selected.facilityName} </h1>
                                 <h3> {selected && selected.email}   {selected && selected.phone} </h3>
                                 <h3> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </h3>
+                                <div>
+                                    {selected && (<Button onClick={() => setRedirectToAppointment(true)}> Create an appointment</Button>)}
+                                </div>
                             </div>
+                            
                         </div>
-                    </Row>
-
+                    </Row>       
                 </Col>
             </Row>
         </Container>

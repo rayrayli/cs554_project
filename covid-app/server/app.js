@@ -23,6 +23,7 @@ const data = require('./data');
 const getData = data.statData;
 const chatData = data.chatData;
 const users = data.users;
+const appointments = data.appointments;
 const cors = require('cors');
 const cron = require("node-cron");
 const fs = require("fs");
@@ -51,6 +52,77 @@ if (process.env.NODE_ENV === 'production') {
 /*
 ######################### ROUTES #########################
 */
+
+// get appointment info
+app.get("/appointment/:date", async (req, res) => {
+    try {
+        const appt = await appointments.getAppointmentByDate(req.params.date);
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.delete("/appointment/:date/:slot", async (req, res) => {
+    try {
+        const deleted = await appointments.deleteAppointmentByDate(req.params.date,req.params.slot);
+        res.status(200).json(deleted);
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.get("/appointment", async (req, res) => {
+    try {
+        const appt = await appointments.getAllAppointments();
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.get("/appointment/facility/:facilityid", async (req, res) => {
+    try {
+        const appt = await appointments.getAppointmentByFacilityId(req.params.facilityid);
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.get("/appointment/employee/:employeeid", async (req, res) => {
+    try {
+        const appt = await appointments.getAppointmentByEmployee(req.params.employeeid);
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.get("/appointment/patient/:patientId", async (req, res) => {
+    try {
+        const appt = await appointments.getAppointmentByPatientId(req.params.patientId);
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.post("/appointment/:facilityid", async (req, res) => {
+    try {
+        const newAppt = await appointments.addNewAppointmentToFacility(req.params.facilityid, req.body);
+        res.status(200).send({ '_id': newAppt });
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+
 // Get National/State Level Data  
 app.get("/data/nation_state", async (req, res) => {
     try {

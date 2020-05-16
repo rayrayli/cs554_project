@@ -21,4 +21,5 @@ module.exports = {
     users: getCollectionFn('users'), // Used to store all user data ... User Types: Patient, Facility EMployee User, Admin)
     facilities: getCollectionFn('facilities'), // Used to store all testing facilities and respective info (hours, appoinment data, patient data, employees, etc)
     chats: getCollectionFn('chats'),
+    appoinments: getCollectionFn('appointments'),
 };
