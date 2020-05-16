@@ -69,10 +69,10 @@ let exportedMethods = {
     },
 
 
-    async getAppointmentByEmployee(eployee) {
+    async getAppointmentByEmployee(employee) {
         try {
             const apptCollection = await appointments();
-            let apptFound = await apptCollection.find({ assignedToEmployee: eployee }).toArray();
+            let apptFound = await apptCollection.find({ assignedToEmployee: employee }).toArray();
             return apptFound;
         } catch (err) {
             return err;
