@@ -1,34 +1,37 @@
-app = require('express.io')()
-app.http().io()
+var app = require('express')();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
 
-app.get('/chat/:id', function(req, res) {
-  res.sendfile(__dirname + '/client.html');
+app.get('/chat/:id', (req, res) => {
+  res.sendFile(__dirname + '/chat.html');
 });
 
-app.io.route('join_chat', function(req) {
-  req.io.join(req.data);
-  req.io.room(req.data).broadcast('announce', {
-    message: `New client in the req.data room @ ${new Date().toString()}`
-  })
-});
+io.on('connection', function(socket) {
+  let chat_id = "";
 
-app.io.route('send_msg', function(req) {
-  req.io.join(req.data.id);
-  req.io.room(req.data.id).broadcast('announce', {
-    message: req.data.msg.toString()
+  socket.on('join_chat', function(req) {
+    chat_id = req.id;
+    socket.join(chat_id);
+    io.in(chat_id).emit("announce", {message: `${req.user} joined @ ${new Date().toString()}`});
   });
-  req.io.respond({msg: "ok"});
-});
+  console.log('a user connected');
 
-app.io.route('disc', function(req) {
-  req.io.join(req.data.id);
-  req.io.room(req.data.id).broadcast('announce', {
-    message: `${req.data.user} has disconnected`
+  socket.on('send_msg', function(req) {
+    io.in(chat_id).emit("announce", {message: `${req.msg}`});
+  });
+
+  socket.on('disc', function(req) {
+    console.log("leaving");
+    console.log(req);
+    io.in(chat_id).emit("announce", {message: `${req.user} has disconnected`});
   });
 });
 
-app.get('/', function(req, res) {
-  res.sendfile(__dirname + '/client.html');
-});
+// io.on('send_msg', function(req) {
+//   console.log("here");
+//   io.in(req.data.id).emit("announce", {message: `New client in the req.data room @ ${new Date().toString()}`});
+// });
 
-app.listen(7076)
+http.listen(3000, () => {
+  console.log('listening on *:3000');
+});
