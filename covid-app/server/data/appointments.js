@@ -79,6 +79,7 @@ let exportedMethods = {
         }
     },
 
+
     async getAppointmentByDate(date) {
         try {
             const apptCollection = await appointments();
@@ -93,22 +94,31 @@ let exportedMethods = {
     async addNewAppointmentToFacility(fcId, updateInfo) {
         try {
             const userCollection = await users();
+            const apptCollection = await appointments();
+
             let doc = await userCollection.findOne({ uid: fcId});
             if(!doc){
                 throw `No appoitment with ${fcId}`;
             }
+            let adminsFound = await userCollection.find({ role: 'employee' }, { facility: doc.facilityName }).toArray();
             //todo add to patient appointment list
             if (doc.role === 'admin') {
-                let employees = doc.employees;
                 let assignTo = null;
 
-                if (employees === []){
-                    assignTo = null
-                }else{
-                    assignTo = employees[Math.floor(Math.random() * employees.length)]
-                }
+                let beforeAppointment = await apptCollection.find({ patientId: updateInfo.patientId }).toArray();
 
-                const apptCollection = await appointments();
+                if (!beforeAppointment || beforeAppointment[0].assignedToEmployee === null){
+                    if (adminsFound === []){
+                        assignTo = null
+                    }else{
+                        assignTo = adminsFound[Math.floor(Math.random() * adminsFound.length)].uid
+                    }
+                }
+                else {
+                     assignTo = beforeAppointment.assignTo;
+                }
+                console.log(beforeAppointment);
+                console.log(assignTo);
 
                 let newAppointment = {
                     _id: uuidv4(),
@@ -118,7 +128,7 @@ let exportedMethods = {
                     userEmail: updateInfo.email,
                     patientId: updateInfo.patientId,
                     facilityUid: fcId,
-                    faclilityName: doc.facilityName,
+                    facilityName: doc.facilityName,
                     assignedToEmployee: assignTo
                 };
 
@@ -134,6 +144,7 @@ let exportedMethods = {
                 return;
             }
         } catch (err) {
+            console.log(err)
             return err;
         };
     }
