@@ -33,7 +33,7 @@ class ChatBox extends React.Component {
           let contents = document.getElementById("text_box").value;
           if (contents != "") {
             document.getElementById("text_box").value = "";
-            let ack = socket.emit('send_msg', {id: id, msg: contents});
+            let ack = socket.emit('send_msg', {user: window.firstName, msg: contents});
             if (ack != null && ack != undefined) {
               $("#text_box").text("");
             }
@@ -50,7 +50,6 @@ class ChatBox extends React.Component {
     render() {
         return (
             <Container className='main' fluid>
-                <p>hello</p>
                 <div id="chat">
                     <div id="chat_box" />
                     <input type="text" id="text_box"/>

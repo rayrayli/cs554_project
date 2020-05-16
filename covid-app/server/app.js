@@ -21,6 +21,7 @@ const app = express();
 const bodyParser = require("body-parser"); // JSON Parsing
 const data = require('./data');
 const getData = data.statData;
+const chatData = data.chatData;
 const users = data.users;
 const cors = require('cors');
 const cron = require("node-cron");
@@ -265,25 +266,35 @@ let io = require('socket.io').listen(server);
 /*
     Socket stuff
 */
-io.on('connection', function(socket) {
+io.on('connection', async function(socket) {
     let chat_id = "";
     let user = ""
   
-    socket.on('join_chat', function(req) {
+    socket.on('join_chat', async function(req) {
       chat_id = req.id;
       user = req.user;
       socket.join(chat_id);
       
+      let history = await chatData.getHistory(chat_id);
+      for (line in history) {
+        socket.emit("announce", {message: history[line]});
+      }
       io.in(chat_id).emit("announce", {message: `${req.user} joined @ ${new Date().toString()}`});
       console.log(`${req.user} joined @ ${new Date().toString()}`);
-});
+    });
   
-    socket.on('send_msg', function(req) {
-      io.in(chat_id).emit("announce", {message: `${req.msg}`});
+    socket.on('send_msg', async function(req) {
+      let line = `${req.user}: ${req.msg}`;
+      try {
+        chatData.addToHistory(chat_id, line);
+      } catch (e) {
+        console.log(e);
+      }
+      io.in(chat_id).emit("announce", {message: line});
     });
 
-    socket.on('disconnect', function() {
+    socket.on('disconnect', async function() {
       console.log(`${user} left @ ${new Date().toString()}`);
-      io.in(chat_id).emit("announce", {message: `${user} has disconnected`});
+      io.in(chat_id).emit("announce", {message: `${user} has disconnected @ ${new Date().toString()}`});
     });
 });
