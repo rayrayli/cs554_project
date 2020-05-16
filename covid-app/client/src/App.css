@@ -41,7 +41,6 @@
 
 .main {
   align-content: center;
-  margin-top: 3rem;
 }
 
 .landing-form, #landingform {
@@ -83,44 +82,35 @@
   text-align: left;
   font-size: 11pt;
   height: fit-content;
+  justify-content: center;
 }
 
 .leg-item {
   padding-right: 1px;
   padding-left: 1px;
-  width: 7.5rem;
+  width: 5rem;
+}
+
+#zero, #one, #two, #three, #four {
+  height: .75rem;
+  width: 4rem;
+  margin: 0px;
 }
 #zero{
-  height: .75rem;
-  width: 7rem;
   background-color: #02e66c;
-  margin: 0px;
 }
 #one{
-  height: .75rem;
-  width: 7rem;
-  min-width: 50px;
-  max-width: 115px;
   background-color: #06c961;
-  margin: 0px;
 }
 #two{
-  height: .75rem;
-  width: 7rem;
   background-color: #02a34d;
-  margin: 0px;
 }
+
 #three{
-  height: .75rem;
-  width: 7rem;
   background-color: #246b3b;
-  margin: 0px;
 }
 #four{
-  height: .75rem;
-  width: 7rem;
   background-color: #174726;
-  margin: 0px;
 }
 
 #search {
@@ -133,6 +123,7 @@
   border-color: black;
   text-align: center;
   align-content: center;
+  margin-bottom: 2rem;
 }
 #form {
   align-content: center;
@@ -146,7 +137,14 @@
   justify-content: center;
   /* font-style: italic; */
   font-weight: bold;
+  text-align: center;
+}
 
+.landing-header {
+  text-align: center;
+  font-weight: bold;
+  padding-bottom: 1.5rem;
+  font-size: 1.3rem;
 }
 .stat-cont {
   align-content: center;
@@ -170,5 +168,38 @@
 
 .App-nav{
   background-color: white;
+}
+
+.info-header {
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+
+.login, .nav a {
+  color: rgb(40, 3, 252);
+}
+
+.img-container {
+  padding: 0 100px;
+}
+
+.logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.logo {
+  width: 150px;
+  height: 150px;
+}
+
+.footer {
+  padding-top: 3rem;
+  font-style: italic;
+  justify-content: center;  
+}
+
+.landing-body {
+  border-bottom: 1px solid black;
 }
 

@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "seed": "node ./task/seed.js",
-    "dev": "nodemon app.js",
+    "dev": "node app.js",
     "start": "node app.js",
     "heroku-postbuild": "node ./task/seed.js && cd client && npm install && npm run build"
   },
@@ -26,8 +26,5 @@
     "fs": "0.0.1-security",
     "html-pdf": "^2.2.0",
     "node-cron": "^2.0.3"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.3"
   }
 }

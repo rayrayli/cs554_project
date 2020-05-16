@@ -25,10 +25,7 @@ function App() {
       <Router>
 
         <Container className="App">
-          <Row>
-            <Navigation />
-          </Row>
-
+          <Navigation />
 
           <Switch>
             <Route exact path='/login' component={Login} />
