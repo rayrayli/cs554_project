@@ -60,6 +60,7 @@ class ChatBox extends React.Component {
         )
     }
 }
+
 const Chat = () => {
   const { currentUser } = useContext(AuthContext);
 
@@ -67,31 +68,5 @@ const Chat = () => {
     <ChatBox user={currentUser.dbUser} />
   )
 };
+
 export default Chat;
-
-
-
-
-// const Chat = () => {
-//     const { currentUser } = useContext(AuthContext)
-//     let { cid } = useParams();
-//     console.log(cid);
-//     io = io.connect();
-
-//     // If Auth Component Finds Registered User, Redirect to Landing
-//     if (currentUser) {
-//         if (currentUser.dbUser.role === 'patient' || currentUser.dbUser.role === 'employee') {
-//             if (!currentUser.dbUser.messages.include( ({chat}) => chat === cid )) {
-//                 return (<Redirect to='/' />);
-//             }
-//         } else if (currentUser.dbUser.role === 'admin') {
-//             return (<Redirect to='/' />);
-//         }
-//     }
-
-//     return (
-//         <Container className='main' fluid>
-            
-//         </Container >
-//     )
-// }
