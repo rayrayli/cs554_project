@@ -68,7 +68,7 @@ const FacilityInfo = (props) => {
         })
 
         formatted = `${street_address}, ${city}, ${state} ${zip}, USA`
-        console.log(formatted)
+        
         let geoJson = {
             type: "Feature",
             geometry: {

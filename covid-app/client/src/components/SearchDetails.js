@@ -28,8 +28,6 @@ const SearchDetails = (props) => {
 
     const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
     let marker;
-    let li;
-    let row = null
 
     useEffect(
         () => {
@@ -42,6 +40,7 @@ const SearchDetails = (props) => {
                 let county;
                 let state;
                 console.log(data);
+                
                 data && data.address_components.forEach( (arrInd, i) => {
                     if (arrInd.types[0] === 'administrative_area_level_2') {
                         county = data.address_components[i].long_name;
