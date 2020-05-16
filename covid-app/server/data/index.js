@@ -1,7 +1,9 @@
 const statData = require('./statData');
 const users = require('./users');
+const appointments = require('./appointments');
 
 module.exports = {
     statData: statData,
-    users: users
+    users: users,
+    appointments:appointments
 };

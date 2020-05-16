@@ -24,7 +24,7 @@ const SearchDetails = (props) => {
     const [map, setMap] = useState(undefined)
 
     const [selected, setSelected] = useState(null);
-
+    const [redirectToAppointment, setRedirectToAppointment] = useState(false);
 
     const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
     let marker;
@@ -199,15 +199,16 @@ const SearchDetails = (props) => {
         })
     }
 
-
-    //add fro appointment picker
-    function handleredirecttoAppointment(){
-        
-        return (<Redirect to='/appointment' />);
-
+    //add for appointment picker
+    if (redirectToAppointment) {
+        return (
+        <Redirect to={{
+            pathname: '/appointment/',
+            state: {facilityInfo: selected}
+        }}/>
+        )
     }
-
-
+ 
     // Populate County Data
     return (
         <Container className='main' fluid >
@@ -242,7 +243,9 @@ const SearchDetails = (props) => {
                                 <h1> {selected && selected.facilityName} </h1>
                                 <h3> {selected && selected.email}   {selected && selected.phone} </h3>
                                 <h3> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </h3>
-                                {selected && (<Button onClick={handleredirecttoAppointment}> Create an appointment</Button>)}
+                                <div>
+                                    {selected && (<Button onClick={() => setRedirectToAppointment(true)}> Create an appointment</Button>)}
+                                </div>
                             </div>
                             
                         </div>

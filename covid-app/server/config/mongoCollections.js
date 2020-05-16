@@ -20,4 +20,5 @@ module.exports = {
     covidCoStats: getCollectionFn('covidCoStats'), // Used for nation/state-level covid stats
     users: getCollectionFn('users'), // Used to store all user data ... User Types: Patient, FacilityUser, Admin)
     facilities: getCollectionFn('facilities'), // Used to store all testing facilities and respective info (hours, appoinment data, patient data, employees, etc)
+    appoinments: getCollectionFn('appointments'),
 };
