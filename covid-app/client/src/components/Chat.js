@@ -62,10 +62,17 @@ class ChatBox extends React.Component {
 
 const Chat = () => {
   const { currentUser } = useContext(AuthContext);
+  const { cid } = useParams();
+  const user = currentUser.dbUser;
 
-  return (
-    <ChatBox user={currentUser.dbUser} />
-  )
+
+  if (user.messages.length > 0 && user.messages.includes(cid)) {
+    return (
+      <ChatBox user={user} />
+    )
+  } else {
+    return (<Redirect to='/' />)
+  }
 };
 
 export default Chat;
