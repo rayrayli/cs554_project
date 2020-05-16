@@ -1,6 +1,6 @@
 // begin ray add for appointment 5/11/2020
 import React, { useState, useEffect, useContext} from 'react';
-import axios from 'axios';
+import { Link, Redirect } from 'react-router-dom';
 import { Container, Row } from 'react-bootstrap';
 import { AuthContext } from '../firebase/Auth';
 import { makeStyles } from '@material-ui/core/styles';
@@ -20,7 +20,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
+// import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Snackbar from '@material-ui/core/Snackbar';
 
@@ -57,7 +57,6 @@ const Appointment = (props) => {
     const [confirmationSnackbarOpen, setConfirmationSnackbarOpen] = useState(false);
     const [loading, setLoading] = useState(true)
     const [appointmentSchedule, setAppointmentSchedule] = useState([]);
-
 
     let displayName = currentUser.dbUser.firstName + ' ' + currentUser.dbUser.lastName;
     let userEmail = currentUser.dbUser.email;
@@ -135,7 +134,6 @@ const Appointment = (props) => {
                 fetch(`/appointment/facility/${facilityId}`)
                     .then((res1) => res1.json())
                     .then((data) => {
-      
                         handlefetch(data);
                     })          
                     .catch(err => {
@@ -302,6 +300,9 @@ const Appointment = (props) => {
 
     return ( 
         <Container className='main' fluid > 
+        <Row>
+              <Link to='/searchDetails'>Go Back</Link>
+            </Row>
         <Row>
               <div className={classes.root}>
               <Stepper activeStep={activeStep} orientation="vertical">
