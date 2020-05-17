@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Container, Row, Col, Image, Form, Button, FormGroup } from 'react-bootstrap';
 import { AuthContext } from '../firebase/Auth';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 // User Login With Email and Password
 const Inbox = () => {
