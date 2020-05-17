@@ -22,20 +22,6 @@ module.exports = {
       }
     }
   },
-
-  // send_email: async (data) => {
-  //   try {
-  //     response = await emailDriver.sendMessageAsync({
-  //       qname: "emailqueue",
-  //       message: data
-  //     }, )
-  //     if (response) {
-  //       console.log("Message sent. ID:", response);
-  //     }
-  //   } catch (err) {
-  //     console.log(err)
-  //   }
-  // }
   send_email: async (recipients, subject, contents) => {
     try {
       response = await emailDriver.sendMessageAsync({

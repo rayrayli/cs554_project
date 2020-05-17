@@ -49,7 +49,7 @@ const NavigationEmployee = () => {
                     {displayName} | 
                 </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
-                <Nav.Link href='/messages'> Messages </Nav.Link>
+                <Nav.Link href='/inbox'> Inbox </Nav.Link>
                 <Nav.Link to='/' onClick={doSignOut}> Logout </Nav.Link>
             </Navbar.Collapse>
         </Navbar>
@@ -61,7 +61,7 @@ const NavigationAuth = () => {
     const { currentUser } = useContext(AuthContext);
 
     let displayName = currentUser.dbUser.firstName + ' ' + currentUser.dbUser.lastName
-
+    let chatLink = currentUser.dbUser.messages[0] ? `/chat/${currentUser.dbUser.messages[0].cid}` : '/'
     return (
         <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>
@@ -70,8 +70,9 @@ const NavigationAuth = () => {
                     {displayName} | 
                 </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
-                <Nav.Link href='/messages'> Messages </Nav.Link>
-                <Nav.Link onClick={doSignOut}> Logout </Nav.Link>
+                {/* add check to see if appointment exists later */}
+                <Nav.Link href={chatLink}> Chat </Nav.Link>
+                <Nav.Link  to='/' onClick={doSignOut}> Logout </Nav.Link>
             </Navbar.Collapse>
         </Navbar>
     );

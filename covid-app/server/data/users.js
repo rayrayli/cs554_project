@@ -231,6 +231,50 @@ let exportedMethods = {
             return err;
 
         };
+    },
+
+    async addToMessage(eid, pid, cid) {
+        try {
+            const userCollection = await users();
+
+            let userFound = await this.getUserById(eid);
+            if (userFound) {
+                userFound.messages.push({cid: cid, other: await this.getFirstName(pid)});
+                let newChat = await userCollection.updateOne({uid: eid}, {$set: {messages: userFound.messages}});
+                console.log(await this.getUserById(eid));
+            }
+            userFound = await this.getUserById(pid);
+            if (userFound) {
+                userFound.messages.push({cid: cid, other: await this.getFirstName(eid)});
+                newChat = await userCollection.updateOne({uid: pid}, {$set: {messages: userFound.messages}});
+            }
+
+            return;
+        } catch(e) {
+            console.log(e);
+        }
+    },
+
+    async getEmail(uid) {
+        try {
+            let userFound = await this.getUserById(uid);
+            if (userFound) {
+                return userFound.email;
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    },
+
+    async getFirstName(uid) {
+        try {
+            let userFound = await this.getUserById(uid);
+            if (userFound) {
+                return userFound.firstName;
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
 };
 

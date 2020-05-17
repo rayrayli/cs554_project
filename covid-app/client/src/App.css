@@ -109,11 +109,11 @@
 
 #search {
   display: block;
-  border-bottom-width: 1px;
-  border-top-width: 0px;
+  border-width: 1px;
+  /* border-top-width: 0px;
   border-right-width: 0px;
-  border-left-width: 0px;
-  border-radius: 0px;
+  border-left-width: 0px; */
+  border-radius: 5px;
   border-color: black;
   text-align: center;
   align-content: center;
@@ -122,6 +122,10 @@
 #form {
   align-content: center;
   justify-content: center;
+}
+/* CLASS TO STYLE AUTO COMPLETE */
+.pac-item { 
+ 
 }
 
 
