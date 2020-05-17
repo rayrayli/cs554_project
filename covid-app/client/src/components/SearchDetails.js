@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../firebase/Auth';
 import { Link, Redirect } from 'react-router-dom';
 import {Container , Button}from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
@@ -16,12 +17,14 @@ async function loadScript(src) {
 }
 
 const SearchDetails = (props) => {
+    const { currentUser } = useContext(AuthContext);
     const [userData, setUserdata] = useState(undefined);
     const [facilityData, setFacilityData] = useState(undefined);
     const [searchResult, setSearchResult] = useState(undefined);
     const [countyData, setCountyData] = useState(undefined);
     const [loaded, setLoaded] = useState(false)
     const [map, setMap] = useState(undefined)
+    const [userAppt, setUserAppt] = useState(undefined)
 
     const [selected, setSelected] = useState(null);
     const [redirectToAppointment, setRedirectToAppointment] = useState(false);
@@ -68,7 +71,13 @@ const SearchDetails = (props) => {
                     })
             };
 
+            async function checkAppt() {
+                let appt = await axios.get(`/appointment/patient/${currentUser.dbUser.uid}`)
+                setUserAppt(appt.data)
+            }
+
             getLocation(props.location.state.result)
+            checkAppt();
             console.log("%%%%%%%%%%%%")
             window.initMap = initMap();
 
@@ -194,6 +203,8 @@ const SearchDetails = (props) => {
         }}/>
         )
     }
+
+    console.log('#############',userAppt)
  
     // Populate County Data
     return (
@@ -220,7 +231,10 @@ const SearchDetails = (props) => {
                                 <p className="facility-p"> {selected && selected.email}   {selected && selected.phone} </p>
                                 <p className="facility-p"> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </p>
                                 <div>
-                                    {selected && (<Button className="submit" onClick={() => setRedirectToAppointment(true)}> Create an appointment</Button>)}
+                                    {selected && (<Button className="submit" onClick={() => (!userAppt || userAppt && userAppt.length === 0) ? 
+                                        setRedirectToAppointment(true) 
+                                        : 
+                                        alert('Appointment for User Already Exist, Cancel Your Appointment in Account to Reschedule An Appointment')}> Create an appointment</Button>)}
                                 </div>
                             </div>
                             

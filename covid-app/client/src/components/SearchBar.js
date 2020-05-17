@@ -33,6 +33,10 @@ const SearchBar = (props) => {
 
         let autocomplete = new window.google.maps.places.Autocomplete(document.getElementById('search'), options);
         autocomplete.setFields(['address_components', 'formatted_address']);
+        autocomplete.addListener('place_changed', function() {
+            let place = autocomplete.getPlace();
+            setSearchLocality(place.name)
+        })
     }
 
     const handleChange = (e) => {
@@ -43,6 +47,7 @@ const SearchBar = (props) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (searchLocality) {
+            console.log(searchLocality)
             setSearchLocality(searchLocality.replace(',', '').replace(' ', '+'))
             setRedirect(true)
         } else {
