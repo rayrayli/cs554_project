@@ -43,6 +43,7 @@ const FacilityLanding = () => {
     const { currentUser } = useContext(AuthContext);
     const [hideModal, setHideModal] = useState(true);
     const [employees, setEmployees] = useState([]);
+    const [appointments, setAppointments] = useState(undefined)
 
     let li = null;
 
@@ -55,7 +56,13 @@ const FacilityLanding = () => {
                     })
             };
 
+            // async function fetchAppts() {
+            //     let apptList = await axios.get(`appointment/facility/${currentUser.dbUser.uid}`)
+            //     setAppointments(apptList.data)
+            // }
+
             fetchEmployees();
+            fetchAppts()
         }, [hideModal]
     );
 
@@ -87,19 +94,19 @@ const FacilityLanding = () => {
         };
     };
     
-    const formatAppointments = () => {
-        return appointments && appointments.map( (appt) => {
-            let startTime = new Date(appt.slot)
-            let endTime = new Date(startTime.setMinutes(startTime.getMinutes() + 15)); //add 15 min to start
+    // const formatAppointments = () => {
+    //     return appointments && appointments.map( (appt) => {
+    //         let startTime = new Date(appt.slot)
+    //         let endTime = new Date(startTime.setMinutes(startTime.getMinutes() + 15)); //add 15 min to start
 
-            return {
-                title: `COVID-19 Testing - ${appt.userName} ${appt._id}`,
-                start: startTime,
-                end: endTime,
-                extendedProps: {...appt}
-            }
-        })
-    }
+    //         return {
+    //             title: `COVID-19 Testing - ${appt.userName} ${appt._id}`,
+    //             start: startTime,
+    //             end: endTime,
+    //             extendedProps: {...appt}
+    //         }
+    //     })
+    // }
 
     if (employees) {
         li = employees && employees.map((employee) => {
@@ -142,7 +149,7 @@ const FacilityLanding = () => {
                     <div>
                         <h3> Facility Appointment Manager </h3>
                         <Calendar
-                            appts={appointments && formatAppointments()}
+                            // appts={appointments && formatAppointments()}
                         />
                     </div>
                 </Col>
