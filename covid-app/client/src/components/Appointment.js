@@ -108,7 +108,7 @@ const Appointment = (props) => {
     setSelectedMeridiem(date);
   };
 
-  
+
   function handlefetch(data) {
     const appointments = data
     const initSchedule = {}
@@ -176,7 +176,7 @@ const Appointment = (props) => {
         console.log(res)
         setConfirmationSnackbarOpen(true);
         setConfirmationSnackbarMessage("Appointment succesfully added!");
-        
+
       })
     } catch (err) {
       console.log(err)
@@ -213,7 +213,7 @@ const Appointment = (props) => {
 
     var result = [];
 
-    while (new Date(start) <= new Date(end)) {
+    while (new Date(start) < new Date(end)) {
       result.push(start);
       start = moment(start).add('Minutes', 15).format('MM-DD-YYYY hh:mm a')
     }
@@ -230,22 +230,27 @@ const Appointment = (props) => {
         return false
 
       } else {
-        return slots.map((slot, i) => {
-          const appointmentDateString = moment(selectedDate).format('MM-DD-YYYY')
-          const t1 = moment(slot)
-          const t2 = moment(slots[i + 1])
-          const scheduleDisabled = appointmentSchedule[appointmentDateString] ? appointmentSchedule[moment(selectedDate).format('YYYY-DD-MM')][slot] : false
-          const meridiemDisabled = selectedMeridiem ? t1.format('a') === 'am' : t1.format('a') === 'pm'
+        let x = slots.map((slot, i) => {
+          if (i < slots.length - 1) {
+            const appointmentDateString = moment(selectedDate).format('MM-DD-YYYY')
+            const t1 = moment(slot)
+            const t2 = moment(slots[i + 1])
+            const scheduleDisabled = appointmentSchedule[appointmentDateString] ? appointmentSchedule[moment(selectedDate).format('YYYY-DD-MM')][slot] : false
+            const meridiemDisabled = selectedMeridiem ? t1.format('a') === 'am' : t1.format('a') === 'pm'
 
-
-          return <RadioButton
-            label={t1.format('h:mm a') + ' - ' + t2.format('h:mm a')}
-            key={slot}
-            value={slot}
-            style={{ marginBottom: 15, display: meridiemDisabled ? 'none' : 'inherit' }}
-            disabled={scheduleDisabled || meridiemDisabled} 
-            onClick={() => setAppointmentSlot(slot)}/>
+            return (
+              <RadioButton
+                label={t1.format('h:mm a') + ' - ' + t2.format('h:mm a')}
+                key={slot}
+                value={slot}
+                style={{ marginBottom: 15, display: meridiemDisabled ? 'none' : 'inherit' }}
+                disabled={scheduleDisabled || meridiemDisabled}
+                onClick={() => setAppointmentSlot(slot)}
+              />
+            )
+          }
         })
+        return x.slice(0, slots.length-1)
       }
     } else {
       return null;
@@ -300,7 +305,7 @@ const Appointment = (props) => {
                 }}
                 name="appointmentTimes"
                 defaultSelected={appointmentSlot}
-                >
+              >
                 {renderAppointmentTimes()}
               </RadioButtonGroup> : <h6> No Availability, Try Selecting Another Date </h6>}
             </div>
