@@ -86,6 +86,20 @@ const FacilityLanding = () => {
             alert(err);
         };
     };
+    
+    const formatAppointments = () => {
+        return appointments && appointments.map( (appt) => {
+            let startTime = new Date(appt.slot)
+            let endTime = new Date(startTime.setMinutes(startTime.getMinutes() + 15)); //add 15 min to start
+
+            return {
+                title: `COVID-19 Testing - ${appt.userName} ${appt._id}`,
+                start: startTime,
+                end: endTime,
+                extendedProps: {...appt}
+            }
+        })
+    }
 
     if (employees) {
         li = employees && employees.map((employee) => {
@@ -127,7 +141,9 @@ const FacilityLanding = () => {
                 <Col lg={8} md={12} sm={12}>
                     <div>
                         <h3> Facility Appointment Manager </h3>
-                        <Calendar />
+                        <Calendar
+                            appts={appointments && formatAppointments()}
+                        />
                     </div>
                 </Col>
             </Row>
