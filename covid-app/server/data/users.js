@@ -235,18 +235,18 @@ let exportedMethods = {
 
     async addToMessage(eid, pid, cid) {
         try {
+            const userCollection = await users();
+
             let userFound = await this.getUserById(eid);
             if (userFound) {
-                userFound.message.push({cid: cid, other: this.getFirstName(pid)});
-                const userCollection = await users();
-                let newChat = await userCollection.updateOne({_id: ObjectId(eid)}, {$set: {message: userFound.message}});
+                userFound.messages.push({cid: cid, other: await this.getFirstName(pid)});
+                let newChat = await userCollection.updateOne({uid: eid}, {$set: {messages: userFound.messages}});
+                console.log(await this.getUserById(eid));
             }
-
-            let userFound = await this.getUserById(pid);
+            userFound = await this.getUserById(pid);
             if (userFound) {
-                userFound.message.push({cid: cid, other: this.getFirstName(eid)});
-                const userCollection = await users();
-                let newChat = await userCollection.updateOne({_id: ObjectId(pid)}, {$set: {message: userFound.message}});
+                userFound.messages.push({cid: cid, other: await this.getFirstName(eid)});
+                newChat = await userCollection.updateOne({uid: pid}, {$set: {messages: userFound.messages}});
             }
 
             return;

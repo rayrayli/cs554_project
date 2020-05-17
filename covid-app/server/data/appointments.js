@@ -106,8 +106,7 @@ let exportedMethods = {
                 let assignTo = null;
 
                 let beforeAppointment = await apptCollection.find({ patientId: updateInfo.patientId }).toArray();
-
-                if (!beforeAppointment || beforeAppointment[0].assignedToEmployee === null){
+                if (!Array.isArray(beforeAppointment) || !beforeAppointment.length || beforeAppointment[0].assignedToEmployee === null){
                     if (adminsFound === []){
                         assignTo = null
                     }else{
