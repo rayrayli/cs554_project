@@ -113,9 +113,10 @@ const handlefetch = (data) =>{
     //  console.log(dayOfmommentWeek)
     let everydaySlots = intervals(date, facilityInfo.hours[dayOfWeek].Start, facilityInfo.hours[dayOfWeek].End);
     //  console.log(everydaySlots);
-    if (!Array.isArray(currentSchedule[date]) && everydaySlots.length) {
-      currentSchedule[date] = Array(everydaySlots.length).fill(false);
+    if (!Array.isArray(currentSchedule[date]) && (everydaySlots.length - 1) > 0 ) {
+      currentSchedule[date] = Array(everydaySlots.length - 1).fill(false);
     }
+
     if (Array.isArray(currentSchedule[date]) && currentSchedule[date].length) {
         let index = everydaySlots.indexOf(slot)
         // console.log(index);
@@ -133,6 +134,7 @@ const handlefetch = (data) =>{
           schedule[day] = true;
         }
       }
+      // console.log(schedule[day])
     }
     setAppointmentSchedule(schedule);
     setLoading(false);
@@ -191,6 +193,7 @@ const handlefetch = (data) =>{
     }
     handleCommitAppointment(appointment);
     handleConfirmationModalFalse();
+    handleDateChange(null);
     handleReload();
     handleNext();
   };
