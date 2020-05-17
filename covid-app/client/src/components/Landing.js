@@ -62,7 +62,7 @@ const FacilityLanding = () => {
             // }
 
             fetchEmployees();
-            fetchAppts()
+            // fetchAppts()
         }, [hideModal]
     );
 
