@@ -108,6 +108,19 @@ const FacilityLanding = () => {
         })
     }
 
+    if (employees) {
+        li = employees && employees.map((employee) => {
+            return (
+                <li key={employee.uid}>
+                    <div>
+                        <p> {employee.firstName} {employee.lastName} ({employee.email}) </p>
+                        <Button onClick={() => adminDeleteUser(employee.uid)}> Delete </Button>
+                    </div>
+                </li>
+            );
+        });
+    };
+
     return (
         <div>
             <h1> ADMIN LANDING </h1>
