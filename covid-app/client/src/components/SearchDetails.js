@@ -186,8 +186,11 @@ const SearchDetails = (props) => {
     if (redirectToAppointment) {
         return (
         <Redirect to={{
-            pathname: '/appointment/',
-            state: {facilityInfo: selected}
+            pathname: '/appointment',
+            state: {
+                facilityInfo: selected,
+                result: props.location.state.result 
+                }
         }}/>
         )
     }
