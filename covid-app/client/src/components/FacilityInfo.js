@@ -96,7 +96,7 @@ const FacilityInfo = (props) => {
 
     // Update MongoDB With Facility Details (hours, address, phone, etc)
     const updateDbUser = async (inf) => {
-        let info = userInfo
+        let info = userInfo || inf
         try {
             await axios({
                 method: 'POST',
@@ -139,7 +139,7 @@ const FacilityInfo = (props) => {
                 info[element.id] = element.value
             };
         });
-
+        console.log(info);
         setUserInfo(info);
 
         // Check Address Validity using google Geocoding API
@@ -158,10 +158,12 @@ const FacilityInfo = (props) => {
     };
 
     // Redirect User On Form Successful Submission
+    console.log(userInfo);
     if (formComplete) {
         return (
             <Redirect to='/'></Redirect>
         )
+        //setHideModal(false);
     }
 
     return (

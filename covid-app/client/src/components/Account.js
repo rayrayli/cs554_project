@@ -34,15 +34,17 @@ const AccountFacility = () => {
     // Make Facility Open and Facility Close Inputs Inactive When Closed is Selected 
     const handleClose = (e) => {
         let day = e.target.name
-
+        console.log(document.getElementById(e.target.id).checked);
         if (e.target.checked) {
             document.getElementById(`${day}Start`).setAttribute('disabled', true);
             document.getElementById(`${day}End`).setAttribute('disabled', true);
             document.getElementById(e.target.id).setAttribute('value', 'Closed')
+            document.getElementById(e.target.id).checked = true;
         } else {
             document.getElementById(`${day}Start`).removeAttribute('disabled', true);
             document.getElementById(`${day}End`).removeAttribute('disabled', true);
-            document.getElementById(e.target.id).setAttribute('value', 'null')
+            document.getElementById(e.target.id).setAttribute('value', 'on');
+            document.getElementById(e.target.id).checked = false;
         };
     }
 
@@ -149,17 +151,59 @@ const AccountFacility = () => {
         let { email, phone, website, address1, address2, city, state, zip } = e.target.elements;
         let [street_address, conf_city, conf_state, conf_zip, geoJson]  = await validateAddress(`${address1.value}, ${city.value}, ${state.value} ${zip.value}, USA`)
         console.log(geoJson)
-
+        console.log("target elements");
         let info = {
             'email': email.value,
             'phone': phone.value,
             'website': website.value,
             'address': {
-                'street': street_address,
+                'street': address1.value,
                 'unit': address2.value,
                 'city': conf_city,
                 'state': conf_state,
                 'zip': conf_zip,
+            },
+            'hours':{
+                'Monday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+                'Tuesday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Wednesday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Thursday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Friday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Saturday':{
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Sunday':{
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                }
             },
             'geoJSON': geoJson
         }
@@ -209,7 +253,7 @@ const AccountFacility = () => {
                                             </Form.Group>
                                         </Form.Row>
                                         <Form.Row>
-                                            <Form.Group as={Col} controlId="phone">
+                                            <Form.Group as={Col}>
                                                 <Form.Label>Phone Number</Form.Label>
                                                 <Form.Control
                                                     className='register-form'
@@ -292,7 +336,7 @@ const AccountFacility = () => {
                                     <Col lg={12} md={12}>
                                         <h2> Hours of Operation </h2>
                                         <p> Need to find a better way to edit </p>
-                                        {/* {days && days.map((day) => {
+                                        {days && days.map((day) => {
                                             return (
                                                 <Form.Row key={day}>
                                                     <Form.Group as={Col}>
@@ -304,7 +348,8 @@ const AccountFacility = () => {
                                                     </Form.Group>
 
                                                     <Form.Group as={Col}>
-                                                        <Form.Control id={day + 'Start'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].start) || '08:00'}/>
+                                                        {currentUser.dbUser.hours[day].Closed !== "Closed" && <Form.Control id={day + 'Start'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].Start) || '08:00'}/>}
+                                                        {currentUser.dbUser.hours[day].Closed === "Closed" && <Form.Control id={day + 'Start'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].Start) || '08:00'} disabled/>}
                                                     </Form.Group>
 
                                                     <Form.Group as={Col}>
@@ -312,7 +357,9 @@ const AccountFacility = () => {
                                                     </Form.Group>
 
                                                     <Form.Group as={Col}>
-                                                        <Form.Control id={day + 'End'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].end) || '20:00'} />
+                                                        {currentUser.dbUser.hours[day].Closed !== "Closed" && <Form.Control id={day + 'End'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].End) || '20:00'} />}
+                                                        {currentUser.dbUser.hours[day].Closed === "Closed" && <Form.Control id={day + 'End'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].End) || '20:00'} disabled />}
+
                                                     </Form.Group>
 
                                                     <Form.Group as={Col}>
@@ -320,11 +367,11 @@ const AccountFacility = () => {
                                                     </Form.Group>
 
                                                     <Form.Group as={Col}>
-                                                        <Form.Check id={day + 'Closed'} name={day} type='checkbox' onChange={handleClose} />
+                                                        <Form.Check id={day + 'Closed'} name={day} type='checkbox' onChange={handleClose} checked={currentUser.dbUser.hours[day].Closed === "Closed"}/>
                                                     </Form.Group>
                                                 </Form.Row>
                                             )
-                                        })} */}
+                                        })}
                                     </Col>
 
                                     <Button variant="primary" type="submit">
