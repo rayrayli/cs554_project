@@ -170,7 +170,7 @@ async function main() {
     async function seedAdmin() {
         try {
             let adminUser = await admin.auth().createUser({
-                email: 'testfacilityseed@gmail.com',
+                email: 'testfacilityseed11@gmail.com',
                 password: 'password1',
             })
                 .then(async (userRecord) => {
@@ -182,7 +182,7 @@ async function main() {
                         role: "admin",
                         type: 'seed',
                         uid: userRecord.uid,
-                        email: 'testfacilityseed@gmail.com',
+                        email: 'testfacilityseed11@gmail.com',
                         phone: "201-344-2222",
                         facilityName: "TestFacilitySeed",
                         phone: "201-234-5678",
@@ -267,7 +267,7 @@ async function main() {
     async function seedEmployee(adminUser) {
         try {
             await admin.auth().createUser({
-                email: 'employeeseed1@gmail.com',
+                email: 'employeeseed11@gmail.com',
                 password: 'password1',
             })
                 .then(async (userRecord) => {
@@ -279,7 +279,7 @@ async function main() {
                         role: "employee",
                         type: 'seed',
                         uid: userRecord.uid,
-                        email: 'employeeseed1@gmail.com',
+                        email: 'employeeseed11@gmail.com',
                         firstName: 'Employee1First',
                         lastName: 'Employee1Last',
                         phone: "201-220-1220",
@@ -299,7 +299,7 @@ async function main() {
     async function seedPatient() {
         try {
             await admin.auth().createUser({
-                email: "patientseed@gmail.com",
+                email: "patientseed11@gmail.com",
                 password: 'password1',
             })
                 .then(async (userRecord) => {
@@ -313,7 +313,7 @@ async function main() {
                         uid: userRecord.uid,
                         firstName: "Patient1First",
                         lastName: "Patient1Last",
-                        email: "patientseed@gmail.com",
+                        email: "patientseed11@gmail.com",
                         gender: "male",
                         dob: "1995-03-27",
                         ssn: "$2b$16$AdPa6IjpOoX3CW/M8xuKHu8kMvqYKMn9YwQlpGyLNIA.R8f11miRu",

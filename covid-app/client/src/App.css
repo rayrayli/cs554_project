@@ -313,3 +313,20 @@
 .dn{
   color: black !important;
 }
+
+.map-info-cont{
+  display: flex;
+  justify-content: center;
+}
+
+.map-info{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.map-info-h{
+  font-size: 1.8rem;
+  text-align: center;
+}

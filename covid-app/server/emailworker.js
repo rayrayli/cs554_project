@@ -1,6 +1,6 @@
 const rsmq = require("rsmq-worker");
 const worker = new rsmq("emailqueue", {
-  host: "127.0.0.1",
+  host: 'redis',
   port: 6379,
   ns: "rsmq"
 });

@@ -57,12 +57,22 @@ async function doUpdateEmail(newEmail) {
     await firebase.auth().currentUser.updateEmail(newEmail)
         .then(async (res) => {
             await axios({
+                method: 'PATCH',
+                url: `/users/${uid}`,
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                data: { email: newEmail }
+            })
+        })
+        .then(async (res) => {
+            await axios({
                 method: 'POST',
                 url: `/appointment/user/${uid}`,
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
-                data: {newEmail}
+                data: { newEmail }
             })
         });
 };
@@ -72,27 +82,30 @@ async function deleteAccount() {
 
     try {
         await firebase.auth().currentUser.delete()
-        .then(async (res) => {
-            // Delete MongoDB User
-            await axios({
-                method: "DELETE",
-                url: `/users/${uid}`,
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
-                }
-            }).then(async (conf) => {
+            .then(async (res) => {
                 await axios({
                     method: "DELETE",
                     url: `/appointment/user/${uid}`,
                     headers: {
                         'Content-Type': 'application/json;charset=utf-8'
                     }
-                }).then( (res) => {
-                    console.log('User Deleted');
-                })
-                
+                }).then(async (conf) => {
+                    console.log(conf)
+                    // Delete MongoDB User
+                    await axios({
+                        method: "DELETE",
+                        url: `/users/${uid}`,
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        }
+
+                    }).then((res) => {
+                        console.log(res)
+                        console.log('User Deleted');
+                    })
+
+                });
             });
-        });
     } catch (err) {
         return err
     }

@@ -27,11 +27,7 @@ const appointments = data.appointments;
 const cors = require('cors');
 const cron = require("node-cron");
 const fs = require("fs");
-// const http = require('http').createServer(app);
-// const io = require('socket.io')(http);
 const eq = require("./emailqueue");
-eq.create_queue();
-
 
 /*
 ################ SERVE REACT STATIC FILES ################
@@ -59,10 +55,20 @@ app.get("/appointment/:date", async (req, res) => {
         const appt = await appointments.getAppointmentByDate(req.params.date);
         res.status(200).json(appt);
     } catch (err) {
-        console.log(err)
         res.status(400).json({ "error": err.message });
     };
 });
+
+app.delete("/appointment/user/:uid", async (req, res) => {
+    try {
+        console.log('%%%', req.params.uid)
+        const deleted = await appointments.deleteAppointmentByUser(req.params.uid)
+        console.log("$$$", deleted)
+        res.status(200).json(true);
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+})
 
 app.delete('/appointment/clear', async (req, res) => {
     try {
@@ -92,21 +98,11 @@ app.delete("/appointment/:id", async (req, res) => {
     };
 });
 
-app.delete('/appointment/user/:uid', async (req, res) => {
-    try {
-        console.log('%%%', req.params.uid)
-        const deleted = await appointments.deleteAppointmentByUser(req.params.uid)
-        res.status(200).json(deleted);
-    } catch (err) {
-        res.status(400).json({ "error": err.message });
-    };
-})
-
 app.post('/appointment/user/:uid', async (req, res) => {
     try {
         let {newEmail} = req.body
         const updated = await appointments.updateAppointmentByUser(req.params.uid, newEmail)
-        res.status(200).json(updatesd);
+        res.status(200).json(updated);
     } catch (err) {
         res.status(400).json({ "error": err.message });
     };
@@ -325,7 +321,7 @@ app.get("/users/:facility/employee", async (req, res) => {
 app.get("/users/:uid", async (req, res) => {
     try {
         let userFound = await users.getUserById(req.params.uid);
-        console.log(userFound)
+
         if (userFound === []) {
             userFound = await users.getUserById(req.params.uid);
         }
@@ -401,6 +397,8 @@ cron.schedule("00 5 * * *", async () => {
 ####################### RUN SERVER #######################
 */
 let server = app.listen(PORT, async () => {
+    await eq.create_queue();
+
     console.log("We've now got a server!");
     console.log(`Your routes will be running on http://localhost:${PORT}`);
 });

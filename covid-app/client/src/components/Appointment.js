@@ -97,7 +97,6 @@ const handleReload = () => {
     setSelectedMeridiem(date);
   };
 
-  
 const handlefetch = (data) =>{
   // console.log(data);
   const appointments = data;
@@ -171,7 +170,7 @@ const handlefetch = (data) =>{
         console.log(res)
         setConfirmationSnackbarOpen(true);
         setConfirmationSnackbarMessage("Appointment succesfully added!");
-        
+
       })
     } catch (err) {
       console.log(err)
@@ -214,7 +213,7 @@ const handlefetch = (data) =>{
 
     var result = [];
 
-    while (new Date(start) <= new Date(end)) {
+    while (new Date(start) < new Date(end)) {
       result.push(start);
       start = moment(start).add('Minutes', 15).format('MM-DD-YYYY hh:mm a')
     }
@@ -295,7 +294,7 @@ const handlefetch = (data) =>{
                 }}
                 name="appointmentTimes"
                 defaultSelected={appointmentSlot}
-                >
+              >
                 {renderAppointmentTimes()}
               </RadioButtonGroup>
             </div>

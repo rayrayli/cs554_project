@@ -95,15 +95,16 @@ const FacilityLanding = () => {
     };
 
     const formatAppointments = () => {
-        return appointments && appointments.map( (appt) => {
+        return appointments && appointments.map((appt) => {
             let startTime = new Date(appt.slot)
-            let endTime = new Date(startTime.setMinutes(startTime.getMinutes() + 15)); //add 15 min to start
-            console.log(startTime)
+            let endTime = new Date(appt.slot)
+            endTime = new Date(endTime.setMinutes(endTime.getMinutes() + 15)); //add 15 min to start
 
             return {
                 title: `COVID-19 Testing - ${appt.userName} ${appt._id}`,
                 start: startTime,
-                extendedProps: {...appt}
+                end: endTime,
+                extendedProps: { ...appt }
             }
         })
     }
@@ -111,12 +112,12 @@ const FacilityLanding = () => {
     if (employees) {
         li = employees && employees.map((employee) => {
             return (
-                    <div className="emp-list">
-                        <p> {employee.firstName} {employee.lastName} </p>
-                        <p>({employee.email}) </p>
-                        <p>{employee.phone}</p>
-                        <p onClick={() => adminDeleteUser(employee.uid)}> Delete Employee</p>
-                    </div>
+                <div className="emp-list">
+                    <p> {employee.firstName} {employee.lastName} </p>
+                    <p>({employee.email}) </p>
+                    <p>{employee.phone}</p>
+                    <p onClick={() => adminDeleteUser(employee.uid)}> Delete Employee</p>
+                </div>
             );
         });
     };
@@ -169,12 +170,66 @@ const FacilityLanding = () => {
 const EmployeeLanding = () => {
     const { currentUser } = useContext(AuthContext);
     const [hideModal, setHideModal] = useState(true);
+    const [facilityAppointments, setFacilityAppointments] = useState(undefined)
+    const [employeeAppointments, setEmployeeAppointments] = useState(undefined)
+
+    let li = []
 
     useEffect(
         () => {
+            async function fetchFacilityAppointments() {
+                let facilityAppt = await axios.get(`/appointment/facility/${currentUser.dbUser.facility}`)
+                setFacilityAppointments(facilityAppt.data)
+            }
+
+            async function fetchEmployeeAppointments() {
+                let employeeAppt = await axios.get(`appointment/employee/${currentUser.dbUser.uid}`)
+                setEmployeeAppointments(employeeAppt.data)
+            }
+
+            fetchFacilityAppointments()
+            fetchEmployeeAppointments()
 
         }, [hideModal]
     );
+
+    const formatFacilityAppointments = () => {
+        return facilityAppointments && facilityAppointments.map((appt) => {
+            let startTime = new Date(appt.slot)
+            let endTime = new Date(appt.slot)
+            endTime = new Date(endTime.setMinutes(endTime.getMinutes() + 15)); //add 15 min to start
+
+            return {
+                title: `COVID-19 Testing - ${appt.userName} ${appt._id}`,
+                start: startTime,
+                end: endTime,
+                extendedProps: { ...appt }
+            }
+        })
+    }
+
+    const formatEmployeeAppointments = () => {
+        let today = new Date().toLocaleString().split(/\D/).slice(0, 3);
+        li = null;
+
+        employeeAppointments && employeeAppointments.forEach((appt) => {
+            let apptDate = appt.toLocaleString().split(/\D/).slice(0, 3);
+            if (today[0] === apptDate[0] && today[1] === apptDate[1] && today[2] === apptDate[2]) {
+                li.append(
+                    <Row>
+                        <span><h6> Date: </h6> <p>{appt.slot}</p></span>
+                        <span><h6> Patient ID: </h6> <p>{appt.patientId}</p></span>
+                        <span><h6> Name: </h6> <p>{appt.userName}</p></span>
+                        <span><h6> Email: </h6> <p>{appt.userEmail}</p></span>
+                    </Row>
+                )
+
+            }
+        })
+
+        return (!!li) ? li : <Row> <h6> No Appointments Today </h6></Row>
+
+    }
 
     return (
         <div>
@@ -187,6 +242,7 @@ const EmployeeLanding = () => {
                     </Row>
                     <Row>
                         <div>
+                            {employeeAppointments && formatEmployeeAppointments()}
                         </div>
                     </Row>
                 </Col>
@@ -195,7 +251,9 @@ const EmployeeLanding = () => {
                 <Col lg={8} md={12} sm={12}>
                     <div>
                         <p className="landing-center landing-side"> Facility Appointment Manager </p>
-                        <Calendar />
+                        <Calendar
+                            appts={facilityAppointments && formatFacilityAppointments()}
+                        />
                     </div>
                 </Col>
             </Row>
@@ -509,9 +567,9 @@ const PatientLanding = () => {
                 </Row>
                 <Row className="logos">
                     <div className="img-container">
-                      
+
                         <a href='https://www.who.int/news-room/q-a-detail/q-a-coronaviruses#'>
-                            <Image alt="WHO Logo" src={who} className="logo"/>
+                            <Image alt="WHO Logo" src={who} className="logo" />
                         </a>
                     </div>
                     <div className="img-container">

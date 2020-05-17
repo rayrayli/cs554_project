@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../firebase/Auth';
 import { Link, Redirect } from 'react-router-dom';
-import {Container , Button}from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import { setLogLevel } from 'firebase';
@@ -16,12 +17,14 @@ async function loadScript(src) {
 }
 
 const SearchDetails = (props) => {
+    const { currentUser } = useContext(AuthContext);
     const [userData, setUserdata] = useState(undefined);
     const [facilityData, setFacilityData] = useState(undefined);
     const [searchResult, setSearchResult] = useState(undefined);
     const [countyData, setCountyData] = useState(undefined);
     const [loaded, setLoaded] = useState(false)
     const [map, setMap] = useState(undefined)
+    const [userAppt, setUserAppt] = useState(undefined)
 
     const [selected, setSelected] = useState(null);
     const [redirectToAppointment, setRedirectToAppointment] = useState(false);
@@ -40,8 +43,8 @@ const SearchDetails = (props) => {
                 let county;
                 let state;
                 console.log(data);
-                
-                data && data.address_components.forEach( (arrInd, i) => {
+
+                data && data.address_components.forEach((arrInd, i) => {
                     if (arrInd.types[0] === 'administrative_area_level_2') {
                         county = data.address_components[i].long_name;
                         state = data.address_components[i + 1].long_name
@@ -68,12 +71,22 @@ const SearchDetails = (props) => {
                     })
             };
 
+
             getLocation(props.location.state.result)
             console.log("%%%%%%%%%%%%")
             window.initMap = initMap();
 
         }, []
     );
+
+    if (currentUser) {
+        async function checkAppt() {
+            let appt = await axios.get(`/appointment/patient/${currentUser.dbUser.uid}`)
+            setUserAppt(appt.data)
+        }
+
+        checkAppt();
+    }
 
     if (searchResult && facilityData && !loaded) {
         initMap()
@@ -185,57 +198,58 @@ const SearchDetails = (props) => {
     //add for appointment picker
     if (redirectToAppointment) {
         return (
-        <Redirect to={{
-            pathname: '/appointment',
-            state: {
-                facilityInfo: selected,
-                result: props.location.state.result 
+            <Redirect to={{
+                pathname: '/appointment',
+                state: {
+                    facilityInfo: selected,
+                    result: props.location.state.result
                 }
-        }}/>
+            }} />
         )
     }
- 
+
+    console.log('#############', userAppt)
+
     // Populate County Data
     return (
         <Container className='main' fluid >
             <Row>
-                <Link to='/'>Go Back</Link>
-            </Row>
-            <Row>
                 <Col lg={6} md={12} sm={12} id='left-comp'>
-                    <Row> <h1> LOCATION MAP HERE </h1> </Row>
                     <div id='map' />
                 </Col>
 
                 <Col lg={6} md={12} sm={12} id='right-comp'>
-                    <Row>
-                        <div>
-                            <h1> COVID FACTS HERE </h1>
-
-                            <p>County: {(countyData && countyData.Admin2) || 'Data Unavailable'}</p>
-                            <p>State: {(countyData && countyData.Province_State) || 'Data Unavailable'}</p>
+                    <Row className="map-info-cont">
+                        <div className="map-info">
+                            <h1 className="map-info-h"> {((countyData && countyData.Admin2) + " County, " + ((countyData && countyData.Province_State))) || 'Data Unavailable'} </h1>
                             <p>Confirmed Cases: {(countyData && numberWithCommas(countyData.Confirmed)) || 'Data Unavailable'}</p>
                             <p>Deaths: {(countyData && numberWithCommas(countyData.Deaths)) || 'Data Unavailable'}</p>
                             <p>Recovered Patients: {(countyData && countyData.Recovered > 0) ? numberWithCommas(countyData.Recovered) : 'Not Reported'}</p>
                         </div>
                     </Row>
 
-                    <Row >
-
-                        <div>
-                            <h1> TESTING CENTER INFO HERE </h1>
-
-                            <div>
-                                <h1> {selected && selected.facilityName} </h1>
-                                <h3> {selected && selected.email}   {selected && selected.phone} </h3>
-                                <h3> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </h3>
+                    <Row className="map-info-cont">
+                        {selected !== null &&
+                            <div className="map-info">
+                                <h1 className="map-info-h"> {selected && selected.facilityName} </h1>
+                                <p className="facility-p"> {selected && selected.email}   {selected && selected.phone} </p>
+                                <p className="facility-p"> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </p>
                                 <div>
-                                    {selected && (<Button onClick={() => setRedirectToAppointment(true)}> Create an appointment</Button>)}
+                                    {selected && (<Button className="submit" onClick={() => (!userAppt || userAppt && userAppt.length === 0) ?
+                                        setRedirectToAppointment(true)
+                                        :
+                                        alert('Appointment for User Already Exist, Cancel Your Appointment in Account to Reschedule An Appointment')}> Create an appointment</Button>)}
                                 </div>
                             </div>
-                            
-                        </div>
-                    </Row>       
+
+                        }
+                        {selected === null &&
+                            <div className="map-info">
+                                <h1 className="map-info-h">Select a Testing Center Pin for More Details</h1>
+                            </div>
+
+                        }
+                    </Row>
                 </Col>
             </Row>
         </Container>
