@@ -51,12 +51,6 @@
   width: 35%;
 }
 
-
-
-
-
-
-
 #map-hold {
   justify-content: center;
   align-content: center;
@@ -179,7 +173,7 @@
   font-weight: bold;
 }
 
-.login, .nav a {
+.login, .nav a, .reg-login a {
   color: rgb(40, 3, 252);
 }
 
@@ -207,3 +201,61 @@
   border-bottom: 1px solid black;
 }
 
+.registration-content{
+  display: flex;
+  justify-content: center;
+}
+
+.registration-header{
+  text-align: center;
+}
+
+.registration-body {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.reg-login{
+  justify-content: center;
+  padding: 1rem;
+}
+
+.reg-p {
+  margin: .5rem -.5rem .5rem 1rem;
+}
+
+.submit{
+  background-color: rgb(40, 3, 252) !important;
+}
+
+.user-tab.active {
+  background-color: rgb(40, 3, 252) !important;
+}
+
+.login-content{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-button{
+  padding: 0 5px;
+}
+
+.forgot-pw{
+  justify-content: center;
+  padding: 1rem;
+  color: rgb(40, 3, 252);
+}
+
+.cursor{
+  cursor: pointer;
+}
+
+.reset-btn{
+  max-height: 2.4rem;
+  margin-top: 2rem;
+  background-color: rgb(40, 3, 252) !important;
+}

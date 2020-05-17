@@ -338,7 +338,7 @@ async function main() {
     await fetchData('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest', 'pop');
     await fetchCountyLevel()
 
-    // await clearUsers()
+    await clearUsers()
     await seedPatient()
     await seedAdmin().then(async (adminUser) => {
         console.log(adminUser)

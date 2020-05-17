@@ -3,6 +3,7 @@ import { AuthContext } from '../firebase/Auth';
 import { Navbar, Nav, Row } from 'react-bootstrap';
 import { doSignOut } from '../firebase/FirebaseFunctions';
 import '../App.css'
+import { useLocation } from 'react-router-dom';
 
 const Navigation = () => {
     const { currentUser } = useContext(AuthContext);
@@ -79,11 +80,12 @@ const NavigationAuth = () => {
 
 // Navigation for Unauthorized Users
 const NavigationNoAuth = () => {
+    let location = useLocation();
     return (
         <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
-                <Nav.Link href='/register' className="login">  Login / Register </Nav.Link>
+            {location.pathname !== "/register" && location.pathname !== "/login" && <Nav.Link href='/register' className="login">  Login / Register</Nav.Link>}
             </Navbar.Collapse>
         </Navbar>
     );

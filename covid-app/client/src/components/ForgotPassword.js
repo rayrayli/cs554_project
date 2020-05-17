@@ -26,7 +26,7 @@ const ForgotPassword = (props) => {
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    Forgot Passwords
+                    Forgot Password
                     </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -43,14 +43,10 @@ const ForgotPassword = (props) => {
                                 required
                             />
                         </Form.Group>
-                        <Button type='submit'>Send Reset Link</Button>
+                        <Button className="reset-btn" type='submit' size="sm">Send Reset Link</Button>
                     </Form.Row>
                 </Form>
             </Modal.Body>
-            <Modal.Footer>
-                <Button onClick={props.onHide}> Back to Login</Button>
-                <Button onClick={props.onHide}>Close</Button>
-            </Modal.Footer>
         </Modal>
     )
 };
