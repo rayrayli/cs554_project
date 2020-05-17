@@ -42,28 +42,13 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const useComponentDidMount = func => useEffect(func, []);
-
-const useComponentWillMount = func => {
-  const willMount = useRef(true);
-
-  if (willMount.current) {
-    func();
-  }
-
-  useComponentDidMount(() => {
-    willMount.current = false;
-  });
-};
-
-
 const Appointment = (props) => {
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState();
   const [selectedMeridiem, setSelectedMeridiem] = useState(0);
   const { currentUser } = useContext(AuthContext);
 
-  const [hideModal, setHideModal] = useState(true);
+  const [reloadData, setReloadData] = useState(0);
   const [appointmentSlot, setAppointmentSlot] = useState(undefined);
   const [confirmationModalOpen, setConfirmationModal] = useState(false);
   const [confirmationSnackbarMessage, setConfirmationSnackbarMessage] = useState(undefined);
@@ -78,7 +63,10 @@ const Appointment = (props) => {
   let patientId = currentUser.dbUser.uid;
   let facilityInfo = props.location.state.facilityInfo;
   let facilityId = facilityInfo.uid;
-  let timeSlot = null
+  
+const handleReload = () => {
+      setReloadData((prevCount) => prevCount + 1);
+    };
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -89,6 +77,7 @@ const Appointment = (props) => {
   };
 
   const handleReset = () => {
+    handleReload();
     setActiveStep(0);
   };
 
@@ -109,24 +98,34 @@ const Appointment = (props) => {
   };
 
   
-  function handlefetch(data) {
-    const appointments = data
-    const initSchedule = {}
-    const today = moment().startOf('day')
-    initSchedule[today.format('YYYY-DD-MM')] = true
-    //return schedule after today
-    const schedule = (!appointments || !appointments.length) ? initSchedule : appointments.reduce((currentSchedule, appointment) => {
-      const { _id, date, slot, ...otherdata } = appointment
-      // console.log(appointment);
-      const dateString = moment(date, 'YYYY-DD-MM').format('YYYY-DD-MM');
-      if (!currentSchedule[date]) {
-        currentSchedule[dateString] = Array(8).fill(false);
+const handlefetch = (data) =>{
+  // console.log(data);
+  const appointments = data;
+  const initSchedule = {};
+  const today = moment().startOf('day');
+  initSchedule[today.format('YYYY-DD-MM')] = false;
+  const daysInWeeks= [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  //return schedule after today
+  const schedule = (!appointments || !appointments.length) ? initSchedule : appointments.reduce((currentSchedule, appointment) => {
+    const { _id, date, slot, ...otherdata } = appointment;
+    let dayOfmommentWeek = moment(date, 'YYYY-DD-MM').day();
+    let dayOfWeek = daysInWeeks[dayOfmommentWeek];
+    // console.log(dayOfWeek)
+    //  console.log(dayOfmommentWeek)
+    let everydaySlots = intervals(date, facilityInfo.hours[dayOfWeek].Start, facilityInfo.hours[dayOfWeek].End);
+    //  console.log(everydaySlots);
+    if (!Array.isArray(currentSchedule[date]) && everydaySlots.length) {
+      currentSchedule[date] = Array(everydaySlots.length).fill(false);
+    }
+    if (Array.isArray(currentSchedule[date]) && currentSchedule[date].length) {
+        let index = everydaySlots.indexOf(slot)
+        // console.log(index);
+        if (index >= 0 ) {
+          currentSchedule[date][index] = true;
+        }
       }
-      if (Array.isArray(currentSchedule[dateString])) {
-        currentSchedule[dateString][slot] = true;
-      }
-      return currentSchedule;
-    }, initSchedule)
+    return currentSchedule;
+  }, initSchedule)
 
     for (let day in schedule) {
       let slots = schedule[day];
@@ -138,32 +137,28 @@ const Appointment = (props) => {
     }
     setAppointmentSchedule(schedule);
     setLoading(false);
-  };
-
+  }
+  
   useEffect(
-    () => {
-      console.log(currentUser)
-      console.log(facilityId)
-      if (currentUser && facilityId) {
-
-        async function fetchAppointment() {
-          await axios.get(`/appointment/facility/${facilityId}`)
-            .then((data) => {
-              handlefetch(data);
-            })
-            .catch(err => {
-              console.log(err)
-              setConfirmationSnackbarMessage("Fetch Error!");
-              setConfirmationSnackbarOpen(true);
-              return;
-            })
+        () => {
+          async function fetchAppointment() {
+            await axios.get(`/appointment/facility/${facilityId}`)
+                .then((data) => {
+                    handlefetch(data.data);
+                })          
+                .catch(err => {
+                  console.log(err)
+                  setConfirmationSnackbarMessage("Fetch Error!");
+                  setConfirmationSnackbarOpen(true);
+                  return ;
+                })
         };
-        fetchAppointment();
-      }
-    }, [currentUser]
-  );
+          if (currentUser && facilityId) {
+            fetchAppointment();
+        }}, [reloadData]
+    );
 
-  const commitAppointment = async (info) => {
+  const handleCommitAppointment = async (info) => {
     try {
       await axios({
         method: 'POST',
@@ -195,21 +190,27 @@ const Appointment = (props) => {
       email: userEmail,
       patientId: patientId
     }
-    commitAppointment(appointment);
+    handleCommitAppointment(appointment);
     handleConfirmationModalFalse();
+    handleReload();
     handleNext();
   };
 
   function checkDisableDate(day) {
     const dateString = moment(day).format('YYYY-DD-MM')
-    return (appointmentSchedule[dateString] === true || moment(day).startOf('day').diff(moment().startOf('day')) < 0)
+    let currentdayDisable = false
+    let dayOfWeek = new Intl.DateTimeFormat('en-US', {weekday: 'long' }).format(day)
+    if (facilityInfo && (facilityInfo.hours[dayOfWeek].Closed === 'Closed')) {
+        currentdayDisable = true
+    }
+    return (currentdayDisable === true || appointmentSchedule[dateString] === true || moment(day).startOf('day').diff(moment().startOf('day')) < 0)
   }
 
-  function intervals(startTime, endTime) {
+  function intervals(date, startTime, endTime) {
     let [startTimeHour, startTimeMin] = startTime.split(':')
     let [endTimeHour, endTimeMin] = endTime.split(':')
-    let start = moment(selectedDate).hour(Number(startTimeHour)).minute(Number(startTimeMin)).format('MM-DD-YYYY hh:mm a')
-    let end = moment(selectedDate).hour(Number(endTimeHour)).minute(Number(endTimeMin)).format('MM-DD-YYYY hh:mm a')
+    let start = moment(date, 'YYYY-DD-MM').hour(Number(startTimeHour)).minute(Number(startTimeMin)).format('MM-DD-YYYY hh:mm a')
+    let end = moment(date, 'YYYY-DD-MM').hour(Number(endTimeHour)).minute(Number(endTimeMin)).format('MM-DD-YYYY hh:mm a')
 
     var result = [];
 
@@ -217,27 +218,21 @@ const Appointment = (props) => {
       result.push(start);
       start = moment(start).add('Minutes', 15).format('MM-DD-YYYY hh:mm a')
     }
-
     return result;
   }
 
   function renderAppointmentTimes() {
     if (!loading) {
       let dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(selectedDate)
-      let slots = intervals(facilityInfo.hours[dayOfWeek].Start, facilityInfo.hours[dayOfWeek].End)
-
-      if (facilityInfo.hours[dayOfWeek].Closed === 'Closed') {
-        return false
-
-      } else {
-        return slots.map((slot, i) => {
-          const appointmentDateString = moment(selectedDate).format('MM-DD-YYYY')
+      let slots = intervals(moment(selectedDate).format('YYYY-DD-MM'), facilityInfo.hours[dayOfWeek].Start, facilityInfo.hours[dayOfWeek].End)
+      let x = slots.map((slot, i) => {
+          if (i < slots.length-1){
+          const appointmentDateString = moment(selectedDate).format('YYYY-DD-MM')
           const t1 = moment(slot)
           const t2 = moment(slots[i + 1])
-          const scheduleDisabled = appointmentSchedule[appointmentDateString] ? appointmentSchedule[moment(selectedDate).format('YYYY-DD-MM')][slot] : false
+          const scheduleDisabled = appointmentSchedule[appointmentDateString] ? appointmentSchedule[appointmentDateString][i] : false
+          //  console.log(appointmentSchedule[appointmentDateString])
           const meridiemDisabled = selectedMeridiem ? t1.format('a') === 'am' : t1.format('a') === 'pm'
-
-
           return <RadioButton
             label={t1.format('h:mm a') + ' - ' + t2.format('h:mm a')}
             key={slot}
@@ -245,8 +240,9 @@ const Appointment = (props) => {
             style={{ marginBottom: 15, display: meridiemDisabled ? 'none' : 'inherit' }}
             disabled={scheduleDisabled || meridiemDisabled} 
             onClick={() => setAppointmentSlot(slot)}/>
+          }
         })
-      }
+      return  x.slice(0, slots.length-1);
     } else {
       return null;
     }
@@ -292,8 +288,7 @@ const Appointment = (props) => {
                 <MenuItem value={0}>AM</MenuItem>
                 <MenuItem value={1}>PM</MenuItem>
               </SelectField>
-
-              {renderAppointmentTimes() ? <RadioButtonGroup
+              <RadioButtonGroup
                 style={{
                   marginTop: 15,
                   marginLeft: 15
@@ -302,7 +297,7 @@ const Appointment = (props) => {
                 defaultSelected={appointmentSlot}
                 >
                 {renderAppointmentTimes()}
-              </RadioButtonGroup> : <h6> No Availability, Try Selecting Another Date </h6>}
+              </RadioButtonGroup>
             </div>
           </MuiThemeProvider>);
 
@@ -343,10 +338,10 @@ const Appointment = (props) => {
     );
   }
 
-  if (confirmationSnackbarMessage === 'Appointment succesfully added!') {
-    setTimeout(3000)
-    return <Redirect to='/' />
-  }
+  // if (confirmationSnackbarMessage === 'Appointment succesfully added!') {
+  //   setTimeout(3000)
+  //   return <Redirect to='/' />
+  // }
 
   return (
     <Container className='main' fluid >
@@ -358,7 +353,7 @@ const Appointment = (props) => {
       </Row>
       <Row>
         <div className="text-center">
-          <h2>Make An Appointment On Facility: {facilityInfo.facilityName}</h2>
+          <h2>Make An Appointment On Testing Facility: {facilityInfo.facilityName}</h2>
         </div>
         <div className={classes.root}>
           <Stepper activeStep={activeStep} orientation="vertical">
