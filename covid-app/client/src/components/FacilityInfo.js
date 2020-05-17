@@ -96,7 +96,7 @@ const FacilityInfo = (props) => {
 
     // Update MongoDB With Facility Details (hours, address, phone, etc)
     const updateDbUser = async (inf) => {
-        let info = userInfo
+        let info = userInfo || inf
         try {
             await axios({
                 method: 'POST',

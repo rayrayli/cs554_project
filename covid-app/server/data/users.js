@@ -108,10 +108,8 @@ let exportedMethods = {
     async getUserById(uid) {
         try {
             const userCollection = await users();
-            console.log(uid)
 
             let userFound = await userCollection.find({ 'uid': uid.toString() }).toArray();
-            console.log('!!!', userFound)
             return userFound[0];
 
         } catch (err) {

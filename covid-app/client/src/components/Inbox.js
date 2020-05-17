@@ -17,7 +17,7 @@ const Inbox = () => {
     }
 
     const AllChats = currentUser.dbUser.messages.map((chat) =>
-        <div>
+        <div key={chat._id}>
             <Link to={`/chat/${chat.cid}`}>{chat.other}</Link>
         </div>
     );
