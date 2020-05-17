@@ -57,7 +57,7 @@ const NavigationAuth = () => {
     let displayName = currentUser.dbUser.firstName + ' ' + currentUser.dbUser.lastName
     let chatLink
     if (currentUser.dbUser ) {
-        chatLink = currentUser.dbUser.messages[0] ? `/chat/${currentUser.dbUser.messages[0].cid}` : '/'
+        chatLink = currentUser.dbUser.messages[0] ? `${currentUser.dbUser.messages[0].cid}` : 'NoMessages'
     }
     
     return (
@@ -69,7 +69,7 @@ const NavigationAuth = () => {
                 </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
                 {/* add check to see if appointment exists later */}
-                <Nav.Link href={chatLink}> Chat </Nav.Link>
+                <Nav.Link href={`/chat/${chatLink}`}> Chat </Nav.Link>
                 <Nav.Link  to='/' onClick={doSignOut}> Logout </Nav.Link>
 
             </Navbar.Collapse>
