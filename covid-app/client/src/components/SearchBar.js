@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
-import { Row, Form, InputGroup, FormControl } from 'react-bootstrap';
+import { Row, Button, Form, InputGroup, FormControl } from 'react-bootstrap';
 
 async function loadScript(src) {
     let script = document.createElement('script');
@@ -51,8 +51,7 @@ const SearchBar = (props) => {
             setSearchLocality(searchLocality.replace(',', '').replace(' ', '+'))
             setRedirect(true)
         } else {
-            setSearchLocality('new+york+new+york');
-            setRedirect(true);
+            setRedirect(false);
         }
     }
 
@@ -75,7 +74,7 @@ const SearchBar = (props) => {
                 <Form id='landingform' method='POST' name='formSearchLocal' onSubmit={handleSubmit} >
                     <InputGroup>
                         <FormControl type='text' id="search" aria-label="Search for Testing Facilities" placeholder='Search For Your County' onChange={handleChange} />
-                        {/* <button> SEARCH </button> */}
+                        <Button type='submit' className="submit" onClick={handleChange} >Search</Button>
                     </InputGroup>
                 </Form>
             </Row>
