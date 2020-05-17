@@ -37,12 +37,12 @@ const sendEmail = function(recipient, subject, contents) {
 
 worker.on("message", function(msg, next, id) {
   const emailDetails = JSON.parse(msg);
-  let emails = emailDetails.recipients[0]
+  let emails = ""; 
   if (emailDetails.recipients.length > 1) {
-    for (let i = 1; i < emailDetails.recipients.length; i++) {
-      emails = emails + ", " + emailDetails.recipients[i]
-    }
-  } 
+    emails = emailDetails.recipients.join(", ");
+  } else {
+    emails = emailDetails.recipients[0];
+  }
   sendEmail(emails, emailDetails.subject, emailDetails.contents);
   next();
 });
