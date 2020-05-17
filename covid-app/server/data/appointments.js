@@ -11,13 +11,13 @@ let exportedMethods = {
             const apptCollection = await appointments();
 
             const apptWithUser = await apptCollection.findOne(
-                {date:date},
-                {slot:slot}
-            );        
-            if(!apptWithUser){
-                throw `No appoitment with ${date}${slot}`;
+                { date: date },
+                { slot: slot }
+            );
+            if (!apptWithUser) {
+                throw `No appoitment with ${app_id}`;
             }
-            let deleteResult = await apptCollection.deleteOne({date: date}, {slot: slot });
+            let deleteResult = await apptCollection.deleteOne({ date: date }, { slot: slot });
 
             if (!deleteResult.ok) {
                 throw `Mongo was unable to delete the appointment: ${date}${slot} `;
@@ -69,6 +69,7 @@ let exportedMethods = {
 
         }
     },
+    
     async getAppointmentByPatientId(patientId) {
         try {
             const apptCollection = await appointments();
@@ -111,17 +112,20 @@ let exportedMethods = {
         }
     },
 
-    
+
     async addNewAppointmentToFacility(fcId, updateInfo) {
         try {
             const userCollection = await users();
             const apptCollection = await appointments();
 
-            let doc = await userCollection.findOne({ uid: fcId});
-            if(!doc){
+            let doc = await userCollection.findOne({ uid: fcId });
+
+            if (!doc) {
                 throw `No appoitment with ${fcId}`;
             }
+
             let adminsFound = await userCollection.find({ role: 'employee' }, { facility: doc.facilityName }).toArray();
+
             //todo add to patient appointment list
             if (doc.role === 'admin') {
                 let assignTo = null;
@@ -135,7 +139,7 @@ let exportedMethods = {
                     }
                 }
                 else {
-                     assignTo = beforeAppointment.assignTo;
+                    assignTo = beforeAppointment.assignTo;
                 }
 
                 let newAppointment = {
@@ -154,13 +158,13 @@ let exportedMethods = {
 
                 const insertInfo = await apptCollection.insertOne(newAppointment);
                 if (insertInfo.insertedCount === 0) throw "Could not add new task";
-            
+
                 const newId = insertInfo.insertedId;
                 const a_appt = await apptCollection.findOne({ _id: newId });
                 if (a_appt === null) throw "No task with that id";
                 return a_appt;
-            } 
-            else{
+            }
+            else {
                 return;
             }
         } catch (err) {

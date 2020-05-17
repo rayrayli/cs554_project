@@ -31,8 +31,8 @@ const SearchBar = (props) => {
             types: ['(cities)'],
         };
 
-        // let autocomplete = new window.google.maps.places.Autocomplete(document.getElementById('search'), options);
-        // autocomplete.setFields(['address_components', 'formatted_address']);
+        let autocomplete = new window.google.maps.places.Autocomplete(document.getElementById('search'), options);
+        autocomplete.setFields(['address_components', 'formatted_address']);
     }
 
     const handleChange = (e) => {

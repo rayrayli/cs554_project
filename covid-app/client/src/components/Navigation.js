@@ -61,7 +61,11 @@ const NavigationAuth = () => {
     const { currentUser } = useContext(AuthContext);
 
     let displayName = currentUser.dbUser.firstName + ' ' + currentUser.dbUser.lastName
-    let chatLink = currentUser.dbUser.messages[0] ? `/chat/${currentUser.dbUser.messages[0].cid}` : '/'
+    let chatLink
+    if (currentUser.dbUser ) {
+        chatLink = currentUser.dbUser.messages[0] ? `/chat/${currentUser.dbUser.messages[0].cid}` : '/'
+    }
+    
     return (
         <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>

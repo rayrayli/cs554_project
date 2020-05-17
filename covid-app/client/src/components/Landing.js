@@ -56,13 +56,13 @@ const FacilityLanding = () => {
                     })
             };
 
-            // async function fetchAppts() {
-            //     let apptList = await axios.get(`appointment/facility/${currentUser.dbUser.uid}`)
-            //     setAppointments(apptList.data)
-            // }
+            async function fetchAppts() {
+                let apptList = await axios.get(`appointment/facility/${currentUser.dbUser.uid}`)
+                setAppointments(apptList.data)
+            }
 
             fetchEmployees();
-            // fetchAppts()
+            fetchAppts()
         }, [hideModal]
     );
 
@@ -93,33 +93,20 @@ const FacilityLanding = () => {
             alert(err);
         };
     };
-    
-    // const formatAppointments = () => {
-    //     return appointments && appointments.map( (appt) => {
-    //         let startTime = new Date(appt.slot)
-    //         let endTime = new Date(startTime.setMinutes(startTime.getMinutes() + 15)); //add 15 min to start
 
-    //         return {
-    //             title: `COVID-19 Testing - ${appt.userName} ${appt._id}`,
-    //             start: startTime,
-    //             end: endTime,
-    //             extendedProps: {...appt}
-    //         }
-    //     })
-    // }
+    const formatAppointments = () => {
+        return appointments && appointments.map( (appt) => {
+            let startTime = new Date(appt.slot)
+            let endTime = new Date(startTime.setMinutes(startTime.getMinutes() + 15)); //add 15 min to start
 
-    if (employees) {
-        li = employees && employees.map((employee) => {
-            return (
-                <li key={employee.uid}>
-                    <div>
-                        <p> {employee.firstName} {employee.lastName} ({employee.email}) </p>
-                        <Button onClick={() => adminDeleteUser(employee.uid)}> Delete </Button>
-                    </div>
-                </li>
-            );
-        });
-    };
+            return {
+                title: `COVID-19 Testing - ${appt.userName} ${appt._id}`,
+                start: startTime,
+                end: endTime,
+                extendedProps: {...appt}
+            }
+        })
+    }
 
     return (
         <div>
@@ -149,7 +136,7 @@ const FacilityLanding = () => {
                     <div>
                         <h3> Facility Appointment Manager </h3>
                         <Calendar
-                            // appts={appointments && formatAppointments()}
+                            appts={appointments && formatAppointments()}
                         />
                     </div>
                 </Col>
