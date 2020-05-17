@@ -27,11 +27,7 @@ const appointments = data.appointments;
 const cors = require('cors');
 const cron = require("node-cron");
 const fs = require("fs");
-// const http = require('http').createServer(app);
-// const io = require('socket.io')(http);
 const eq = require("./emailqueue");
-eq.create_queue();
-
 
 /*
 ################ SERVE REACT STATIC FILES ################
@@ -401,6 +397,8 @@ cron.schedule("00 5 * * *", async () => {
 ####################### RUN SERVER #######################
 */
 let server = app.listen(PORT, async () => {
+    await eq.create_queue();
+
     console.log("We've now got a server!");
     console.log(`Your routes will be running on http://localhost:${PORT}`);
 });
