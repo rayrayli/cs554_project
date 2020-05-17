@@ -26,7 +26,6 @@ const users = data.users;
 const appointments = data.appointments;
 const cors = require('cors');
 const cron = require("node-cron");
-const katex = require('katex');
 const fs = require("fs");
 // const http = require('http').createServer(app);
 // const io = require('socket.io')(http);
@@ -119,19 +118,22 @@ app.post("/appointment/:facilityid", async (req, res) => {
         const newAppt = await appointments.addNewAppointmentToFacility(req.params.facilityid, req.body);
         
         // create new chat
+        console.log("creating chat");
         console.log(newAppt.patientId);
         console.log(newAppt.assignedToEmployee);
-        const newChatId = await chatData.createChat(newAppt.patientId, newAppt.assignedToEmployee._id);
+        const newChatId = await chatData.createChat(newAppt.patientId, newAppt.assignedToEmployee);
+        console.log("updating users with chat");
         users.addToMessage(newAppt.assignedToEmployee, newAppt.patientId, newChatId);
 
         // email to patient and employee about chat
+        console.log("sending email");
         eq.send_email(
             [
-                users.getEmail(newAppt.patientId), 
-                users.getEmail(newAppt.assignedToEmployee)
+                await users.getEmail(newAppt.patientId),
+                await users.getEmail(newAppt.assignedToEmployee)
             ], 
             "New Chat Started!",
-            `localhost:3000/chat/${newChatId}`
+            `Hi!\nYou've been matched for covid-care.\nStart chatting here! localhost:3000/chat/${newChatId}`
         );
 
         res.status(200).send({ '_id': newAppt });
