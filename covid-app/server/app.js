@@ -64,6 +64,16 @@ app.get("/appointment/:date", async (req, res) => {
     };
 });
 
+app.delete('/appointment/clear', async (req, res) => {
+    try {
+        const deleted = await appointments.clearAppointments();
+        res.status(200).json(deleted);
+
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    }
+})
+
 app.delete("/appointment/:date/:slot", async (req, res) => {
     try {
         const deleted = await appointments.deleteAppointmentByDate(req.params.date,req.params.slot);
@@ -81,6 +91,26 @@ app.delete("/appointment/:id", async (req, res) => {
         res.status(400).json({ "error": err.message });
     };
 });
+
+app.delete('/appointment/user/:uid', async (req, res) => {
+    try {
+        console.log('%%%', req.params.uid)
+        const deleted = await appointments.deleteAppointmentByUser(req.params.uid)
+        res.status(200).json(deleted);
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+})
+
+app.post('/appointment/user/:uid', async (req, res) => {
+    try {
+        let {newEmail} = req.body
+        const updated = await appointments.updateAppointmentByUser(req.params.uid, newEmail)
+        res.status(200).json(updatesd);
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+})
 
 app.get("/appointment", async (req, res) => {
     try {
@@ -294,7 +324,11 @@ app.get("/users/:facility/employee", async (req, res) => {
 // Get User By FIREBASE UID
 app.get("/users/:uid", async (req, res) => {
     try {
-        const userFound = await users.getUserById(req.params.uid);
+        let userFound = await users.getUserById(req.params.uid);
+        console.log(userFound)
+        if (userFound === []) {
+            userFound = await users.getUserById(req.params.uid);
+        }
         res.status(200).send(userFound);
 
     } catch (err) {

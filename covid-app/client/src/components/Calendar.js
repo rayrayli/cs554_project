@@ -17,8 +17,8 @@ const Calendar = (props) => {
     const [hideModal, setHideModal] = useState(true)
     const [selectedAppt, setSelectedAppt] = useState(undefined);
 
-    const handleModal = () => {
-        if (selectedAppt) {
+    const handleModal = (bool) => {
+        if (selectedAppt || bool) {
             setHideModal(false)
         }
     }
@@ -26,7 +26,7 @@ const Calendar = (props) => {
         e.jsEvent.preventDefault();
 
         setSelectedAppt(e.event._def.extendedProps)
-        handleModal()
+        handleModal(true)
     }
 
     return (
@@ -55,9 +55,9 @@ const Calendar = (props) => {
 }
 
 const AppointmentDetailsModal = (props) => {
-    const [empl, setEmpl] = useState(undefined)   
-    
-    useEffect( 
+    const [empl, setEmpl] = useState(undefined)
+
+    useEffect(
         () => {
             async function getClinician() {
                 let clinician = await axios.get(`/users/${props.appointmentDetails.assignedToEmployee}`)
@@ -71,6 +71,25 @@ const AppointmentDetailsModal = (props) => {
         }, [props.appointmentDetails]
     )
 
+    const handleAppointDelete = async (id) => {
+        try {
+            await axios({
+                method: "DELETE",
+                url: `/appointment/${id}`,
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                }
+            }).then((conf) => {
+                console.log('Appointment Deleted');
+                props.onHide()
+                window.location.reload();
+            });
+        } catch (err) {
+            console.log(err)
+            return err
+        }
+    };
+
     return (
         <Modal
             {...props}
@@ -80,12 +99,14 @@ const AppointmentDetailsModal = (props) => {
         >
             <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">
-                    {`${props.appointmentDetails && props.appointmentDetails.userName.split(' ')[1]}, ${props.appointmentDetails && props.appointmentDetails.userName.split(' ')[0]}
-                    (${props.appointmentDetails && props.appointmentDetails.patientId})`}
+                    {`${props.appointmentDetails && props.appointmentDetails.userName.split(' ')[1]}, ${props.appointmentDetails && props.appointmentDetails.userName.split(' ')[0]}`}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <h4>Appointment Details</h4>
+                <p>
+                    <strong> Patiend ID: </strong> {props.appointmentDetails && props.appointmentDetails.patientId}
+                </p>
                 <p>
                     <strong> Patient Email: </strong> {props.appointmentDetails && props.appointmentDetails.userEmail}
                 </p>
@@ -99,10 +120,14 @@ const AppointmentDetailsModal = (props) => {
                     <strong> Appointment Duration: </strong> 15 minutes
                 </p>
                 <p>
-                    <strong> Assigned Clinician: </strong> {empl && props.appointmentDetails && `${empl.firstName} ${empl.lastName} (${props.appointmentDetails.assignedToEmployee})`} 
+                    <strong> Clinician ID: </strong> {props.appointmentDetails && props.appointmentDetails.assignedToEmployee}
+                </p>
+                <p>
+                    <strong> Clinician Name: </strong> {empl && props.appointmentDetails && `${empl.firstName} ${empl.lastName} `}
                 </p>
             </Modal.Body>
             <Modal.Footer>
+                <Button onClick={() => handleAppointDelete(props.appointmentDetails && props.appointmentDetails._id)}>Delete Appointment</Button>
                 <Button onClick={props.onHide}>Close</Button>
             </Modal.Footer>
         </Modal >

@@ -64,7 +64,7 @@ const Appointment = (props) => {
   const { currentUser } = useContext(AuthContext);
 
   const [hideModal, setHideModal] = useState(true);
-  const [appointmentSlot, setAppointmentSlot] = useState(0);
+  const [appointmentSlot, setAppointmentSlot] = useState(undefined);
   const [confirmationModalOpen, setConfirmationModal] = useState(false);
   const [confirmationSnackbarMessage, setConfirmationSnackbarMessage] = useState(undefined);
   const [smallScreen, setSmallScreen] = useState(window.innerWidth < 768);
@@ -78,6 +78,7 @@ const Appointment = (props) => {
   let patientId = currentUser.dbUser.uid;
   let facilityInfo = props.location.state.facilityInfo;
   let facilityId = facilityInfo.uid;
+  let timeSlot = null
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -107,10 +108,7 @@ const Appointment = (props) => {
     setSelectedMeridiem(date);
   };
 
-  const handleSetAppointmentSlot = (slot) => {
-    setAppointmentSlot(slot)
-  }
-
+  
   function handlefetch(data) {
     const appointments = data
     const initSchedule = {}
@@ -178,7 +176,8 @@ const Appointment = (props) => {
         console.log(res)
         setConfirmationSnackbarOpen(true);
         setConfirmationSnackbarMessage("Appointment succesfully added!");
-      });
+        
+      })
     } catch (err) {
       console.log(err)
       setConfirmationSnackbarMessage("Appointment add failure!");
@@ -244,7 +243,8 @@ const Appointment = (props) => {
             key={slot}
             value={slot}
             style={{ marginBottom: 15, display: meridiemDisabled ? 'none' : 'inherit' }}
-            disabled={scheduleDisabled || meridiemDisabled} />
+            disabled={scheduleDisabled || meridiemDisabled} 
+            onClick={() => setAppointmentSlot(slot)}/>
         })
       }
     } else {
@@ -300,7 +300,7 @@ const Appointment = (props) => {
                 }}
                 name="appointmentTimes"
                 defaultSelected={appointmentSlot}
-                onChange={(evt, val) => handleSetAppointmentSlot(val)}>
+                >
                 {renderAppointmentTimes()}
               </RadioButtonGroup> : <h6> No Availability, Try Selecting Another Date </h6>}
             </div>
@@ -317,7 +317,7 @@ const Appointment = (props) => {
                 appointment {selectedDate && <span>
                   on <span style={spanStyle}>{moment(selectedDate).format('dddd[,] MMMM Do')}</span>
                 </span>}
-                {Number.isInteger(appointmentSlot) && <span> at <span style={spanStyle}>{moment().hour(9).minute(0).add(appointmentSlot, 'hours').format('h:mm a')}</span></span>}
+                {(appointmentSlot) && <span> at <span style={spanStyle}>{appointmentSlot && `${appointmentSlot.split(' ')[1]} ${appointmentSlot.split(' ')[2]}`}</span></span>}
               </span>}
             </h2>
           </MuiThemeProvider>);
@@ -338,9 +338,14 @@ const Appointment = (props) => {
           Email: <span style={spanStyle}>{userEmail}</span>
         </Typography>
         <Typography gutterBottom>
-          Appointment: <span style={spanStyle}>{moment(selectedDate).format('dddd[,] MMMM Do[,] YYYY')}</span> at <span style={spanStyle}>{moment().hour(9).minute(0).add(appointmentSlot, 'hours').format('h:mm a')}</span>
+          Appointment: <span style={spanStyle}>{moment(selectedDate).format('dddd[,] MMMM Do[,] YYYY')}</span> at <span style={spanStyle}>{(appointmentSlot && `${appointmentSlot.split(' ')[1]} ${appointmentSlot.split(' ')[2]}`)}</span>
         </Typography></div>
     );
+  }
+
+  if (confirmationSnackbarMessage === 'Appointment succesfully added!') {
+    setTimeout(3000)
+    return <Redirect to='/' />
   }
 
   return (
@@ -407,7 +412,7 @@ const Appointment = (props) => {
               Email: <span >{userEmail}</span>
             </Typography>
             <Typography gutterBottom>
-              Appointment: <span >{moment(selectedDate).format('dddd[,] MMMM Do[,] YYYY')}</span> at <span>{moment().hour(9).minute(0).add(appointmentSlot, 'hours').format('h:mm a')}</span>
+              Appointment: <span >{moment(selectedDate).format('dddd[,] MMMM Do[,] YYYY')}</span> at <span>{appointmentSlot && `${appointmentSlot.split(' ')[1]} ${appointmentSlot.split(' ')[2]}`}</span>
             </Typography>
           </DialogContent>
           <DialogActions>
@@ -416,7 +421,7 @@ const Appointment = (props) => {
                 </Button>
             <Button autoFocus onClick={handleSubmit} color="primary">
               Submit
-                </Button>
+            </Button>
           </DialogActions>
         </Dialog>
         <Snackbar

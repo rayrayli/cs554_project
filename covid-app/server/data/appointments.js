@@ -6,6 +6,16 @@ const uuidv4 = require('uuid/v4');
 
 let exportedMethods = {
 
+    async clearAppointments() {
+        try {
+            const apptCollection = await appointments();
+            const deleted = await apptCollection.deleteMany({})
+            return true
+        } catch (err) {
+            return err
+        }
+    },
+
     async deleteAppointmentByDate(date, slot) {
         try {
             const apptCollection = await appointments();
@@ -33,12 +43,12 @@ let exportedMethods = {
             const apptCollection = await appointments();
 
             const apptWithUser = await apptCollection.findOne(
-                {_id:id}
-            );        
-            if(!apptWithUser){
+                { _id: id }
+            );
+            if (!apptWithUser) {
                 throw `No appoitment with ${id}`;
             }
-            let deleteResult = await apptCollection.deleteOne({_id: id});
+            let deleteResult = await apptCollection.deleteOne({ _id: id });
             if (!deleteResult.ok) {
                 throw `Mongo was unable to delete the appointment: ${id}`;
             }
@@ -47,7 +57,31 @@ let exportedMethods = {
             return err;
         }
     },
-    
+
+    async deleteAppointmentByUser(uid) {
+        try {
+            const apptCollection = await appointments();
+            console.log('%%%',uid)
+
+            const deleted = await apptCollection.deleteMany({ patientId: uid })
+            return deleted
+        } catch (err) {
+            return err;
+        }
+    },
+
+    async updateAppointmentByUser(uid, updateEmail) {
+        try {
+            const apptCollection = await appointments();
+
+            const updated = await apptCollection.updateMany({ patientId: uid }, {$set: {userEmail: updateEmail}})
+            return updated
+
+        } catch (err) {
+            return err;
+        }
+    },
+
 
     async getAllAppointments() {
         try {
@@ -69,7 +103,7 @@ let exportedMethods = {
 
         }
     },
-    
+
     async getAppointmentByPatientId(patientId) {
         try {
             const apptCollection = await appointments();
@@ -130,10 +164,10 @@ let exportedMethods = {
             if (doc.role === 'admin') {
                 let assignTo = null;
                 let beforeAppointment = await apptCollection.find({ patientId: updateInfo.patientId }).toArray();
-              
-                if ((!Array.isArray(beforeAppointment) || !beforeAppointment.length || 
-                    beforeAppointment[0].assignedToEmployee === null)){
-                    if (Array.isArray(adminsFound) && adminsFound.length){
+
+                if ((!Array.isArray(beforeAppointment) || !beforeAppointment.length ||
+                    beforeAppointment[0].assignedToEmployee === null)) {
+                    if (Array.isArray(adminsFound) && adminsFound.length) {
                         let radomEmp = Math.floor(Math.random() * adminsFound.length);
                         assignTo = adminsFound[radomEmp].uid;
                     }

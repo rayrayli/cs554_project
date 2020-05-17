@@ -10,12 +10,12 @@ async function doCreateUserWithEmailAndPassword(email, password, displayName, in
             // Create MongoDB User
             await axios({
                 method: 'POST',
-                url:'http://localhost:3001/users/',
+                url: '/users/',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
                 data: info
-            }).then( (res) => {
+            }).then((res) => {
                 console.log(res)
             });
         });
@@ -52,24 +52,50 @@ async function doSignOut() {
 };
 
 async function doUpdateEmail(newEmail) {
-    await firebase.auth().currentUser.updateEmail(newEmail);
+    let uid = firebase.auth().currentUser.uid;
+
+    await firebase.auth().currentUser.updateEmail(newEmail)
+        .then(async (res) => {
+            await axios({
+                method: 'POST',
+                url: `/appointment/user/${uid}`,
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                data: {newEmail}
+            })
+        });
 };
 
 async function deleteAccount() {
     let uid = firebase.auth().currentUser.uid;
 
-    await firebase.auth().currentUser.delete()
+    try {
+        await firebase.auth().currentUser.delete()
         .then(async (res) => {
             // Delete MongoDB User
-            await axios.get(`http://localhost:3001/users/${uid}`, {
+            await axios({
                 method: "DELETE",
+                url: `/users/${uid}`,
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 }
-            }).then((conf) => {
-                console.log('User Deleted');
+            }).then(async (conf) => {
+                await axios({
+                    method: "DELETE",
+                    url: `/appointment/user/${uid}`,
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    }
+                }).then( (res) => {
+                    console.log('User Deleted');
+                })
+                
             });
         });
+    } catch (err) {
+        return err
+    }
 };
 
 async function reauthenticate(currentPassword) {
@@ -84,11 +110,13 @@ async function onAuthUserListen(next, redirect) {
             console.log('GETTING DBUSER TO MERGE WITH AUTH USER...');
 
             try {
-                await axios.get(`http://localhost:3001/users/${user.uid}`)
+                setTimeout(600)
+                await axios.get(`/users/${user.uid}`)
                     .then((data) => {
-                        console.log('ACQUIRED DBUSER',data);
+                        console.log('ACQUIRED DBUSER', data);
 
                         if (data.data) {
+                            console.log(data.data)
                             const currentUser = {
                                 user: user,
                                 dbUser: data.data,

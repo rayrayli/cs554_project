@@ -98,11 +98,11 @@ const FacilityLanding = () => {
         return appointments && appointments.map( (appt) => {
             let startTime = new Date(appt.slot)
             let endTime = new Date(startTime.setMinutes(startTime.getMinutes() + 15)); //add 15 min to start
+            console.log(startTime)
 
             return {
                 title: `COVID-19 Testing - ${appt.userName} ${appt._id}`,
                 start: startTime,
-                end: endTime,
                 extendedProps: {...appt}
             }
         })

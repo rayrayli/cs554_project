@@ -45,6 +45,7 @@ let exportedMethods = {
             const userCollection = await users();
 
             let deletedUser = await userCollection.deleteOne({ uid: uid });
+            console.log(deletedUser)
             return true
 
         } catch (err) {

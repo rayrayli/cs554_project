@@ -139,9 +139,7 @@ const Register = () => {
 
     // Redirect User to Respective Details Form On Successful Register
     if (currentUser) {
-        setTimeout(() => {
-            
-        }, 500);
+        setTimeout(500)
         if (currentUser.dbUser.role === 'patient') {
             return (<Redirect to='/user/health-details' />)
         } else if (currentUser.dbUser.role === 'admin') {

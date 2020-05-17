@@ -983,8 +983,9 @@ const ManageAppointment = () =>{
 
     const handleAppointDelete = async (id) => {
         try {
-            await fetch(`/appointment/${id}`, {
+            await axios({
                 method: "DELETE",
+                url: `/appointment/${id}`, 
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 }
@@ -1013,11 +1014,10 @@ const ManageAppointment = () =>{
           if (currentUser) {
             async function fetchAppointment (){
                 // console.log(currentUser)
-                fetch(`/appointment/patient/${currentUser.dbUser.uid}`)
-                    .then((res1) => res1.json())
+                axios.get(`/appointment/patient/${currentUser.dbUser.uid}`)
                     .then((data) => {
                         // console.log(data)
-                        handleAppointmetnList(data);
+                        handleAppointmetnList(data.data);
                     })          
                     .catch(err => {
                       console.log(err)
@@ -1037,11 +1037,11 @@ const ManageAppointment = () =>{
         }
         return appointmentList.map(appointment => {
                 const dateString = moment(appointment.date, 'YYYY-DD-MM').format('MM/DD/YYYY');
-                const t1 = moment().hour(9).minute(0).add(appointment.slot, 'hours');
-                const t2 = moment().hour(9).minute(0).add(appointment.slot + 1, 'hours');
+                const t1 = moment(appointment.slot).format('hh:mm a');
+                const t2 = moment(appointment.slot).add('Minutes', 15).format('hh:mm a');
             return (<tr key={appointment._id}>
                 <td>{dateString}</td>
-                <td>{t1.format('H:mm') + ' - ' + t2.format('H:mm')}</td>
+                <td>{t1 + '-' + t2}</td>
                 <td>{appointment.facilityName}</td>
                 <td>{appointment.facilityPhone}</td>
                 <td>{appointment.facilityEmail}</td>
@@ -1199,7 +1199,7 @@ const ChangePassword = () => {
 // Reusable Delete Account Button (For All Users)
 const DeleteAccount = () => {
     const handleDelete = () => {
-        deleteAccount();
+        deleteAccount()
     };
 
     return (
