@@ -31,7 +31,6 @@ const Calendar = (props) => {
 
     return (
         <div>
-            <h6> {currentUser.dbUser.facilityName} </h6>
             <FullCalendar
                 defaultView="dayGridMonth"
                 header={{

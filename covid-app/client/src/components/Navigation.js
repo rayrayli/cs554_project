@@ -25,11 +25,8 @@ const NavigationAdmin = () => {
         <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Admin Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
-                <Navbar.Text>
-                    {displayName} | 
-                </Navbar.Text>
-                <Nav.Link href='/account'> Account </Nav.Link>
-                <Nav.Link to='/' onClick={doSignOut}> Logout </Nav.Link>
+                <Nav.Link className="admin-nav" href='/account'> Account </Nav.Link>
+                <Nav.Link className="admin-nav" to='/' onClick={doSignOut}> Logout </Nav.Link>
             </Navbar.Collapse>
         </Navbar>
     );
@@ -45,9 +42,6 @@ const NavigationEmployee = () => {
         <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Facility Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
-                <Navbar.Text>
-                    {displayName} | 
-                </Navbar.Text>
                 <Nav.Link href='/account'> Account </Nav.Link>
                 <Nav.Link href='/inbox'> Inbox </Nav.Link>
                 <Nav.Link to='/' onClick={doSignOut}> Logout </Nav.Link>
