@@ -1,7 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext , useEffect, useRef} from 'react';
 import { AuthContext } from '../firebase/Auth';
 import { doChangePassword, deleteAccount, doUpdateEmail, reauthenticate } from '../firebase/FirebaseFunctions';
-import { Container, Nav, Col, Row, Tab, Form, Button, Modal } from 'react-bootstrap';
+import { Container, Nav, Col, Row, Tab, Form, Button, Modal , Table} from 'react-bootstrap';
+import moment from 'moment'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
+
+
 const states = [
     'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
     'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
@@ -316,6 +320,7 @@ const AccountPatient = () => {
     const [reauth, setReauth] = useState(undefined)
     const [hideModal, setHideModal] = useState(true)
 
+
     const patchDbUser = async (info, type) => {
         // TYPE 0 = No Email Update , TYPE 1 = Email Update (Reauth Req)
         try {
@@ -556,6 +561,14 @@ const AccountPatient = () => {
                                     </Col>
                                 </Form>
                             </Tab.Pane>
+                            <Tab.Pane eventKey="Appointments">
+                                Manage Your Appointments
+                                {currentUser  && <ManageAppointment />}
+                                {currentUser && currentUser.user.providerData[0].providerId !== 'password' &&
+                                    <h1> You Have Logged In Using Social Media Provider. You Cannot Manage the Appointment</h1>
+                                }
+                            </Tab.Pane>
+
                             <Tab.Pane eventKey="Password">
                                 PASSWORD
                                 {currentUser && currentUser.user.providerData[0].providerId === 'password' &&
@@ -858,6 +871,146 @@ const UpdateEmailModal = (props) => {
             </Modal.Body>
         </Modal>
     );
+}
+
+const ManageAppointment = () =>{
+    const { currentUser } = useContext(AuthContext);
+    const [appointmentList, setAppointmentList] = useState([])
+    const [reloadData, setReloadData] = useState(0);
+    // const [rowsPerPage, setRowsPerPage] = useState(5);
+    // const [page, setPage] = useState(0);
+    // const [rows, setRows] = useState(0);
+
+
+
+    const handleReload = () => {
+        setReloadData((prevCount) => prevCount + 1);
+      };
+
+    const handleAppointmetnList =(data)=>{
+        setAppointmentList(data);
+    };
+
+    const handleAppointDelete = async (id) => {
+        try {
+            await fetch(`/appointment/${id}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                }
+            }).then((conf) => {
+                console.log('Appointment Deleted');
+            });
+            handleReload();
+        } catch (err) {
+            console.log(err)
+            return err
+        }
+    };
+
+    // const handleChangePage = (event, newPage) => {
+    //     setPage(newPage);
+    //   };
+    
+    //   const handleChangeRowsPerPage = (event) => {
+    //     setRowsPerPage(parseInt(event.target.value, 10));
+    //     setPage(0);
+    //   };
+
+
+    useEffect(
+        () => {
+          if (currentUser) {
+            async function fetchAppointment (){
+                // console.log(currentUser)
+                fetch(`/appointment/patient/${currentUser.dbUser.uid}`)
+                    .then((res1) => res1.json())
+                    .then((data) => {
+                        // console.log(data)
+                        handleAppointmetnList(data);
+                    })          
+                    .catch(err => {
+                      console.log(err)
+                      return ;
+                    })
+            };
+
+            fetchAppointment();
+        }}, [reloadData]
+    );
+
+    function redenderAppointmentInfo (){
+        // console.log(appointmentList)
+
+        if ( appointmentList === undefined  || appointmentList.length === 0 ){
+            return null;
+        }
+        return appointmentList.map(appointment => {
+                const dateString = moment(appointment.date, 'YYYY-DD-MM').format('MM/DD/YYYY');
+                const t1 = moment().hour(9).minute(0).add(appointment.slot, 'hours');
+                const t2 = moment().hour(9).minute(0).add(appointment.slot + 1, 'hours');
+            return (<tr key={appointment._id}>
+                <td>{dateString}</td>
+                <td>{t1.format('H:mm') + ' - ' + t2.format('H:mm')}</td>
+                <td>{appointment.facilityName}</td>
+                <td>{appointment.facilityPhone}</td>
+                <td>{appointment.facilityEmail}</td>
+                <td>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div className="btn-group" style={{marginBottom: "20px" }}>
+                            <button className="btn btn-sm btn-outline-secondary" onClick={() => handleAppointDelete(appointment._id)}>
+                                Delete Appointment</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>)
+            })
+        }
+
+      function  redenderAppointmentInfoF(){
+            return  <MuiThemeProvider>              
+            <tbody>
+            {redenderAppointmentInfo()}
+            </tbody>
+            </MuiThemeProvider>
+        }
+
+    return (
+        <div >
+                {appointmentList.length === 0 && (
+                    <div className="text-center">
+                        <h2>No appointment found at the moment</h2>
+                    </div>
+                )}
+        {/* <TableContainer component={Paper}> */}
+        <div className="container">
+            <div className="row">
+           <Table bordered hover> 
+            <thead className = "thread-light">
+                    <tr>
+                    <th>Appointment Day</th>
+                    <th>Appointment Time</th>
+                    <th>Facility Name</th>
+                    <th>Facility Phone</th>
+                    <th>Facility Email</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead> 
+                {redenderAppointmentInfoF()}
+            </Table>
+        {/* </TableContainer> */}
+        {/* <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={rows}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={()=> handleChangePage()}
+          onChangeRowsPerPage={()=> handleChangeRowsPerPage()}
+        /> */}
+        </div>              
+        </div>
+    </div>)
 }
 
 // Reusable Change Password Component (For All Users)

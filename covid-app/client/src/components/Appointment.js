@@ -1,5 +1,5 @@
 // begin ray add for appointment 5/11/2020
-import React, { useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext, useRef} from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import { Container, Row } from 'react-bootstrap';
 import { AuthContext } from '../firebase/Auth';
@@ -41,6 +41,20 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
+const useComponentDidMount = func => useEffect(func, []);
+
+ const useComponentWillMount = func => {
+    const willMount = useRef(true);
+  
+    if (willMount.current) {
+      func();
+    }
+  
+    useComponentDidMount(() => {
+      willMount.current = false;
+    });
+  };
+
 
 const Appointment = (props) => {
 
@@ -48,7 +62,7 @@ const Appointment = (props) => {
     const [selectedMeridiem, setSelectedMeridiem] = useState(0);  
     const { currentUser } = useContext(AuthContext);
 
-    const [hideModal, setHideModal] = useState(true);
+    const [reloadData, setReloadData] = useState(0);
     const [appointmentSlot, setAppointmentSlot] = useState(0);
     const [confirmationModalOpen, setConfirmationModal] = useState(false);
     const [confirmationSnackbarMessage, setConfirmationSnackbarMessage] = useState(undefined);
@@ -63,6 +77,11 @@ const Appointment = (props) => {
     let patientId = currentUser.dbUser.uid;
     let facilityInfo = props.location.state.facilityInfo;
     let facilityId = facilityInfo.uid;
+
+
+    const handleReload = () => {
+      setReloadData((prevCount) => prevCount + 1);
+    };
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -96,7 +115,7 @@ const Appointment = (props) => {
         setAppointmentSlot(slot)
       }
     
-    function handlefetch(data) {
+    const handlefetch = (data) =>{
         const appointments = data
         const initSchedule = {}
         const today = moment().startOf('day')
@@ -125,29 +144,32 @@ const Appointment = (props) => {
         }
         setAppointmentSchedule(schedule);
         setLoading(false);
-      };
+      }
 
-      useEffect(
+
+    const  fetchAppointment= async() => {
+        fetch(`/appointment/facility/${facilityId}`)
+            .then((res1) => res1.json())
+            .then((data) => {
+                handlefetch(data);
+            })          
+            .catch(err => {
+              console.log(err)
+              setConfirmationSnackbarMessage("Fetch Error!");
+              setConfirmationSnackbarOpen(true);
+              return ;
+            })
+    };
+
+    useComponentWillMount(() => fetchAppointment());
+
+    useEffect(
         () => {
-          console.log(currentUser)
-          console.log(facilityId)
+          // console.log(currentUser)
+          // console.log(facilityId)
           if (currentUser && facilityId) {
-            
-            async function fetchAppointment() {
-                fetch(`/appointment/facility/${facilityId}`)
-                    .then((res1) => res1.json())
-                    .then((data) => {
-                        handlefetch(data);
-                    })          
-                    .catch(err => {
-                      console.log(err)
-                      setConfirmationSnackbarMessage("Fetch Error!");
-                      setConfirmationSnackbarOpen(true);
-                      return ;
-                    })
-            };
             fetchAppointment();
-        }}, [currentUser]
+        }}, [reloadData]
     );
 
     const commitAppointment = async (info) => {
@@ -181,6 +203,7 @@ const Appointment = (props) => {
          }
           commitAppointment(appointment);
           handleConfirmationModalFalse();
+          handleReload();
           handleNext();
     };
 
@@ -310,6 +333,9 @@ const Appointment = (props) => {
         }}>Go Back</Link>
         </Row>
         <Row>
+              <div className="text-center">
+                  <h2>Make An Appointment On Facility: {facilityInfo.facilityName}</h2>
+              </div>
               <div className={classes.root}>
               <Stepper activeStep={activeStep} orientation="vertical">
                   {steps.map((label, index) => (
@@ -355,8 +381,16 @@ const Appointment = (props) => {
                   Confirm your appointment
               </DialogTitle>
               <DialogContent>
-                    {renderAppointmentConfirmation}
-              </DialogContent>
+                  <Typography gutterBottom>
+                      Name: <span >{displayName}</span>
+                    </Typography >
+                    <Typography gutterBottom>
+                      Email: <span >{userEmail}</span>
+                    </Typography>
+                    <Typography gutterBottom>
+                    Appointment: <span >{moment(selectedDate).format('dddd[,] MMMM Do[,] YYYY')}</span> at <span>{moment().hour(9).minute(0).add(appointmentSlot, 'hours').format('h:mm a')}</span>
+                    </Typography>
+            </DialogContent>
               <DialogActions>
                 <Button onClick={handleConfirmationModalFalse} color="primary">
                   Cancel

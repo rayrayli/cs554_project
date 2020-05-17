@@ -60,6 +60,15 @@ app.delete("/appointment/:date/:slot", async (req, res) => {
     };
 });
 
+app.delete("/appointment/:id", async (req, res) => {
+    try {
+        const deleted = await appointments.deleteAppointmentById(req.params.id);
+        res.status(200).json(deleted);
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+});
+
 app.get("/appointment", async (req, res) => {
     try {
         const appt = await appointments.getAllAppointments();

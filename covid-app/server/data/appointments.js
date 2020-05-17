@@ -15,18 +15,39 @@ let exportedMethods = {
                 {slot:slot}
             );        
             if(!apptWithUser){
-                throw `No appoitment with ${app_id}`;
+                throw `No appoitment with ${date}${slot}`;
             }
             let deleteResult = await apptCollection.deleteOne({date: date}, {slot: slot });
 
             if (!deleteResult.ok) {
-                throw `Mongo was unable to delete the appointment: ${uid}`;
+                throw `Mongo was unable to delete the appointment: ${date}${slot} `;
             }
             return true
         } catch (err) {
             return err;
         }
     },
+
+    async deleteAppointmentById(id) {
+        try {
+            const apptCollection = await appointments();
+
+            const apptWithUser = await apptCollection.findOne(
+                {_id:id}
+            );        
+            if(!apptWithUser){
+                throw `No appoitment with ${id}`;
+            }
+            let deleteResult = await apptCollection.deleteOne({_id: id});
+            if (!deleteResult.ok) {
+                throw `Mongo was unable to delete the appointment: ${id}`;
+            }
+            return true
+        } catch (err) {
+            return err;
+        }
+    },
+    
 
     async getAllAppointments() {
         try {
@@ -104,14 +125,12 @@ let exportedMethods = {
             //todo add to patient appointment list
             if (doc.role === 'admin') {
                 let assignTo = null;
-
                 let beforeAppointment = await apptCollection.find({ patientId: updateInfo.patientId }).toArray();
-
-                if ((typeof beforeAppointment === 'undefined') || !beforeAppointment || beforeAppointment[0].assignedToEmployee === null){
-                    if (typeof adminsFound === 'undefined' || !adminsFound){
-                        assignTo = null
-                    }else{
-                        assignTo = adminsFound[Math.floor(Math.random() * adminsFound.length)].uid
+                if ((!Array.isArray(beforeAppointment) || !beforeAppointment.length || 
+                    beforeAppointment[0].assignedToEmployee === null)){
+                    if (Array.isArray(adminsFound) && adminsFound.length){
+                        let radomEmp = Math.floor(Math.random() * adminsFound.length);
+                        assignTo = adminsFound[radomEmp].uid;
                     }
                 }
                 else {
@@ -127,6 +146,8 @@ let exportedMethods = {
                     patientId: updateInfo.patientId,
                     facilityUid: fcId,
                     facilityName: doc.facilityName,
+                    facilityPhone: doc.phone,
+                    facilityEmail: doc.email,
                     assignedToEmployee: assignTo
                 };
 
