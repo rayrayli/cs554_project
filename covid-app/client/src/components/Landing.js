@@ -90,43 +90,45 @@ const FacilityLanding = () => {
     if (employees) {
         li = employees && employees.map((employee) => {
             return (
-                <li key={employee.uid}>
-                    <div>
-                        <p> {employee.firstName} {employee.lastName} ({employee.email}) </p>
-                        <Button onClick={() => adminDeleteUser(employee.uid)}> Delete </Button>
+                    <div className="emp-list">
+                        <p> {employee.firstName} {employee.lastName} </p>
+                        <p>({employee.email}) </p>
+                        <p>{employee.phone}</p>
+                        <p onClick={() => adminDeleteUser(employee.uid)}> Delete Employee</p>
                     </div>
-                </li>
             );
         });
     };
 
     return (
         <div>
-            <h1> ADMIN LANDING </h1>
+            <h1 className="landing-head landing-center"> Welcome, {currentUser.dbUser.facilityName} Admin! </h1>
             <Row>
                 <Col lg={4} md={12} sm={12}>
-                    <Row>
-                        <h3> Facility Employees</h3>
-                        <Button onClick={adminAddUser}> Add Employee </Button>
+                    <Row className="landing-center-flex">
+                        <p className="landing-side landing-center"> Facility Employees</p>
                     </Row>
-                    <Row>
+                    <Row className="landing-center-flex">
                         <div>
                             {
                                 employees ?
-                                    <ul>
+                                    <div className="landing-center-flex emp-list-cont">
                                         {li}
-                                    </ul>
+                                    </div>
                                     :
-                                    <h6> Currently No Employee Accounts Created. To Create An Employee, Click 'Add Employee' Button Above </h6>
+                                    <h6> Currently No Employee Accounts Created. To Create An Employee, Click 'Add Employee' Button Below </h6>
                             }
                         </div>
+                    </Row>
+                    <Row className="landing-center-flex">
+                        <Button className="submit" variant="primary" onClick={adminAddUser}> Add Employee</Button>
                     </Row>
                 </Col>
 
 
                 <Col lg={8} md={12} sm={12}>
                     <div>
-                        <h3> Facility Appointment Manager </h3>
+                        <p className="landing-side landing-center"> Facility Appointment Manager </p>
                         <Calendar />
                     </div>
                 </Col>
@@ -153,11 +155,12 @@ const EmployeeLanding = () => {
 
     return (
         <div>
-            <h1> EMPLOYEE LANDING </h1>
+            <h1 className="landing-center landing-head"> Welcome, {currentUser.dbUser.firstName}! </h1>
+            <p className="landing-center landing-p">View your appointment schedule below</p>
             <Row>
                 <Col lg={4} md={12} sm={12}>
                     <Row>
-                        <h3> Todays Appointments</h3>
+                        <p className="landing-center landing-side"> Todays Appointments</p>
                     </Row>
                     <Row>
                         <div>
@@ -168,7 +171,7 @@ const EmployeeLanding = () => {
 
                 <Col lg={8} md={12} sm={12}>
                     <div>
-                        <h3> Facility Appointment Manager </h3>
+                        <p className="landing-center landing-side"> Facility Appointment Manager </p>
                         <Calendar />
                     </div>
                 </Col>
