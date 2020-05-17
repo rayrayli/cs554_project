@@ -32,6 +32,9 @@ services:
             - mongo
         depends_on:
             - mongo
+        environment:
+            env_file: .env
+            NODE_ENV: development
     mongo:
         image: mongo
         ports:

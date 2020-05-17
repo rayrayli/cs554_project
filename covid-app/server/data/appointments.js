@@ -90,10 +90,10 @@ let exportedMethods = {
     },
 
 
-    async getAppointmentByEmployee(eployee) {
+    async getAppointmentByEmployee(employee) {
         try {
             const apptCollection = await appointments();
-            let apptFound = await apptCollection.find({ assignedToEmployee: eployee }).toArray();
+            let apptFound = await apptCollection.find({ assignedToEmployee: employee }).toArray();
             return apptFound;
         } catch (err) {
             return err;
@@ -126,6 +126,7 @@ let exportedMethods = {
             if (doc.role === 'admin') {
                 let assignTo = null;
                 let beforeAppointment = await apptCollection.find({ patientId: updateInfo.patientId }).toArray();
+              
                 if ((!Array.isArray(beforeAppointment) || !beforeAppointment.length || 
                     beforeAppointment[0].assignedToEmployee === null)){
                     if (Array.isArray(adminsFound) && adminsFound.length){

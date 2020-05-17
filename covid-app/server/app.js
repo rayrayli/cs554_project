@@ -14,18 +14,23 @@ admin.initializeApp({
 /*
 ####################### RUN SERVER #######################
 */
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const express = require("express");     // Utilize Express Module
 const path = require('path');
-const app = express();                  // Generate Express Application
+const app = express();
 const bodyParser = require("body-parser"); // JSON Parsing
 const data = require('./data');
 const getData = data.statData;
+const chatData = data.chatData;
 const users = data.users;
 const appointments = data.appointments;
 const cors = require('cors');
 const cron = require("node-cron");
 const fs = require("fs");
+// const http = require('http').createServer(app);
+// const io = require('socket.io')(http);
+const eq = require("./emailqueue");
+eq.create_queue();
 
 
 /*
@@ -35,6 +40,14 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static('client/build'));
+
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    });
+}
 
 /*
 ######################### ROUTES #########################
@@ -112,6 +125,26 @@ app.get("/appointment/patient/:patientId", async (req, res) => {
 app.post("/appointment/:facilityid", async (req, res) => {
     try {
         const newAppt = await appointments.addNewAppointmentToFacility(req.params.facilityid, req.body);
+        
+        // create new chat
+        console.log("creating chat");
+        console.log(newAppt.patientId);
+        console.log(newAppt.assignedToEmployee);
+        const newChatId = await chatData.createChat(newAppt.patientId, newAppt.assignedToEmployee);
+        console.log("updating users with chat");
+        users.addToMessage(newAppt.assignedToEmployee, newAppt.patientId, newChatId);
+
+        // email to patient and employee about chat
+        console.log("sending email");
+        eq.send_email(
+            [
+                await users.getEmail(newAppt.patientId),
+                await users.getEmail(newAppt.assignedToEmployee)
+            ], 
+            "New Chat Started!",
+            `Hi!\nYou've been matched for covid-care.\nStart chatting here! localhost:3000/chat/${newChatId}`
+        );
+
         res.status(200).send({ '_id': newAppt });
     } catch (err) {
         res.status(400).json({ "error": err.message });
@@ -189,13 +222,11 @@ app.post("/admin/newEmployee", (req, res) => {
                     email: employeeInfo.email,
                     phone: employeeInfo.phone,
                     facility: employeeInfo.facility,
-                    appointments: [
-                        null
-                    ],
-                    messages: [
-                        null
-                    ]
-                });
+                    appointments: [],
+                    messages: []
+                }).then(async (res) => {
+                    await users.addEmployeeToFacility(employeeInfo.facility, res[1])
+                })
 
                 res.status(200).send(userRecord.uid);
             })
@@ -208,15 +239,18 @@ app.post("/admin/newEmployee", (req, res) => {
 // Admin Delete User with FIREBASE UID
 app.delete("/admin/deleteEmployee", (req, res) => {
     try {
-        let uid = req.body;
+        let deleteInfo = req.body;
 
-        admin.auth().deleteUser(uid.uid)
+        admin.auth().deleteUser(deleteInfo.employeeUid)
             .then(async () => {
-                console.log(`Successfully deleted firebase user with uid ${uid.uid}`);
-                await users.deleteUser(uid.uid);
+                console.log(`Successfully deleted firebase user with uid ${deleteInfo.employeeUid}`);
+                await users.deleteUser(deleteInfo.employeeUid);
+            })
+            .then(async () => {
+                await users.removeEmployeeFromFacility(deleteInfo.facilityUid, deleteInfo.employeeUid)
             })
             .then(() => {
-                console.log(`Successfully deleted mongodb user with uid ${uid.uid}`);
+                console.log(`Successfully deleted mongodb user with uid ${deleteInfo.employeeUid}`);
                 res.status(200).json(true);
             })
     } catch (err) {
@@ -312,6 +346,7 @@ app.delete("/users/:uid", async (req, res) => {
     };
 });
 
+
 // Send 404 On All Other Routes
 app.use("*", (req, res) => {
     res.sendStatus(404);
@@ -331,7 +366,45 @@ cron.schedule("00 5 * * *", async () => {
 /*
 ####################### RUN SERVER #######################
 */
-app.listen(PORT, () => {       
+let server = app.listen(PORT, async () => {
     console.log("We've now got a server!");
     console.log(`Your routes will be running on http://localhost:${PORT}`);
+});
+
+let io = require('socket.io').listen(server);
+
+/*
+    Socket stuff
+*/
+io.on('connection', async function(socket) {
+    let chat_id = "";
+    let user = ""
+  
+    socket.on('join_chat', async function(req) {
+      chat_id = req.id;
+      user = req.user;
+      socket.join(chat_id);
+      
+      let history = await chatData.getHistory(chat_id);
+      for (line in history) {
+        socket.emit("announce", {message: history[line]});
+      }
+      io.in(chat_id).emit("announce", {message: `${req.user} joined @ ${new Date().toString()}`});
+      console.log(`${req.user} joined @ ${new Date().toString()}`);
+    });
+  
+    socket.on('send_msg', async function(req) {
+      let line = `${req.user}: ${req.msg}`;
+      try {
+        await chatData.addToHistory(chat_id, line);
+      } catch (e) {
+        console.log(e);
+      }
+      io.in(chat_id).emit("announce", {message: line});
+    });
+
+    socket.on('disconnect', async function() {
+      console.log(`${user} left @ ${new Date().toString()}`);
+      io.in(chat_id).emit("announce", {message: `${user} has disconnected @ ${new Date().toString()}`});
+    });
 });

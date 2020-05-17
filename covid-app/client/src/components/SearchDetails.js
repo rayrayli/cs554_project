@@ -28,8 +28,6 @@ const SearchDetails = (props) => {
 
     const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
     let marker;
-    let li;
-    let row = null
 
     useEffect(
         () => {
@@ -42,34 +40,20 @@ const SearchDetails = (props) => {
                 let county;
                 let state;
                 console.log(data);
-
-                if ((data.address_components.length >= 2) && (data.address_components[1].long_name.includes('County'))) {
-                    county = data.address_components[1].long_name;
-                    console.log(county)
-                    state = data.address_components[2].long_name
-
-                } else if ((data.address_components.length >= 3) && (data.address_components[2].long_name.includes('County'))) {
-                    county = data.address_components[2].long_name
-                    console.log(county)
-                    state = data.address_components[3].long_name
-
-                } else if ((data.address_components.length >= 4) && (data.address_components[3].long_name.includes('County'))) {
-                    county = data.address_components[3].long_name
-                    console.log(county)
-                    state = data.address_components[4].long_name
-
-                } else {
-                    setSearchResult({ lat: data.geometry.location.lat, lng: data.geometry.location.lng });
-                    return
-                };
+                
+                data && data.address_components.forEach( (arrInd, i) => {
+                    if (arrInd.types[0] === 'administrative_area_level_2') {
+                        county = data.address_components[i].long_name;
+                        state = data.address_components[i + 1].long_name
+                    }
+                })
 
                 setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
 
-                fetch(`/data/county/${county.substring(0, county.indexOf('County'))}`)
-                    .then((res1) => res1.json())
+                axios.get(`/data/county/${county.substring(0, county.indexOf('County'))}`)
                     .then((data) => {
                         console.log(data)
-                        data.forEach((doc) => {
+                        data.data.forEach((doc) => {
                             if (doc.Province_State === state) {
                                 console.log(doc);
                                 setCountyData(doc);
@@ -78,10 +62,9 @@ const SearchDetails = (props) => {
                         });
                     });
 
-                fetch('/users/admin/')
-                    .then((res1) => res1.json())
+                axios.get('/users/admin/')
                     .then((data) => {
-                        setFacilityData(data)
+                        setFacilityData(data.data)
                     })
             };
 
@@ -175,16 +158,16 @@ const SearchDetails = (props) => {
 
     function drawMarkers() {
         facilityData && facilityData.map((facility, i) => {
-            marker = new window.google.maps.Marker({
-                position: { lat: facility.geoJSON.geometry.coordinates[0], lng: facility.geoJSON.geometry.coordinates[1] },
-                map: map,
-                info: facility
-            });
+            if (facility.geoJSON && facility.geoJSON.geometry.coordinates) {
+                marker = new window.google.maps.Marker({
+                    position: { lat: facility.geoJSON.geometry.coordinates[0], lng: facility.geoJSON.geometry.coordinates[1] },
+                    map: map,
+                    info: facility
+                });
+            }
 
             window.google.maps.event.addListener(marker, 'click', ((marker, i) => {
                 return () => {
-                    // console.log(marker.info)
-                    // console.log(marker.info)
                     if (!!selected) {
                         if (selected === marker.info) {
                             setSelected(null)

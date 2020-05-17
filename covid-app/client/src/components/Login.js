@@ -27,16 +27,8 @@ const Login = () => {
             }
         } else if (currentUser.dbUser.role === 'employee') {
             return (<Redirect to='/' />)
-            // if () {
-            //     return (<Redirect to='/register/facility-details' />)
-            // } else {
-            //     return (<Redirect to='/' />)
-            // }
-            return
         }
     }
-
-    
 
     // Attempt Login With User Input Email and Password
     const handleLogin = async (e) => {
@@ -52,10 +44,15 @@ const Login = () => {
 
     return (
         <Container className='main' fluid>
-            <Row>
+            <div className="login-content">
+                <div className='registration-header'>
+                    <h1> Welcome! </h1>
+                    <p className="reg-login"> Thank you for your diligence in fighting COVID-19! Login to your account below.</p>
+                    <br />
+                </div>
                 <Form onSubmit={handleLogin}>
                     <Col lg={12} md={12}>
-                        <SocialLogin />
+                        <SocialLogin/>
                         <Form.Row>
                             <Form.Group as={Col} controlId="email-login">
                                 <Form.Label>Email</Form.Label>
@@ -82,17 +79,17 @@ const Login = () => {
                                 />
                             </Form.Group>
                         </Form.Row>
-                        <Form.Row>
-                            <Button type='submit'>Login</Button>
+                        <Form.Row className="login-button">
+                            <Button type='submit' className="submit" block>Login</Button>
                         </Form.Row>
 
-                        <Form.Row>
-                            <Button onClick={() => setShowReset(true)}> Forgot Your Password? </Button>
+                        <Form.Row className="forgot-pw">
+                            <p className="cursor" onClick={() => setShowReset(true)}> Forgot Your Password? </p>
                         </Form.Row>
 
                     </Col>
                 </Form>
-            </Row>
+            </div>
             <ForgotPassword
                 show={showReset}
                 onHide={() => setShowReset(false)}
@@ -114,7 +111,7 @@ const SocialLogin = () => {
 
     return <Form.Row>
         <FormGroup as={Col} controlId="formGmailLogin">
-            <Image alt='google-login' src={googleImg} onClick={() => loginSocial('google')} />
+            <Image className="cursor" alt='google-login' src={googleImg} onClick={() => loginSocial('google')} />
         </FormGroup>
     </Form.Row>
 };
