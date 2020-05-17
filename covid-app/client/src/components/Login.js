@@ -32,11 +32,14 @@ const Login = () => {
 
     // Attempt Login With User Input Email and Password
     const handleLogin = async (e) => {
+        console.log("logging in");
         e.preventDefault();
         const [ email, password, btn, btn2 ] = e.target.elements;
 
         try {
+            console.log("trying");
             await doSignInWithEmailAndPassword(email.value, password.value);
+            console.log("logged in");
         } catch (err) {
             alert(err);     // Unable to Login
         }

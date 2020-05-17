@@ -199,42 +199,38 @@ const SearchDetails = (props) => {
     return (
         <Container className='main' fluid >
             <Row>
-                <Link to='/'>Go Back</Link>
-            </Row>
-            <Row>
                 <Col lg={6} md={12} sm={12} id='left-comp'>
-                    <Row> <h1> LOCATION MAP HERE </h1> </Row>
                     <div id='map' />
                 </Col>
 
                 <Col lg={6} md={12} sm={12} id='right-comp'>
-                    <Row>
-                        <div>
-                            <h1> COVID FACTS HERE </h1>
-
-                            <p>County: {(countyData && countyData.Admin2) || 'Data Unavailable'}</p>
-                            <p>State: {(countyData && countyData.Province_State) || 'Data Unavailable'}</p>
+                    <Row className="map-info-cont">
+                        <div className="map-info">
+                            <h1 className="map-info-h"> {((countyData && countyData.Admin2) + " County, " + ((countyData && countyData.Province_State))) || 'Data Unavailable'} </h1>
                             <p>Confirmed Cases: {(countyData && numberWithCommas(countyData.Confirmed)) || 'Data Unavailable'}</p>
                             <p>Deaths: {(countyData && numberWithCommas(countyData.Deaths)) || 'Data Unavailable'}</p>
                             <p>Recovered Patients: {(countyData && countyData.Recovered > 0) ? numberWithCommas(countyData.Recovered) : 'Not Reported'}</p>
                         </div>
                     </Row>
 
-                    <Row >
-
-                        <div>
-                            <h1> TESTING CENTER INFO HERE </h1>
-
-                            <div>
-                                <h1> {selected && selected.facilityName} </h1>
-                                <h3> {selected && selected.email}   {selected && selected.phone} </h3>
-                                <h3> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </h3>
+                    <Row className="map-info-cont">
+                        {selected !== null && 
+                            <div className="map-info">
+                                <h1 className="map-info-h"> {selected && selected.facilityName} </h1>
+                                <p className="facility-p"> {selected && selected.email}   {selected && selected.phone} </p>
+                                <p className="facility-p"> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </p>
                                 <div>
-                                    {selected && (<Button onClick={() => setRedirectToAppointment(true)}> Create an appointment</Button>)}
+                                    {selected && (<Button className="submit" onClick={() => setRedirectToAppointment(true)}> Create an appointment</Button>)}
                                 </div>
                             </div>
                             
-                        </div>
+                        }
+                        {   selected === null &&
+                            <div className="map-info">
+                                <h1 className="map-info-h">Select a Testing Center Pin for More Details</h1>
+                            </div>
+
+                        }
                     </Row>       
                 </Col>
             </Row>
