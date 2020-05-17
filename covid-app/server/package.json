@@ -7,6 +7,7 @@
     "seed": "node ./task/seed.js",
     "dev": "node app.js",
     "start": "node app.js",
+    "emailer": "node emailworker.js",
     "heroku-postbuild": "node ./task/seed.js && cd client && npm install && npm run build"
   },
   "author": "",
@@ -24,7 +25,9 @@
     "install": "^0.13.0",
     "mongodb": "^3.5.5",
     "node-cron": "^2.0.3",
+    "nodemailer": "^6.4.6",
     "rsmq": "^0.12.0",
+    "rsmq-worker": "^0.5.2",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0"
   },
