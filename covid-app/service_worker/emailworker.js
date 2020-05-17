@@ -35,16 +35,17 @@ const sendEmail = function(recipient, subject, contents) {
   });
 }
 
-console.log("working");
 worker.on("message", function(msg, next, id) {
   const emailDetails = JSON.parse(msg);
-  let emails = ""
+  let emails = ""; 
   if (emailDetails.recipients.length > 1) {
     emails = emailDetails.recipients.join(", ");
   } else {
-    emails = emailDetails.recipients[0]
+    emails = emailDetails.recipients[0];
   }
   sendEmail(emails, emailDetails.subject, emailDetails.contents);
   next();
 });
+
+console.log("working");
 worker.start();

@@ -2,7 +2,7 @@ const MongoClient = require("mongodb").MongoClient;
 
 const settings = {
     mongoConfig: {
-        serverUrl: "mongodb://mongo:27017" || process.env.MONGODB_URI,
+        serverUrl: "mongodb://mongo:27017",
         database: "CS554-Final-Project-CovidApp"
     }
 };

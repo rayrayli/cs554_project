@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
+import {Container , Button}from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import axios from 'axios';
+import { setLogLevel } from 'firebase';
+
 const key = process.env.REACT_APP_GOOGLE_API_KEY
 
 async function loadScript(src) {
@@ -22,12 +24,10 @@ const SearchDetails = (props) => {
     const [map, setMap] = useState(undefined)
 
     const [selected, setSelected] = useState(null);
-
+    const [redirectToAppointment, setRedirectToAppointment] = useState(false);
 
     const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
     let marker;
-    let li;
-    let row = null
 
     useEffect(
         () => {
@@ -40,26 +40,13 @@ const SearchDetails = (props) => {
                 let county;
                 let state;
                 console.log(data);
-
-                if ((data.address_components.length >= 2) && (data.address_components[1].long_name.includes('County'))) {
-                    county = data.address_components[1].long_name;
-                    console.log(county)
-                    state = data.address_components[2].long_name
-
-                } else if ((data.address_components.length >= 3) && (data.address_components[2].long_name.includes('County'))) {
-                    county = data.address_components[2].long_name
-                    console.log(county)
-                    state = data.address_components[3].long_name
-
-                } else if ((data.address_components.length >= 4) && (data.address_components[3].long_name.includes('County'))) {
-                    county = data.address_components[3].long_name
-                    console.log(county)
-                    state = data.address_components[4].long_name
-
-                } else {
-                    setSearchResult({ lat: data.geometry.location.lat, lng: data.geometry.location.lng });
-                    return
-                };
+                
+                data && data.address_components.forEach( (arrInd, i) => {
+                    if (arrInd.types[0] === 'administrative_area_level_2') {
+                        county = data.address_components[i].long_name;
+                        state = data.address_components[i + 1].long_name
+                    }
+                })
 
                 setSearchResult({ county: county, lat: data.geometry.location.lat, lng: data.geometry.location.lng })
 
@@ -171,7 +158,7 @@ const SearchDetails = (props) => {
 
     function drawMarkers() {
         facilityData && facilityData.map((facility, i) => {
-            if (facility.geoJSON.geometry && facility.geoJSON.geometry.coordinates) {
+            if (facility.geoJSON && facility.geoJSON.geometry.coordinates) {
                 marker = new window.google.maps.Marker({
                     position: { lat: facility.geoJSON.geometry.coordinates[0], lng: facility.geoJSON.geometry.coordinates[1] },
                     map: map,
@@ -195,6 +182,19 @@ const SearchDetails = (props) => {
         })
     }
 
+    //add for appointment picker
+    if (redirectToAppointment) {
+        return (
+        <Redirect to={{
+            pathname: '/appointment',
+            state: {
+                facilityInfo: selected,
+                result: props.location.state.result 
+                }
+        }}/>
+        )
+    }
+ 
     // Populate County Data
     return (
         <Container className='main' fluid >
@@ -216,11 +216,12 @@ const SearchDetails = (props) => {
                             <p>State: {(countyData && countyData.Province_State) || 'Data Unavailable'}</p>
                             <p>Confirmed Cases: {(countyData && numberWithCommas(countyData.Confirmed)) || 'Data Unavailable'}</p>
                             <p>Deaths: {(countyData && numberWithCommas(countyData.Deaths)) || 'Data Unavailable'}</p>
-                            <p>Recovered Patiends: {(countyData && countyData.Recovered > 0) ? numberWithCommas(countyData.Recovered) : 'Not Reported'}</p>
+                            <p>Recovered Patients: {(countyData && countyData.Recovered > 0) ? numberWithCommas(countyData.Recovered) : 'Not Reported'}</p>
                         </div>
                     </Row>
 
                     <Row >
+
                         <div>
                             <h1> TESTING CENTER INFO HERE </h1>
 
@@ -228,10 +229,13 @@ const SearchDetails = (props) => {
                                 <h1> {selected && selected.facilityName} </h1>
                                 <h3> {selected && selected.email}   {selected && selected.phone} </h3>
                                 <h3> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </h3>
+                                <div>
+                                    {selected && (<Button onClick={() => setRedirectToAppointment(true)}> Create an appointment</Button>)}
+                                </div>
                             </div>
+                            
                         </div>
-                    </Row>
-
+                    </Row>       
                 </Col>
             </Row>
         </Container>

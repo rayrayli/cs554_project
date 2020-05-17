@@ -1,10 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { Row, Form, InputGroup, FormControl } from 'react-bootstrap';
+
+async function loadScript(src) {
+    let script = document.createElement('script');
+    script.src = src;
+    script.addEventListener('load', () => console.log('loaded'), { passive: false });
+    script.addEventListener('error', (err) => console.log(err), { passive: false });
+    document.body.appendChild(script);
+}
 
 const SearchBar = (props) => {
     const [searchLocality, setSearchLocality] = useState(undefined);
     const [redirect, setRedirect] = useState(false)
+    const key = process.env.REACT_APP_GOOGLE_API_KEY
+    const script = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`
+
+    useEffect(
+        () => {
+            async function loadGoogle() {
+                await loadScript(script)
+            }
+
+            loadGoogle();
+        }, []
+    )
+
+    if (window.google && window.google.maps && window.google.maps.places) {
+        const options = {
+            types: ['(cities)'],
+        };
+
+        let autocomplete = new window.google.maps.places.Autocomplete(document.getElementById('search'), options);
+        autocomplete.setFields(['address_components', 'formatted_address']);
+    }
 
     const handleChange = (e) => {
         let value = e.target.value
@@ -23,16 +52,21 @@ const SearchBar = (props) => {
     }
 
     if (searchLocality !== undefined && redirect) {
-        return(
+        return (
             <Redirect to={{
                 pathname: `/searchDetails`,
-                state: {result: searchLocality}
-            }}/>
+                state: { result: searchLocality }
+            }} />
         );
+
 
     } else {
         return (
             <Row className='landing-form'>
+                {/* <Script
+                    url={`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`}
+                    onLoad={handleScriptLoad}
+                /> */}
                 <Form id='landingform' method='POST' name='formSearchLocal' onSubmit={handleSubmit} >
                     <InputGroup>
                         <FormControl type='text' id="search" aria-label="Search for Testing Facilities" placeholder='Search For Your County' onChange={handleChange} />

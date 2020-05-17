@@ -34,6 +34,9 @@ async function main() {
     const population = mongoCollections.covidPopStats;
     const county = mongoCollections.covidCoStats;
     const users = mongoCollections.users;
+    const appointments = mongoCollections.appoinments;
+    db.createCollection("chats");
+
 
     async function clearUsers() {
         try {
@@ -43,6 +46,15 @@ async function main() {
         } catch (err) {
             return err;
 
+        }
+    }
+
+    async function clearAppointments(){
+        try {
+            collection = await appointments();
+            let conf = collection.deleteMany({})
+        } catch (err) {
+            return err;
         }
     }
 
@@ -336,6 +348,7 @@ async function main() {
     await fetchData('https://datausa.io/api/data?drilldowns=State&measures=Population&year=latest', 'pop');
     await fetchCountyLevel()
 
+    await clearAppointments()
     await clearUsers()
     await seedPatient()
     await seedAdmin().then(async (adminUser) => {

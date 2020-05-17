@@ -17,14 +17,20 @@ admin.initializeApp({
 const PORT = process.env.PORT || 3001;
 const express = require("express");     // Utilize Express Module
 const path = require('path');
-const app = express();                  // Generate Express Application
+const app = express();
 const bodyParser = require("body-parser"); // JSON Parsing
 const data = require('./data');
 const getData = data.statData;
+const chatData = data.chatData;
 const users = data.users;
+const appointments = data.appointments;
 const cors = require('cors');
 const cron = require("node-cron");
 const fs = require("fs");
+// const http = require('http').createServer(app);
+// const io = require('socket.io')(http);
+const eq = require("./emailqueue");
+eq.create_queue();
 
 
 /*
@@ -46,6 +52,136 @@ if (process.env.NODE_ENV === 'production') {
 /*
 ######################### ROUTES #########################
 */
+
+// get appointment info
+app.get("/appointment/:date", async (req, res) => {
+    try {
+        const appt = await appointments.getAppointmentByDate(req.params.date);
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.delete('/appointment/clear', async (req, res) => {
+    try {
+        const deleted = await appointments.clearAppointments();
+        res.status(200).json(deleted);
+
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    }
+})
+
+app.delete("/appointment/:date/:slot", async (req, res) => {
+    try {
+        const deleted = await appointments.deleteAppointmentByDate(req.params.date,req.params.slot);
+        res.status(200).json(deleted);
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.delete("/appointment/:id", async (req, res) => {
+    try {
+        const deleted = await appointments.deleteAppointmentById(req.params.id);
+        res.status(200).json(deleted);
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.delete('/appointment/user/:uid', async (req, res) => {
+    try {
+        console.log('%%%', req.params.uid)
+        const deleted = await appointments.deleteAppointmentByUser(req.params.uid)
+        res.status(200).json(deleted);
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+})
+
+app.post('/appointment/user/:uid', async (req, res) => {
+    try {
+        let {newEmail} = req.body
+        const updated = await appointments.updateAppointmentByUser(req.params.uid, newEmail)
+        res.status(200).json(updatesd);
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+})
+
+app.get("/appointment", async (req, res) => {
+    try {
+        const appt = await appointments.getAllAppointments();
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.get("/appointment/facility/:facilityid", async (req, res) => {
+    try {
+        const appt = await appointments.getAppointmentByFacilityId(req.params.facilityid);
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.get("/appointment/employee/:employeeid", async (req, res) => {
+    try {
+        const appt = await appointments.getAppointmentByEmployee(req.params.employeeid);
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.get("/appointment/patient/:patientId", async (req, res) => {
+    try {
+        const appt = await appointments.getAppointmentByPatientId(req.params.patientId);
+        res.status(200).json(appt);
+    } catch (err) {
+        console.log(err)
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+app.post("/appointment/:facilityid", async (req, res) => {
+    try {
+        const newAppt = await appointments.addNewAppointmentToFacility(req.params.facilityid, req.body);
+        
+        // create new chat
+        console.log("creating chat");
+        console.log(newAppt.patientId);
+        console.log(newAppt.assignedToEmployee);
+        const newChatId = await chatData.createChat(newAppt.patientId, newAppt.assignedToEmployee);
+        console.log("updating users with chat");
+        users.addToMessage(newAppt.assignedToEmployee, newAppt.patientId, newChatId);
+
+        // email to patient and employee about chat
+        console.log("sending email");
+        eq.send_email(
+            [
+                await users.getEmail(newAppt.patientId),
+                await users.getEmail(newAppt.assignedToEmployee)
+            ], 
+            "New Chat Started!",
+            `Hi!\nYou've been matched for covid-care.\nStart chatting here! localhost:3000/chat/${newChatId}`
+        );
+
+        res.status(200).send({ '_id': newAppt });
+    } catch (err) {
+        res.status(400).json({ "error": err.message });
+    };
+});
+
+
 // Get National/State Level Data  
 app.get("/data/nation_state", async (req, res) => {
     try {
@@ -188,7 +324,11 @@ app.get("/users/:facility/employee", async (req, res) => {
 // Get User By FIREBASE UID
 app.get("/users/:uid", async (req, res) => {
     try {
-        const userFound = await users.getUserById(req.params.uid);
+        let userFound = await users.getUserById(req.params.uid);
+        console.log(userFound)
+        if (userFound === []) {
+            userFound = await users.getUserById(req.params.uid);
+        }
         res.status(200).send(userFound);
 
     } catch (err) {
@@ -240,6 +380,7 @@ app.delete("/users/:uid", async (req, res) => {
     };
 });
 
+
 // Send 404 On All Other Routes
 app.use("*", (req, res) => {
     res.sendStatus(404);
@@ -259,8 +400,45 @@ cron.schedule("00 5 * * *", async () => {
 /*
 ####################### RUN SERVER #######################
 */
-app.listen(PORT, () => {
+let server = app.listen(PORT, async () => {
     console.log("We've now got a server!");
     console.log(`Your routes will be running on http://localhost:${PORT}`);
 });
 
+let io = require('socket.io').listen(server);
+
+/*
+    Socket stuff
+*/
+io.on('connection', async function(socket) {
+    let chat_id = "";
+    let user = ""
+  
+    socket.on('join_chat', async function(req) {
+      chat_id = req.id;
+      user = req.user;
+      socket.join(chat_id);
+      
+      let history = await chatData.getHistory(chat_id);
+      for (line in history) {
+        socket.emit("announce", {message: history[line]});
+      }
+      io.in(chat_id).emit("announce", {message: `${req.user} joined @ ${new Date().toString()}`});
+      console.log(`${req.user} joined @ ${new Date().toString()}`);
+    });
+  
+    socket.on('send_msg', async function(req) {
+      let line = `${req.user}: ${req.msg}`;
+      try {
+        await chatData.addToHistory(chat_id, line);
+      } catch (e) {
+        console.log(e);
+      }
+      io.in(chat_id).emit("announce", {message: line});
+    });
+
+    socket.on('disconnect', async function() {
+      console.log(`${user} left @ ${new Date().toString()}`);
+      io.in(chat_id).emit("announce", {message: `${user} has disconnected @ ${new Date().toString()}`});
+    });
+});

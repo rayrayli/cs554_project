@@ -1,8 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext , useEffect, useRef} from 'react';
 import { AuthContext } from '../firebase/Auth';
 import { doChangePassword, deleteAccount, doUpdateEmail, reauthenticate } from '../firebase/FirebaseFunctions';
-import { Container, Nav, Col, Row, Tab, Form, Button, Modal } from 'react-bootstrap';
+import { Container, Nav, Col, Row, Tab, Form, Button, Modal , Table} from 'react-bootstrap';
+import moment from 'moment'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import axios from 'axios';
+const key = process.env.REACT_APP_GOOGLE_API_KEY
 const states = [
     'AL', 'AK', 'AS', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'DC', 'FM', 'FL', 'GA',
     'GU', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MH', 'MD', 'MA',
@@ -10,6 +13,7 @@ const states = [
     'MP', 'OH', 'OK', 'OR', 'PW', 'PA', 'PR', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT',
     'VT', 'VI', 'VA', 'WA', 'WV', 'WI', 'WY'
 ];
+
 
 const Account = () => {
     const { currentUser } = useContext(AuthContext);
@@ -98,21 +102,66 @@ const AccountFacility = () => {
         }
     }
 
-    const handleAdminUpdate = (e) => {
+    const validateAddress = async (address) => {
+        console.log("!!!!!!!!", address)
+        const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
+        console.log(find)
+        const results = find.data.results[0] 
+        let formatted, street_address, city, state, zip
+    
+        results && results.address_components.forEach( (arrInd, i) => {
+            if (arrInd.types[0] === 'street_number') {
+                street_address = `${results.address_components[i].long_name} ${results.address_components[i + 1].long_name}`
+            }
+    
+            if (arrInd.types[0] === 'locality') {
+                city = `${results.address_components[i].long_name}`
+            }
+    
+            if (arrInd.types[0] === 'administrative_area_level_1') {
+                state = `${results.address_components[i].short_name}`
+            }
+    
+            if (arrInd.types[0] === 'postal_code') {
+                zip = `${results.address_components[i].long_name}`
+            }
+        })
+    
+        formatted = `${street_address}, ${city}, ${state} ${zip}, USA`
+        console.log(formatted)
+    
+        let geoJson = {
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: [
+                    find.data.results[0].geometry.location.lat,
+                    find.data.results[0].geometry.location.lng
+                ]
+            }
+        }
+        return [street_address, city, state, zip, geoJson]
+    };
+
+    const handleAdminUpdate = async (e) => {
         e.preventDefault();
 
         let { email, phone, website, address1, address2, city, state, zip } = e.target.elements;
+        let [street_address, conf_city, conf_state, conf_zip, geoJson]  = await validateAddress(`${address1.value}, ${city.value}, ${state.value} ${zip.value}, USA`)
+        console.log(geoJson)
+
         let info = {
             'email': email.value,
             'phone': phone.value,
             'website': website.value,
             'address': {
-                'street': address1.value,
+                'street': street_address,
                 'unit': address2.value,
-                'city': city.value,
-                'state': state.value,
-                'zip': zip.value,
-            }
+                'city': conf_city,
+                'state': conf_state,
+                'zip': conf_zip,
+            },
+            'geoJSON': geoJson
         }
         setUpdateInfo(info)
 
@@ -319,6 +368,7 @@ const AccountPatient = () => {
     const [reauth, setReauth] = useState(undefined)
     const [hideModal, setHideModal] = useState(true)
 
+
     const patchDbUser = async (info, type) => {
         // TYPE 0 = No Email Update , TYPE 1 = Email Update (Reauth Req)
         try {
@@ -375,9 +425,47 @@ const AccountPatient = () => {
         }
     }
 
+    const validateAddress = async (address) => {
+        const find = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${key}`)
+        const results = find.data.results[0] 
+        let formatted, street_address, city, state, zip
+    
+        results && results.address_components.forEach( (arrInd, i) => {
+            if (arrInd.types[0] === 'street_number') {
+                street_address = `${results.address_components[i].long_name} ${results.address_components[i + 1].long_name}`
+            }
+    
+            if (arrInd.types[0] === 'locality') {
+                city = `${results.address_components[i].long_name}`
+            }
+    
+            if (arrInd.types[0] === 'administrative_area_level_1') {
+                state = `${results.address_components[i].short_name}`
+            }
+    
+            if (arrInd.types[0] === 'postal_code') {
+                zip = `${results.address_components[i].long_name}`
+            }
+        })
+        
+        let geoJson = {
+            type: "Feature",
+            geometry: {
+                type: "Point",
+                coordinates: [
+                    find.data.results[0].geometry.location.lat,
+                    find.data.results[0].geometry.location.lng
+                ]
+            }
+        }
+        return [street_address, city, state, zip, geoJson]
+    };
+
     const handlePatientDetailsUpdate = async (e) => {
         e.preventDefault();
         let { firstName, lastName, email, dob, gender, address1, address2, city, state, zip } = e.target.elements
+        let [street_address, conf_city, conf_state, conf_zip, geoJson] = await validateAddress(`${address1.value}, ${city.value}, ${state.value} ${zip.value}, USA`)
+
         let info = {
             'firstName': firstName.value,
             'lastName': lastName.value,
@@ -385,11 +473,11 @@ const AccountPatient = () => {
             'dob': dob.value.toLocaleString(),
             'gender': gender.value,
             'address': {
-                'street': address1.value,
+                'street': street_address,
                 'unit': address2.value,
-                'city': city.value,
-                'state': state.value,
-                'zip': zip.value,
+                'city': conf_city,
+                'state': conf_state,
+                'zip': conf_zip,
             }
         }
         setUpdateInfo(info)
@@ -424,6 +512,9 @@ const AccountPatient = () => {
                         <Nav variant="pills" className="flex-column">
                             <Nav.Item>
                                 <Nav.Link eventKey="Profile">Profile</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="Appointments">Appointments</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
                                 <Nav.Link eventKey="Password">Password</Nav.Link>
@@ -558,6 +649,14 @@ const AccountPatient = () => {
                                     </Col>
                                 </Form>
                             </Tab.Pane>
+                            <Tab.Pane eventKey="Appointments">
+                                Manage Your Appointments
+                                {currentUser  && <ManageAppointment />}
+                                {currentUser && currentUser.user.providerData[0].providerId !== 'password' &&
+                                    <h1> You Have Logged In Using Social Media Provider. You Cannot Manage the Appointment</h1>
+                                }
+                            </Tab.Pane>
+
                             <Tab.Pane eventKey="Password">
                                 PASSWORD
                                 {currentUser && currentUser.user.providerData[0].providerId === 'password' &&
@@ -864,6 +963,146 @@ const UpdateEmailModal = (props) => {
     );
 }
 
+const ManageAppointment = () =>{
+    const { currentUser } = useContext(AuthContext);
+    const [appointmentList, setAppointmentList] = useState([])
+    const [reloadData, setReloadData] = useState(0);
+    // const [rowsPerPage, setRowsPerPage] = useState(5);
+    // const [page, setPage] = useState(0);
+    // const [rows, setRows] = useState(0);
+
+
+
+    const handleReload = () => {
+        setReloadData((prevCount) => prevCount + 1);
+      };
+
+    const handleAppointmetnList =(data)=>{
+        setAppointmentList(data);
+    };
+
+    const handleAppointDelete = async (id) => {
+        try {
+            await axios({
+                method: "DELETE",
+                url: `/appointment/${id}`, 
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                }
+            }).then((conf) => {
+                console.log('Appointment Deleted');
+            });
+            handleReload();
+        } catch (err) {
+            console.log(err)
+            return err
+        }
+    };
+
+    // const handleChangePage = (event, newPage) => {
+    //     setPage(newPage);
+    //   };
+    
+    //   const handleChangeRowsPerPage = (event) => {
+    //     setRowsPerPage(parseInt(event.target.value, 10));
+    //     setPage(0);
+    //   };
+
+
+    useEffect(
+        () => {
+          if (currentUser) {
+            async function fetchAppointment (){
+                // console.log(currentUser)
+                axios.get(`/appointment/patient/${currentUser.dbUser.uid}`)
+                    .then((data) => {
+                        // console.log(data)
+                        handleAppointmetnList(data.data);
+                    })          
+                    .catch(err => {
+                      console.log(err)
+                      return ;
+                    })
+            };
+
+            fetchAppointment();
+        }}, [reloadData]
+    );
+
+    function redenderAppointmentInfo (){
+        // console.log(appointmentList)
+
+        if ( appointmentList === undefined  || appointmentList.length === 0 ){
+            return null;
+        }
+        return appointmentList.map(appointment => {
+                const dateString = moment(appointment.date, 'YYYY-DD-MM').format('MM/DD/YYYY');
+                const t1 = moment(appointment.slot).format('hh:mm a');
+                const t2 = moment(appointment.slot).add('Minutes', 15).format('hh:mm a');
+            return (<tr key={appointment._id}>
+                <td>{dateString}</td>
+                <td>{t1 + '-' + t2}</td>
+                <td>{appointment.facilityName}</td>
+                <td>{appointment.facilityPhone}</td>
+                <td>{appointment.facilityEmail}</td>
+                <td>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div className="btn-group" style={{marginBottom: "20px" }}>
+                            <button className="btn btn-sm btn-outline-secondary" onClick={() => handleAppointDelete(appointment._id)}>
+                                Delete Appointment</button>
+                        </div>
+                    </div>
+                </td>
+            </tr>)
+            })
+        }
+
+      function  redenderAppointmentInfoF(){
+            return  <MuiThemeProvider>              
+            <tbody>
+            {redenderAppointmentInfo()}
+            </tbody>
+            </MuiThemeProvider>
+        }
+
+    return (
+        <div >
+                {appointmentList.length === 0 && (
+                    <div className="text-center">
+                        <h2>No appointment found at the moment</h2>
+                    </div>
+                )}
+        {/* <TableContainer component={Paper}> */}
+        <div className="container">
+            <div className="row">
+           <Table bordered hover> 
+            <thead className = "thread-light">
+                    <tr>
+                    <th>Appointment Day</th>
+                    <th>Appointment Time</th>
+                    <th>Facility Name</th>
+                    <th>Facility Phone</th>
+                    <th>Facility Email</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead> 
+                {redenderAppointmentInfoF()}
+            </Table>
+        {/* </TableContainer> */}
+        {/* <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={rows}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={()=> handleChangePage()}
+          onChangeRowsPerPage={()=> handleChangeRowsPerPage()}
+        /> */}
+        </div>              
+        </div>
+    </div>)
+}
+
 // Reusable Change Password Component (For All Users)
 const ChangePassword = () => {
     const { currentUser } = useContext(AuthContext);
@@ -960,7 +1199,7 @@ const ChangePassword = () => {
 // Reusable Delete Account Button (For All Users)
 const DeleteAccount = () => {
     const handleDelete = () => {
-        deleteAccount();
+        deleteAccount()
     };
 
     return (
