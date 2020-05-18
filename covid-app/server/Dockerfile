@@ -23,4 +23,4 @@ COPY . .
 EXPOSE 3001
 
 # Run the app when the container launches
-CMD npm run seed && npm run dev
+CMD npm run seed && node emailworker.js && npm run dev
