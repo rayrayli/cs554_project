@@ -16,14 +16,14 @@ const AddressModal = (props) => {
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <h4>Did You Mean ...</h4>
+                <p className="map-info-h">Did You Mean...</p>
                 <p>
                     {props.corrected}
                 </p>
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={props.onHide}>No</Button>
-                <Button onClick={props.update}>Yes</Button>
+                <Button className="submit" onClick={props.onHide}>No</Button>
+                <Button className="submit" onClick={props.update}>Yes</Button>
             </Modal.Footer>
         </Modal>
     );

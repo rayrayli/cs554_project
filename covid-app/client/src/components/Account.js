@@ -34,15 +34,17 @@ const AccountFacility = () => {
     // Make Facility Open and Facility Close Inputs Inactive When Closed is Selected 
     const handleClose = (e) => {
         let day = e.target.name
-
+        console.log(document.getElementById(e.target.id).checked);
         if (e.target.checked) {
             document.getElementById(`${day}Start`).setAttribute('disabled', true);
             document.getElementById(`${day}End`).setAttribute('disabled', true);
             document.getElementById(e.target.id).setAttribute('value', 'Closed')
+            document.getElementById(e.target.id).checked = true;
         } else {
             document.getElementById(`${day}Start`).removeAttribute('disabled', true);
             document.getElementById(`${day}End`).removeAttribute('disabled', true);
-            document.getElementById(e.target.id).setAttribute('value', 'null')
+            document.getElementById(e.target.id).setAttribute('value', 'on');
+            document.getElementById(e.target.id).checked = false;
         };
     }
 
@@ -149,17 +151,59 @@ const AccountFacility = () => {
         let { email, phone, website, address1, address2, city, state, zip } = e.target.elements;
         let [street_address, conf_city, conf_state, conf_zip, geoJson]  = await validateAddress(`${address1.value}, ${city.value}, ${state.value} ${zip.value}, USA`)
         console.log(geoJson)
-
+        console.log("target elements");
         let info = {
             'email': email.value,
             'phone': phone.value,
             'website': website.value,
             'address': {
-                'street': street_address,
+                'street': address1.value,
                 'unit': address2.value,
                 'city': conf_city,
                 'state': conf_state,
                 'zip': conf_zip,
+            },
+            'hours':{
+                'Monday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+                'Tuesday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Wednesday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Thursday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Friday': {
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Saturday':{
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                },
+
+                'Sunday':{
+                    'Start': "08:00",
+                    'End': "09:00",
+                    'Closed': "on"
+                }
             },
             'geoJSON': geoJson
         }
@@ -181,20 +225,19 @@ const AccountFacility = () => {
                     <Col sm={3}>
                         <Nav variant="pills" className="flex-column">
                             <Nav.Item>
-                                <Nav.Link eventKey="Profile">Profile</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="Profile">Profile</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="Password">Password</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="Password">Password</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="DeleteAccount">Delete Account</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="DeleteAccount">Delete Account</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Col>
                     <Col sm={9}>
                         <Tab.Content>
                             <Tab.Pane eventKey="Profile">
-                                ACCOUNT
                                 <Form onSubmit={handleAdminUpdate}>
                                     <Col lg={12} md={12}>
                                         <Form.Row>
@@ -292,7 +335,7 @@ const AccountFacility = () => {
                                     <Col lg={12} md={12}>
                                         <h2> Hours of Operation </h2>
                                         <p> Need to find a better way to edit </p>
-                                        {/* {days && days.map((day) => {
+                                        {days && days.map((day) => {
                                             return (
                                                 <Form.Row key={day}>
                                                     <Form.Group as={Col}>
@@ -300,34 +343,28 @@ const AccountFacility = () => {
                                                     </Form.Group>
 
                                                     <Form.Group as={Col}>
-                                                        <Form.Label>From</Form.Label>
+                                                        <Form.Label for={day + 'Start'}>Opens</Form.Label>
+                                                        {currentUser.dbUser.hours[day].Closed !== "Closed" && <Form.Control id={day + 'Start'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].Start) || '08:00'}/>}
+                                                        {currentUser.dbUser.hours[day].Closed === "Closed" && <Form.Control id={day + 'Start'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].Start) || '08:00'} disabled/>}
                                                     </Form.Group>
 
                                                     <Form.Group as={Col}>
-                                                        <Form.Control id={day + 'Start'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].start) || '08:00'}/>
+                                                        <Form.Label for={day + 'End'}>Closes</Form.Label>
+                                                        {currentUser.dbUser.hours[day].Closed !== "Closed" && <Form.Control id={day + 'End'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].End) || '20:00'} />}
+                                                        {currentUser.dbUser.hours[day].Closed === "Closed" && <Form.Control id={day + 'End'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].End) || '20:00'} disabled />}
+
                                                     </Form.Group>
 
                                                     <Form.Group as={Col}>
-                                                        <Form.Label>To</Form.Label>
-                                                    </Form.Group>
-
-                                                    <Form.Group as={Col}>
-                                                        <Form.Control id={day + 'End'} name='hours' type='time' defaultValue={(currentUser.dbUser.hours && currentUser.dbUser.hours[day].end) || '20:00'} />
-                                                    </Form.Group>
-
-                                                    <Form.Group as={Col}>
-                                                        <Form.Label>Closed</Form.Label>
-                                                    </Form.Group>
-
-                                                    <Form.Group as={Col}>
-                                                        <Form.Check id={day + 'Closed'} name={day} type='checkbox' onChange={handleClose} />
+                                                        <Form.Label for={day + 'Closed'}>Closed</Form.Label>
+                                                        <Form.Check id={day + 'Closed'} name={day} type='checkbox' onChange={handleClose} checked={currentUser.dbUser.hours[day].Closed === "Closed"}/>
                                                     </Form.Group>
                                                 </Form.Row>
                                             )
-                                        })} */}
+                                        })}
                                     </Col>
 
-                                    <Button variant="primary" type="submit">
+                                    <Button className="submit" variant="primary" type="submit">
                                         Submit
                                     </Button>
                                 </Form>
@@ -511,26 +548,25 @@ const AccountPatient = () => {
                     <Col sm={3}>
                         <Nav variant="pills" className="flex-column">
                             <Nav.Item>
-                                <Nav.Link eventKey="Profile">Profile</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="Profile">Profile</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="Appointments">Appointments</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="Appointments">Appointments</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="Password">Password</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="Password">Password</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="HealthDetails">Health Details</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="HealthDetails">Health Details</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="DeleteAccount">Delete Account</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="DeleteAccount">Delete Account</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Col>
                     <Col sm={9}>
                         <Tab.Content>
                             <Tab.Pane eventKey="Profile">
-                                ACCOUNT
                                 <Form onSubmit={handlePatientDetailsUpdate}>
                                     <Col lg={12} md={12}>
                                         <Form.Row>
@@ -643,7 +679,7 @@ const AccountPatient = () => {
                                         </Form.Row>
 
 
-                                        <Button variant="primary" type="submit">
+                                        <Button className="submit" variant="primary" type="submit">
                                             Submit
                                         </Button>
                                     </Col>
@@ -710,7 +746,7 @@ const AccountPatient = () => {
                                         </Form.Group>
                                     </Form.Row>
 
-                                    <Button variant="primary" type="submit">
+                                    <Button className="submit" variant="primary" type="submit">
                                         Submit
                                 </Button>
                                 </Form>
@@ -826,10 +862,10 @@ const AccountEmployee = () => {
                     <Col sm={3}>
                         <Nav variant="pills" className="flex-column">
                             <Nav.Item>
-                                <Nav.Link eventKey="Profile">Profile</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="Profile">Profile</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="Password">Password</Nav.Link>
+                                <Nav.Link className="user-tab" eventKey="Password">Password</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Col>
@@ -883,7 +919,7 @@ const AccountEmployee = () => {
                                                 />
                                             </Form.Group>
                                         </Form.Row>                                  
-                                        <Button variant="primary" type="submit">
+                                        <Button className="submit" variant="primary" type="submit">
                                             Submit
                                         </Button>
                                     </Col>
@@ -955,7 +991,7 @@ const UpdateEmailModal = (props) => {
                                 required
                             />
                         </Form.Group>
-                        <Button type='submit'>Submit</Button>
+                        <Button className="submit" type='submit'>Submit</Button>
                     </Form.Row>
                 </Form>
             </Modal.Body>
@@ -1048,7 +1084,7 @@ const ManageAppointment = () =>{
                 <td>
                     <div className="d-flex justify-content-between align-items-center">
                         <div className="btn-group" style={{marginBottom: "20px" }}>
-                            <button className="btn btn-sm btn-outline-secondary" onClick={() => handleAppointDelete(appointment._id)}>
+                            <button className="btn btn-sm btn-outline-secondary submit" onClick={() => handleAppointDelete(appointment._id)}>
                                 Delete Appointment</button>
                         </div>
                     </div>
@@ -1186,7 +1222,7 @@ const ChangePassword = () => {
                         />
                     </Form.Group>
 
-                    <Button variant="primary" type="submit">
+                    <Button className="submit" variant="primary" type="submit">
                         Submit
                     </Button>
                 </Col>
@@ -1204,8 +1240,8 @@ const DeleteAccount = () => {
 
     return (
         <div>
-            <h6> Warning... </h6>
-            <Button onClick={handleDelete}> Delete Account </Button>
+            <p className="warning"> Warning: this is permanent and cannot be undone, and will delete all data related to the user. </p>
+            <Button className="submit" onClick={handleDelete}> Delete Account </Button>
         </div>
     );
 }

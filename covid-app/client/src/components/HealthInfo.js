@@ -130,8 +130,7 @@ const HealthInfo = (props) => {
     return (
         <Container className='main' fluid>
             <div>
-                <Row> <h3> {displayName} </h3> </Row>
-                <Row> <h6> {email} </h6></Row>
+                <Row> <h1> {displayName} </h1> </Row>
 
             </div>
             <div id='form-error'>
@@ -277,7 +276,7 @@ const HealthInfo = (props) => {
                         </Form.Row>
                     </Col>
 
-                    <Button variant="primary" type="submit">
+                    <Button className="submit" variant="primary" type="submit">
                         Submit
                     </Button>
 

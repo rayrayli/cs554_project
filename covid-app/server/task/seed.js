@@ -41,7 +41,7 @@ async function main() {
     async function clearUsers() {
         try {
             collection = await users();
-            let conf = collection.deleteMany({type: undefined});
+            let conf = collection.deleteMany({});
 
         } catch (err) {
             return err;

@@ -210,24 +210,23 @@ const EmployeeLanding = () => {
     const formatEmployeeAppointments = () => {
         let today = new Date().toLocaleString().split(/\D/).slice(0, 3);
         let li1 = [];
-
-        employeeAppointments && employeeAppointments.map((appt) => {
-            let apptDate = appt.slot && appt.slot.toLocaleString().split(/\D/).slice(0, 3);
-
+      
+        employeeAppointments && employeeAppointments.forEach((appt) => {
+            let apptDate = appt.toLocaleString().split(/\D/).slice(0, 3);
             if (Number(today[0]) === Number(apptDate[0]) && Number(today[1]) === Number(apptDate[1]) && Number(today[2]) === Number(apptDate[2])) {
                 li1.push(
                     <Row>
-                        <span><h6> Date: </h6> <p>{appt.slot}</p></span>
-                        <span><h6> Patient ID: </h6> <p>{appt.patientId}</p></span>
-                        <span><h6> Name: </h6> <p>{appt.userName}</p></span>
-                        <span><h6> Email: </h6> <p>{appt.userEmail}</p></span>
+                        <span><p> Date: </p> <p>{appt.slot}</p></span>
+                        <span><p> Patient </p>: </h6> <p>{appt.patientId}</p></span>
+                        <span><p> Name: </p> <p>{appt.userName}</p></span>
+                        <span><p> Email: </p> <p>{appt.userEmail}</p></span>
                     </Row>
                 )
 
             }
         })
-
-        return (li1.length > 0) ? li1 : <Row> <h6> No Appointments Today </h6></Row>
+        
+        return (li1.length > 0) ? li1 :<Row className="landing-center-flex"> <p className="no-appts"> No Appointments Today </p></Row>
     }
 
     return (
@@ -236,10 +235,10 @@ const EmployeeLanding = () => {
             <p className="landing-center landing-p">View your appointment schedule below</p>
             <Row>
                 <Col lg={4} md={12} sm={12}>
-                    <Row>
-                        <p className="landing-center landing-side"> Todays Appointments</p>
+                    <Row className="landing-center-flex">
+                        <p className="landing-center landing-side"> Today's Appointments</p>
                     </Row>
-                    <Row>
+                    <Row className="landing-center-flex">
                         <div>
                             {employeeAppointments && formatEmployeeAppointments()}
                         </div>
@@ -691,8 +690,8 @@ const AdminNewUserModal = (props) => {
                                 />
                             </Form.Group>
                         </Form.Row>
-                        <Button onClick={props.onHide}>Cancel</Button>
-                        <Button variant="primary" type="submit" >Submit</Button>
+                        <Button className="submit" onClick={props.onHide}>Cancel</Button>
+                        <Button className="submit" variant="primary" type="submit" >Submit</Button>
                     </Col>
                 </Form>
 
