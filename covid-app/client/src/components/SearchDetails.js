@@ -208,8 +208,6 @@ const SearchDetails = (props) => {
         )
     }
 
-    console.log('#############', userAppt)
-
     // Populate County Data
     return (
         <Container className='main' fluid >

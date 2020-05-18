@@ -172,8 +172,7 @@ const EmployeeLanding = () => {
     const [hideModal, setHideModal] = useState(true);
     const [facilityAppointments, setFacilityAppointments] = useState(undefined)
     const [employeeAppointments, setEmployeeAppointments] = useState(undefined)
-
-    let li = []
+    const [li, setLi] = useState(null)
 
     useEffect(
         () => {
@@ -210,12 +209,13 @@ const EmployeeLanding = () => {
 
     const formatEmployeeAppointments = () => {
         let today = new Date().toLocaleString().split(/\D/).slice(0, 3);
-        li = null;
+        let li1 = [];
 
-        employeeAppointments && employeeAppointments.forEach((appt) => {
-            let apptDate = appt.toLocaleString().split(/\D/).slice(0, 3);
-            if (today[0] === apptDate[0] && today[1] === apptDate[1] && today[2] === apptDate[2]) {
-                li.append(
+        employeeAppointments && employeeAppointments.map((appt) => {
+            let apptDate = appt.slot && appt.slot.toLocaleString().split(/\D/).slice(0, 3);
+
+            if (Number(today[0]) === Number(apptDate[0]) && Number(today[1]) === Number(apptDate[1]) && Number(today[2]) === Number(apptDate[2])) {
+                li1.push(
                     <Row>
                         <span><h6> Date: </h6> <p>{appt.slot}</p></span>
                         <span><h6> Patient ID: </h6> <p>{appt.patientId}</p></span>
@@ -227,8 +227,8 @@ const EmployeeLanding = () => {
             }
         })
 
-        return (!!li) ? li : <Row> <h6> No Appointments Today </h6></Row>
 
+        return (li1) ? li1 : <Row> <h6> No Appointments Today </h6></Row>
     }
 
     return (
