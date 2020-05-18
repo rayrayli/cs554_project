@@ -330,3 +330,12 @@
   font-size: 1.8rem;
   text-align: center;
 }
+
+.no-appts{
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.nav-name{
+  color: black !important;
+}

@@ -216,18 +216,18 @@ const EmployeeLanding = () => {
             let apptDate = appt.toLocaleString().split(/\D/).slice(0, 3);
             if (today[0] === apptDate[0] && today[1] === apptDate[1] && today[2] === apptDate[2]) {
                 li.append(
-                    <Row>
-                        <span><h6> Date: </h6> <p>{appt.slot}</p></span>
-                        <span><h6> Patient ID: </h6> <p>{appt.patientId}</p></span>
-                        <span><h6> Name: </h6> <p>{appt.userName}</p></span>
-                        <span><h6> Email: </h6> <p>{appt.userEmail}</p></span>
+                    <Row className="landing-center-flex">
+                        <span><p> Date: </p> <p>{appt.slot}</p></span>
+                        <span><p> Patient ID: </p> <p>{appt.patientId}</p></span>
+                        <span><p> Name: </p> <p>{appt.userName}</p></span>
+                        <span><p> Email: </p> <p>{appt.userEmail}</p></span>
                     </Row>
                 )
 
             }
         })
 
-        return (!!li) ? li : <Row> <h6> No Appointments Today </h6></Row>
+        return (!!li) ? li : <Row className="landing-center-flex"> <p className="no-appts"> No Appointments Today </p></Row>
 
     }
 
@@ -237,10 +237,10 @@ const EmployeeLanding = () => {
             <p className="landing-center landing-p">View your appointment schedule below</p>
             <Row>
                 <Col lg={4} md={12} sm={12}>
-                    <Row>
-                        <p className="landing-center landing-side"> Todays Appointments</p>
+                    <Row className="landing-center-flex">
+                        <p className="landing-center landing-side"> Today's Appointments</p>
                     </Row>
-                    <Row>
+                    <Row className="landing-center-flex">
                         <div>
                             {employeeAppointments && formatEmployeeAppointments()}
                         </div>
@@ -692,8 +692,8 @@ const AdminNewUserModal = (props) => {
                                 />
                             </Form.Group>
                         </Form.Row>
-                        <Button onClick={props.onHide}>Cancel</Button>
-                        <Button variant="primary" type="submit" >Submit</Button>
+                        <Button className="submit" onClick={props.onHide}>Cancel</Button>
+                        <Button className="submit" variant="primary" type="submit" >Submit</Button>
                     </Col>
                 </Form>
 

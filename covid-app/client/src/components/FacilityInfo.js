@@ -139,7 +139,7 @@ const FacilityInfo = (props) => {
                 info[element.id] = element.value
             };
         });
-        console.log(info);
+        //console.log(info);
         setUserInfo(info);
 
         // Check Address Validity using google Geocoding API
@@ -169,8 +169,7 @@ const FacilityInfo = (props) => {
     return (
         <Container className='main' fluid>
             <div>
-                <Row> <h3> {displayName} </h3> </Row>
-                <Row> <h6> {email} </h6></Row>
+                <Row> <h1> {displayName} </h1> </Row>
 
             </div>
             <div id='form-error'>
@@ -271,26 +270,17 @@ const FacilityInfo = (props) => {
                                     </Form.Group>
 
                                     <Form.Group as={Col}>
-                                        <Form.Label>From</Form.Label>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col}>
+                                        <Form.Label for={day + 'Start'}>Opens</Form.Label>
                                         <Form.Control id={day + 'Start'} name='hours' type='time' defaultValue='08:00' />
                                     </Form.Group>
 
                                     <Form.Group as={Col}>
-                                        <Form.Label>To</Form.Label>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col}>
+                                        <Form.Label for={day+ 'End'}>Closes</Form.Label>
                                         <Form.Control id={day + 'End'} name='hours' type='time' defaultValue='20:00' />
                                     </Form.Group>
 
                                     <Form.Group as={Col}>
-                                        <Form.Label>Closed</Form.Label>
-                                    </Form.Group>
-
-                                    <Form.Group as={Col}>
+                                        <Form.Label for={day + 'Closed'}>Closed</Form.Label>
                                         <Form.Check id={day + 'Closed'} name={day} type='checkbox' onChange={handleClose} />
                                     </Form.Group>
                                 </Form.Row>
@@ -298,7 +288,7 @@ const FacilityInfo = (props) => {
                         })}
                     </Col>
 
-                    <Button variant="primary" type="submit">
+                    <Button className="submit" variant="primary" type="submit">
                         Submit
                     </Button>
 

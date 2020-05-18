@@ -25,6 +25,9 @@ const NavigationAdmin = () => {
         <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Admin Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
+            <Navbar.Text className="nav-name">
+                    {displayName} | 
+            </Navbar.Text>
                 <Nav.Link className="admin-nav" href='/account'> Account </Nav.Link>
                 <Nav.Link className="admin-nav" to='/' onClick={doSignOut}> Logout </Nav.Link>
             </Navbar.Collapse>
@@ -42,9 +45,12 @@ const NavigationEmployee = () => {
         <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Facility Console </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
-                <Nav.Link href='/account'> Account </Nav.Link>
-                <Nav.Link href='/inbox'> Inbox </Nav.Link>
-                <Nav.Link to='/' onClick={doSignOut}> Logout </Nav.Link>
+                <Navbar.Text className="nav-name">
+                    {displayName} | 
+                </Navbar.Text>
+                <Nav.Link className="login" href='/account'> Account </Nav.Link>
+                <Nav.Link className="login" href='/inbox'> Inbox </Nav.Link>
+                <Nav.Link className="login" to='/' onClick={doSignOut}> Logout </Nav.Link>
             </Navbar.Collapse>
         </Navbar>
     );
@@ -64,13 +70,13 @@ const NavigationAuth = () => {
         <Navbar className='App-nav'>
             <Navbar.Brand href='/' > COVID-19 Info Hub </Navbar.Brand>
             <Navbar.Collapse className="justify-content-end">
-                <Navbar.Text>
+                <Navbar.Text className="nav-name">
                     {displayName} | 
                 </Navbar.Text>
-                <Nav.Link href='/account'> Account </Nav.Link>
+                <Nav.Link className="login" href='/account'> Account </Nav.Link>
                 {/* add check to see if appointment exists later */}
-                <Nav.Link href={`/chat/${chatLink}`}> Chat </Nav.Link>
-                <Nav.Link  to='/' onClick={doSignOut}> Logout </Nav.Link>
+                <Nav.Link className="login" href={`/chat/${chatLink}`}> Chat </Nav.Link>
+                <Nav.Link  className="login" to='/' onClick={doSignOut}> Logout </Nav.Link>
 
             </Navbar.Collapse>
         </Navbar>
