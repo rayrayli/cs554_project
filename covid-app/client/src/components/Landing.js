@@ -112,7 +112,7 @@ const FacilityLanding = () => {
     if (employees) {
         li = employees && employees.map((employee) => {
             return (
-                <div className="emp-list">
+                <div key={employee.uid} className="emp-list">
                     <p> {employee.firstName} {employee.lastName} </p>
                     <p>({employee.email}) </p>
                     <p>{employee.phone}</p>
