@@ -1,0 +1,332 @@
+.App {
+  justify-content: center;
+  align-content: center;
+  width: 95%
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  /* background-color: #282c34; */
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.main {
+  align-content: center;
+}
+
+.landing-form, #landingform {
+  align-content: center;
+  justify-content: center;
+}
+#landingform {
+  width: 35%;
+}
+
+#map-hold {
+  justify-content: center;
+  align-content: center;
+}
+#gMap {
+  /* height: 600px;
+  width: 90%; */
+  /* justify-content: center;
+  align-content: center; */
+  width: 100%;
+  height: 500px;
+
+}
+.rect {
+  max-width: 95% ;
+}
+/* #left-comp, #right-comp, #map-comp {
+  justify-content: center;
+  align-content: center;
+} */
+
+.legend {
+  text-align: left;
+  font-size: 11pt;
+  height: fit-content;
+  justify-content: center;
+}
+
+.leg-item {
+  padding-right: 1px;
+  padding-left: 1px;
+  width: 5rem;
+}
+
+#zero, #one, #two, #three, #four {
+  height: .75rem;
+  width: 4rem;
+  margin: 0px;
+}
+#zero{
+  background-color: #02e66c;
+}
+#one{
+  background-color: #06c961;
+}
+#two{
+  background-color: #02a34d;
+}
+
+#three{
+  background-color: #246b3b;
+}
+#four{
+  background-color: #174726;
+}
+
+#search {
+  display: block;
+  border-width: 1px;
+  /* border-top-width: 0px;
+  border-right-width: 0px;
+  border-left-width: 0px; */
+  border-radius: 5px;
+  border-color: black;
+  text-align: center;
+  align-content: center;
+  margin-bottom: 2rem;
+}
+#form {
+  align-content: center;
+  justify-content: center;
+}
+/* CLASS TO STYLE AUTO COMPLETE */
+.pac-item { 
+ 
+}
+
+
+
+.stat-header{
+  align-content: center;
+  justify-content: center;
+  /* font-style: italic; */
+  font-weight: bold;
+  text-align: center;
+}
+
+.landing-header {
+  text-align: center;
+  font-weight: bold;
+  padding-bottom: 1.5rem;
+  font-size: 1.3rem;
+}
+.stat-cont {
+  align-content: center;
+  justify-content: center;
+}
+
+#acct{
+  width: 25px;
+  height: auto;
+}
+
+
+#map{
+  height:500px;
+  width: auto;
+}
+
+#patient-register{
+  width: 550px;
+}
+
+.App-nav{
+  background-color: white;
+}
+
+.info-header {
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+
+.login, .nav a, .reg-login a, .admin-nav {
+  color: rgb(40, 3, 252);
+}
+
+.img-container {
+  padding: 0 100px;
+}
+
+.logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.logo {
+  width: 150px;
+  height: 150px;
+}
+
+.footer {
+  padding-top: 3rem;
+  font-style: italic;
+  justify-content: center;  
+}
+
+.landing-body {
+  border-bottom: 1px solid black;
+}
+
+.registration-content{
+  display: flex;
+  justify-content: center;
+}
+
+.registration-header{
+  text-align: center;
+}
+
+.registration-body {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.reg-login{
+  justify-content: center;
+  padding: 1rem;
+}
+
+.reg-p {
+  margin: .5rem -.5rem .5rem 1rem;
+}
+
+.user-tab.active, .submit, .fc-today-button {
+  background-color: rgb(40, 3, 252) !important;
+}
+
+.login-content{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-button{
+  padding: 0 5px;
+}
+
+.forgot-pw{
+  justify-content: center;
+  padding: 1rem;
+  color: rgb(40, 3, 252);
+}
+
+.cursor{
+  cursor: pointer;
+}
+
+.reset-btn{
+  max-height: 2.4rem;
+  margin-top: 2rem;
+  background-color: rgb(40, 3, 252) !important;
+}
+
+.landing-center {
+  text-align: center;
+}
+
+.landing-center-flex{
+  justify-content: center;
+  display: flex;
+}
+
+.landing-head {
+  padding-top: 2rem;
+}
+
+.landing-p {
+  font-style: italic;
+}
+
+.landing-side {
+  padding: 1rem 0;
+  font-size: 1.75rem;
+}
+
+.blue {
+  color: rgb(40, 3, 252)
+}
+
+.emp-list{
+  display: flex;
+  flex-direction: column;
+
+}
+
+.emp-list-cont{
+  flex-direction: column;
+}
+
+.emp-list p{
+  text-align: center;
+}
+.emp-list p:first-child{
+  font-weight: 600;
+  margin: 0;
+}
+
+.emp-list p:nth-child(2), .emp-list p:nth-child(3){
+  margin: 0;
+}
+
+.emp-list p:nth-child(4){
+  cursor: pointer;
+  font-size: .9rem;
+  color: rgb(40, 3, 252);
+}
+
+.dn{
+  color: black !important;
+}
+
+.map-info-cont{
+  display: flex;
+  justify-content: center;
+}
+
+.map-info{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.map-info-h{
+  font-size: 1.8rem;
+  text-align: center;
+}

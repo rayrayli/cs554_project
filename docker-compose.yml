@@ -1,0 +1,49 @@
+version: "3"
+services:
+    client:
+        build:
+          context: ./client
+          dockerfile: Dockerfile
+        restart: always
+        ports:
+            - "3000:3000"
+        volumes:
+            - /client/node_modules
+            - ./client:/client
+        links:
+            - server
+        depends_on:
+            - mongo
+        environment:
+            env_file: .env
+            NODE_ENV: development
+        stdin_open: true
+    server:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        restart: always
+        ports:
+            - "3001:3001"
+        volumes:
+            - /server/node_modules
+            - ./server:/server
+        links:
+            - mongo
+            - redis
+        depends_on:
+            - mongo
+            - redis
+        environment:
+            env_file: .env
+            NODE_ENV: development
+    mongo:
+        image: mongo
+        ports:
+            - "27017:27017"
+    redis:
+        image: 'redis:alpine'
+        ports:
+            - "6379:6379"
+
+    
