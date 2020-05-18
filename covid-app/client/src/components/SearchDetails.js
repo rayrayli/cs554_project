@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../firebase/Auth';
 import { Link, Redirect } from 'react-router-dom';
-import {Container , Button}from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import { setLogLevel } from 'firebase';
@@ -43,8 +43,8 @@ const SearchDetails = (props) => {
                 let county;
                 let state;
                 console.log(data);
-                
-                data && data.address_components.forEach( (arrInd, i) => {
+
+                data && data.address_components.forEach((arrInd, i) => {
                     if (arrInd.types[0] === 'administrative_area_level_2') {
                         county = data.address_components[i].long_name;
                         state = data.address_components[i + 1].long_name
@@ -77,12 +77,15 @@ const SearchDetails = (props) => {
             }
 
             getLocation(props.location.state.result)
-            checkAppt();
+            if (currentUser) {
+                checkAppt();
+            }
             console.log("%%%%%%%%%%%%")
             window.initMap = initMap();
 
         }, []
     );
+
 
     if (searchResult && facilityData && !loaded) {
         initMap()
@@ -194,18 +197,16 @@ const SearchDetails = (props) => {
     //add for appointment picker
     if (redirectToAppointment) {
         return (
-        <Redirect to={{
-            pathname: '/appointment',
-            state: {
-                facilityInfo: selected,
-                result: props.location.state.result 
+            <Redirect to={{
+                pathname: '/appointment',
+                state: {
+                    facilityInfo: selected,
+                    result: props.location.state.result
                 }
-        }}/>
+            }} />
         )
     }
 
-    console.log('#############',userAppt)
- 
     // Populate County Data
     return (
         <Container className='main' fluid >
@@ -225,27 +226,27 @@ const SearchDetails = (props) => {
                     </Row>
 
                     <Row className="map-info-cont">
-                        {selected !== null && 
+                        {selected !== null &&
                             <div className="map-info">
                                 <h1 className="map-info-h"> {selected && selected.facilityName} </h1>
                                 <p className="facility-p"> {selected && selected.email}   {selected && selected.phone} </p>
                                 <p className="facility-p"> {selected && selected.address.street}, {selected && selected.address.city}, {selected && selected.address.state} {selected && selected.address.zip} </p>
                                 <div>
-                                    {selected && (<Button className="submit" onClick={() => (!userAppt || userAppt && userAppt.length === 0) ? 
-                                        setRedirectToAppointment(true) 
-                                        : 
+                                    {selected && (<Button className="submit" onClick={() => (!userAppt || userAppt && userAppt.length === 0) ?
+                                        setRedirectToAppointment(true)
+                                        :
                                         alert('Appointment for User Already Exist, Cancel Your Appointment in Account to Reschedule An Appointment')}> Create an appointment</Button>)}
                                 </div>
                             </div>
-                            
+
                         }
-                        {   selected === null &&
+                        {selected === null &&
                             <div className="map-info">
                                 <h1 className="map-info-h">Select a Testing Center Pin for More Details</h1>
                             </div>
 
                         }
-                    </Row>       
+                    </Row>
                 </Col>
             </Row>
         </Container>

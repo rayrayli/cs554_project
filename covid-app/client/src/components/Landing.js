@@ -112,7 +112,7 @@ const FacilityLanding = () => {
     if (employees) {
         li = employees && employees.map((employee) => {
             return (
-                <div className="emp-list">
+                <div key={employee.uid} className="emp-list">
                     <p> {employee.firstName} {employee.lastName} </p>
                     <p>({employee.email}) </p>
                     <p>{employee.phone}</p>
@@ -172,8 +172,7 @@ const EmployeeLanding = () => {
     const [hideModal, setHideModal] = useState(true);
     const [facilityAppointments, setFacilityAppointments] = useState(undefined)
     const [employeeAppointments, setEmployeeAppointments] = useState(undefined)
-
-    let li = []
+    const [li, setLi] = useState(null)
 
     useEffect(
         () => {
@@ -210,15 +209,15 @@ const EmployeeLanding = () => {
 
     const formatEmployeeAppointments = () => {
         let today = new Date().toLocaleString().split(/\D/).slice(0, 3);
-        li = null;
-
+        let li1 = [];
+      
         employeeAppointments && employeeAppointments.forEach((appt) => {
             let apptDate = appt.toLocaleString().split(/\D/).slice(0, 3);
-            if (today[0] === apptDate[0] && today[1] === apptDate[1] && today[2] === apptDate[2]) {
-                li.append(
-                    <Row className="landing-center-flex">
+            if (Number(today[0]) === Number(apptDate[0]) && Number(today[1]) === Number(apptDate[1]) && Number(today[2]) === Number(apptDate[2])) {
+                li1.push(
+                    <Row>
                         <span><p> Date: </p> <p>{appt.slot}</p></span>
-                        <span><p> Patient ID: </p> <p>{appt.patientId}</p></span>
+                        <span><p> Patient </p>: </h6> <p>{appt.patientId}</p></span>
                         <span><p> Name: </p> <p>{appt.userName}</p></span>
                         <span><p> Email: </p> <p>{appt.userEmail}</p></span>
                     </Row>
@@ -226,9 +225,8 @@ const EmployeeLanding = () => {
 
             }
         })
-
-        return (!!li) ? li : <Row className="landing-center-flex"> <p className="no-appts"> No Appointments Today </p></Row>
-
+        
+        return (li1.length > 0) ? li1 :<Row className="landing-center-flex"> <p className="no-appts"> No Appointments Today </p></Row>
     }
 
     return (

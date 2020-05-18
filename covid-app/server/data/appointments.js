@@ -163,7 +163,7 @@ let exportedMethods = {
             //todo add to patient appointment list
             if (doc.role === 'admin') {
                 let assignTo = null;
-                let beforeAppointment = await apptCollection.find({ patientId: updateInfo.patientId }).toArray();
+                let beforeAppointment = await apptCollection.find({ patientId: updateInfo.patientId }, {facilityUid: fcId}).toArray();
 
                 if ((!Array.isArray(beforeAppointment) || !beforeAppointment.length ||
                     beforeAppointment[0].assignedToEmployee === null)) {
@@ -173,7 +173,7 @@ let exportedMethods = {
                     }
                 }
                 else {
-                    assignTo = beforeAppointment.assignTo;
+                    assignTo = beforeAppointment[0].assignedToEmployee;
                 }
 
                 let newAppointment = {
