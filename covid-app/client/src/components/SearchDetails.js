@@ -71,22 +71,21 @@ const SearchDetails = (props) => {
                     })
             };
 
+            async function checkAppt() {
+                let appt = await axios.get(`/appointment/patient/${currentUser.dbUser.uid}`)
+                setUserAppt(appt.data)
+            }
 
             getLocation(props.location.state.result)
+            if (currentUser) {
+                checkAppt();
+            }
             console.log("%%%%%%%%%%%%")
             window.initMap = initMap();
 
         }, []
     );
 
-    if (currentUser) {
-        async function checkAppt() {
-            let appt = await axios.get(`/appointment/patient/${currentUser.dbUser.uid}`)
-            setUserAppt(appt.data)
-        }
-
-        checkAppt();
-    }
 
     if (searchResult && facilityData && !loaded) {
         initMap()

@@ -5,8 +5,6 @@ import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import AddressModal from './AddressModal';
 
-///// HOW DO WE SET THIS PAGE TO APPEAR ONCE AND ACCESSED ONLY AFTER REGISTER ?! ///////
-
 const key = process.env.REACT_APP_GOOGLE_API_KEY
 
 const FacilityInfo = (props) => {
@@ -28,7 +26,6 @@ const FacilityInfo = (props) => {
     let email = currentUser.dbUser.email;
 
     const handleClose = (e) => {
-        // Use JQuery??!?
         let day = e.target.name
 
         if (e.target.checked) {

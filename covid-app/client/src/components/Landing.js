@@ -227,8 +227,7 @@ const EmployeeLanding = () => {
             }
         })
 
-
-        return (li1) ? li1 : <Row> <h6> No Appointments Today </h6></Row>
+        return (li1.length > 0) ? li1 : <Row> <h6> No Appointments Today </h6></Row>
     }
 
     return (

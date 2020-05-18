@@ -67,14 +67,10 @@ const SearchBar = (props) => {
     } else {
         return (
             <Row className='landing-form'>
-                {/* <Script
-                    url={`https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`}
-                    onLoad={handleScriptLoad}
-                /> */}
                 <Form id='landingform' method='POST' name='formSearchLocal' onSubmit={handleSubmit} >
                     <InputGroup>
                         <FormControl type='text' id="search" aria-label="Search for Testing Facilities" placeholder='Search For Your County' onChange={handleChange} />
-                        <Button type='submit' className="submit" onClick={handleChange} >Search</Button>
+                        {/* <Button type='submit' className="submit" onClick={handleChange} >Search</Button> */}
                     </InputGroup>
                 </Form>
             </Row>
