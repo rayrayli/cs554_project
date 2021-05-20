@@ -20,7 +20,7 @@
     "express": "^4.17.1",
     "firebase-admin": "^8.11.0",
     "fs": "0.0.1-security",
-    "html-pdf": "^2.2.0",
+    "html-pdf": "^3.0.1",
     "mongodb": "^3.5.7",
     "node-cron": "^2.0.3",
     "nodemailer": "^6.4.6",
